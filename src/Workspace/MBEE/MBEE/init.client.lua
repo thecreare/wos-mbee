@@ -60,8 +60,10 @@ local PseudoInstance = require(script.Packages.PseudoInstance)
 
 local LuaEncode = require(script.Packages.LuaEncode)
 
-local Logger = require(script.Modules.Logger)
-local CompileUploader = require(script.Modules.Uploader)
+local CustomModules = script.Modules
+local Logger = require(CustomModules.Logger)
+local CompileUploader = require(CustomModules.Uploader)
+local CompatabilityReplacements = require(CustomModules.Compatability)
 
 local Compiler, Decompiler = nil, nil
 local PartMetadata = nil
@@ -350,36 +352,7 @@ local MaterialDecals =
 		['Neon'] = 'rbxassetid://4611376175',
 	}
 
-local COMPAT_NAME_REPLACEMENTS = 
-	{
-		SteeringSeat = "VehicleSeat";
-		Aluminium = "Aluminum";
-		SignalWire = "TriggerWire";
-		Explosives = "Explosive";
-		WheelTemplate = "Cylinder";
-		CylinderTemplate = "Cylinder";
-		WedgeTemplate = "Wedge";
-		CornerTemplate = "CornerWedge";
-		CornerTetraTemplate = "CornerTetra";
-		TetrahedronTemplate = "Tetrahedron";
-		BallTemplate = "Ball";
-		DoorTemplate = "Door";
-		BladeTemplate = "Blade";
-		RoundTemplate = "RoundWedge";
-		RoundTemplate2 = "RoundWedge2";
-		CornerRoundTemplate = "CornerRoundWedge";
-		CornerRoundTemplate2 = "CornerRoundWedge2";
-		TrussTemplate = "Truss";
-		Eridanium = "Iron";
-		Abantium = "Iron";
-		Lirvanite = "Iron";
-		TouchTrigger = "TouchSensor";
-		IonDrive = "Thruster";
-		NeonBuildingPart = "Neon";
-		SpotLight = "Spotlight";
-		Airshield = "AirSupply";
-		PsiSwitch = "WirelessButton";
-	}
+
 
 local Uncompressable = 
 	{
@@ -756,7 +729,7 @@ local function GetBoundingBox(model, orientation) --https://devforum.roblox.com/
 end
 
 local function CheckCompat(Name)
-	for i,v in COMPAT_NAME_REPLACEMENTS do
+	for i,v in CompatabilityReplacements.COMPAT_NAME_REPLACEMENTS do
 		if v:lower() == Name:lower() then return i end
 	end
 end
@@ -1904,16 +1877,16 @@ local CustomEnums; CustomEnums =
 			AdjustmentFunction = function(Object, Index, Value) end,
 			Swing = 
 			{
-				[0] = "No swing",
-				[1] = "Swing down",
-				[2] = "Follow cursor",
+				[0] = "None",
+				[1] = "Swing",
+				[2] = "Point",
 			},
 
 			TriggerMode =
 			{
-				[0] = "Trigger on down",
-				[1] = "Trigger on up",
-				[2] = "Trigger on up and down"
+				[0] = "MouseDown",
+				[1] = "MouseUp",
+				[2] = "Both"
 			},
 		},
 
@@ -3973,20 +3946,34 @@ CompileButton.OnPressed:Connect(function()
 				value.Value = randId
 				alreadyMadeIds[id] = randId
 			end
-			
+		end
+		local function HandleValue(_value: ValueBase)
+			local value = _value :: ValueBase & {Value:any} -- Who knows the the correct solution to make the errors go away is
+
+			-- Handle % antenna randomization
+			randomizeValue(value)
+
+			-- Handle compat updates
+			local values = CompatabilityReplacements.COMPAT_CONFIG_REPLACEMENTS[value.Name]
+			if values then
+				local replace = values[value.Value]
+				if replace then
+					value.Value = replace
+				end
+			end
 		end
 		for _, part in SelectionParts do
 			for _, child: Configuration|ValueBase in part:GetChildren() do
 				
 				if child:IsA("Configuration") then
-					for _, configValue: ValueBase in child:GetChildren() do
+					for _, configValue in child:GetChildren() do
 						if not configValue:IsA("ValueBase") then continue end
-						randomizeValue(configValue)
+						HandleValue(configValue)
 					end
 				end
 				
 				if child:IsA("ValueBase") then
-					randomizeValue(child)
+					HandleValue(child)
 				end
 			end
 		end
