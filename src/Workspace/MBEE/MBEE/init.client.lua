@@ -3378,7 +3378,10 @@ local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: strin
 		if options then
 			if ConfigValue.Name == "TextColor" then
 				local Colors = ConfigValue.Value:gsub(" ", ""):split(",")
-				TextBox.Box.Text = table.concat({math.round((Colors[1] or 0) * 255), math.round((Colors[2] or 0) * 255), math.round((Colors[3] or 0) * 255)}, ", ")
+				for i, color in Colors do
+					Colors[i] = math.round((tonumber(Colors[i]) or 0) * 255)
+				end
+				TextBox.Box.Text = table.concat(Colors, ", ")
 				TextBox.Box.PlaceholderText = ConfigValue.Name
 			else
 				TextBox.Box.Text = options[ConfigValue.Value] or ConfigValue.Value
