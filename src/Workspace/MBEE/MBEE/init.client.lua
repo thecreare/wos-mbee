@@ -1109,29 +1109,31 @@ local function IsTemplate(part: BasePart): boolean
 	return temp_type or shape
 end
 
-local function SpawnPart(Part, Settings)
+local function SpawnPart(Part, Settings): Model?
+	local SelectedPart
 
-	local SelectedPart = Part:IsA("BasePart") and Part:Clone() or MatchQueryToList(tostring(Part), script.Parts:GetChildren())
-	if not SelectedPart then return end
-	local RayResult = workspace:Raycast(Camera.CFrame.Position, Camera.CFrame.LookVector * ((SelectedPart.Size.X + SelectedPart.Size.Y + SelectedPart.Size.Z) / 3 * 1.5 + 10))
-	SelectedPart.Position = RayResult and RayResult.Position and Vector3.new(RayResult.Position.X, RayResult.Position.Y + SelectedPart.Size.Y / 2, RayResult.Position.Z) or Camera.CFrame.Position + Camera.CFrame.LookVector * 12
-	RoundPos(SelectedPart)
+	HistoricEvent("SpawnPart", "Spawn Part", function()
+		SelectedPart = Part:IsA("BasePart") and Part:Clone() or MatchQueryToList(tostring(Part), script.Parts:GetChildren())
+		if not SelectedPart then return end
+		local RayResult = workspace:Raycast(Camera.CFrame.Position, Camera.CFrame.LookVector * ((SelectedPart.Size.X + SelectedPart.Size.Y + SelectedPart.Size.Z) / 3 * 1.5 + 10))
+		SelectedPart.Position = RayResult and RayResult.Position and Vector3.new(RayResult.Position.X, RayResult.Position.Y + SelectedPart.Size.Y / 2, RayResult.Position.Z) or Camera.CFrame.Position + Camera.CFrame.LookVector * 12
+		RoundPos(SelectedPart)
 
-	SelectedPart.Parent = workspace
+		SelectedPart.Parent = workspace
 
-	if IsTemplate(SelectedPart) then
-		local query = TemplateMaterial.Box.Text
-		if query == "" or query == nil then return SelectedPart end
-		local Matched = MatchQueryToList(query, script.Parts:GetChildren())
-		if not Matched then return SelectedPart end
-		if not Matched[1] then return SelectedPart end
-		if #Matched > 32 then return SelectedPart end
-		ApplyTemplates({SelectedPart}, Matched[1])
-		if Settings.TempColor then SelectedPart.Color = Matched[1].Color end
-	end
-	
+		if IsTemplate(SelectedPart) then
+			local query = TemplateMaterial.Box.Text
+			if query == "" or query == nil then return SelectedPart end
+			local Matched = MatchQueryToList(query, script.Parts:GetChildren())
+			if not Matched then return SelectedPart end
+			if not Matched[1] then return SelectedPart end
+			if #Matched > 32 then return SelectedPart end
+			ApplyTemplates({SelectedPart}, Matched[1])
+			if Settings.TempColor then SelectedPart.Color = Matched[1].Color end
+		end
+	end)
+
 	return SelectedPart
-
 end
 
 local function CreateObjectButton(Settings)
