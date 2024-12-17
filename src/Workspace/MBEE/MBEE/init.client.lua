@@ -1087,9 +1087,12 @@ local function SpawnPart(Part, Settings)
 	SelectedPart.Parent = workspace
 
 	if IsTemplate(SelectedPart) then
-		local Matched = MatchQueryToList(TemplateMaterial.Box.Text, script.Parts:GetChildren())
+		local query = TemplateMaterial.Box.Text
+		if query == "" or query == nil then return SelectedPart end
+		local Matched = MatchQueryToList(query, script.Parts:GetChildren())
 		if not Matched then return SelectedPart end
 		if not Matched[1] then return SelectedPart end
+		if #Matched > 32 then return SelectedPart end
 		ApplyTemplates({SelectedPart}, Matched[1])
 		if Settings.TempColor then SelectedPart.Color = Matched[1].Color end
 	end
@@ -3412,10 +3415,14 @@ local function AddConfigItem(Item: BasePart)
 		ItemIdentifier = "Resource"
 	end
 
+	if PartMetadata:GetShape(Item) then
+		ItemIdentifier = "Resource"
+	end
+
 	if not ItemIdentifier and not (Item:FindFirstChildWhichIsA("ValueBase") or Item:FindFirstChildWhichIsA("Configuration")) then return end
 
 	if Item:FindFirstChild("TempType") then
-	--if IsTemplate(Item) then
+	-- if IsTemplate(Item) then
 		ItemIdentifier = "TemplateObject"
 	elseif not ItemIdentifier then
 		ItemIdentifier = Item.Name
