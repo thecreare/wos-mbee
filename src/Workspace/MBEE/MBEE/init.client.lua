@@ -1085,6 +1085,24 @@ local function CreateCheckBox(Settings)
 	return {Holder = Holder, Label = Label, Toggle = Toggle}
 end
 
+local function HistoricEvent(name: string, display_name: string?, callback: ()->(), ...:any): (boolean, string?)
+	name = "MBEE" .. name
+	display_name = "MBEE " .. (display_name or name)
+
+	local recordingId = ChangeHistoryService:TryBeginRecording(name, display_name)
+
+	local success, err = pcall(callback, ...)
+
+	local operation = if success then Enum.FinishRecordingOperation.Commit else Enum.FinishRecordingOperation.Cancel
+	ChangeHistoryService:FinishRecording(recordingId, operation)
+
+	if not success then
+		Logger.warn(`Failed to run {name} with error: {err}`)
+	end
+
+	return success, err
+end
+
 local function IsTemplate(part: BasePart): boolean
 	local temp_type = part:FindFirstChild("TempType")
 	local shape = PartMetadata:GetShape(part)
