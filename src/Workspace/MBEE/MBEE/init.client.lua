@@ -3294,6 +3294,12 @@ local function createConfigHolder(HeaderText: string)
 	return Holder, HeaderLabel
 end
 
+local function BindToEventWithUndo(event: RBXScriptSignal, name: string, display_name: string?, callback: (...any)->())
+	event:Connect(function(...)
+		HistoricEvent(name, display_name, callback, ...)
+	end)
+end
+
 local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: string, isComponentConfig: boolean)
 	--local RootObject = ConfigValue.Parent
 	local RootObject = if ConfigValue:IsA("BasePart") then ConfigValue else ConfigValue:FindFirstAncestorWhichIsA("BasePart")
@@ -3327,22 +3333,8 @@ local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: strin
 		ConnectBoxToAutocomplete(TextBox.Box, script.Parts:GetChildren())
 		
 		-- On Resource config changed
-		TextBox.Box:GetPropertyChangedSignal("Text"):Connect(function()
-			-- Grab part template that coresponds to the entered resorce's default appearence
-			local TemplateObject = Parts:FindFirstChild(TextBox.Box.Text)
-			if not TemplateObject then return end
-			-- For every "resource" part (eg iron)
-			for _, Resource in SearchCategories.resources do
-				if TemplateObject.Name:lower() ~= Resource then continue end
-				for _, Object in ConfigValues[ItemIdentifier] do
-					-- Clone template appearence onto part
-					Object.Material = TemplateObject.Material or Object.Material
-					Object.Transparency = TemplateObject.Transparency or Object.Transparency
-					Object.Reflectance = TemplateObject.Reflectance or Object.Reflectance
-					Object.Name = TemplateObject.Name
-				end
-				break
-			end
+		BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
+			ApplyTemplates(ConfigValues[ItemIdentifier], TextBox.Box.Text)
 		end)
 
 		toSync = {Labels = {TextBox.Label}, Boxes = {TextBox.Box}}
@@ -3358,7 +3350,7 @@ local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: strin
 				ToggleValue = ConfigValue.Value,
 			})
 
-		Check.Toggle.OnChecked:Connect(function(On)
+		BindToEventWithUndo(Check.Toggle.OnChecked, "Configure", nil, function(On)
 			ApplyConfigurationValues(ItemIdentifier, RootObject, ConfigValue, On)
 		end)
 
@@ -3382,7 +3374,7 @@ local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: strin
 			CreateTipBoxes(TextBox.Box, options)
 		end
 
-		TextBox.Box:GetPropertyChangedSignal("Text"):Connect(function()
+		BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
 			ApplyConfigurationValues(ItemIdentifier, RootObject, ConfigValue, TextBox.Box.Text, TextBox.Box)
 		end)
 
@@ -3424,22 +3416,9 @@ local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: strin
 			end
 		end
 
-		TextBox.Box:GetPropertyChangedSignal("Text"):Connect(function()
+		BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
 			if ConfigValue.Name == 'TempType' then
-				local TemplateObject = Parts:FindFirstChild(TextBox.Box.Text)
-				if not TemplateObject then
-					for _, Object in ConfigValues[ItemIdentifier] do
-						Object:FindFirstChild("TempType").Value = ''
-						Object.Material = 'Concrete'
-						Object.Reflectance = 0
-					end
-					return
-				end
-				for _, Object in ConfigValues[ItemIdentifier] do
-					Object:FindFirstChild("TempType").Value = TemplateObject.Name
-					Object.Material = TemplateObject.Material or Object.Material
-					Object.Reflectance = TemplateObject.Reflectance or Object.Reflectance
-				end
+				ApplyTemplates(ConfigValues[ItemIdentifier], TextBox.Box.Text)
 				return
 			end
 
