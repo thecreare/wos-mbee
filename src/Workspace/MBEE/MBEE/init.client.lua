@@ -2584,7 +2584,7 @@ end
 
 function ModernDecompile(content): Model?
 	local model
-	local success = HistoricEvent("MBEEDecompile", "Decompile Model", function()
+	local success = HistoricEvent("Decompile", "Decompile Model", function()
 		if content:sub(1, 4) == "http" then
 			content = HttpService:GetAsync(content)
 		end
