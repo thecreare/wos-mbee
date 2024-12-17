@@ -2331,17 +2331,10 @@ TemplateMaterial = CreateTextBox(
 		LayoutOrder = 1,
 	})
 
-local LastTemplateShown
 ConnectBoxToAutocomplete(TemplateMaterial.Box, script.Parts:GetChildren()).Event:Connect(function(Matched)
-	if LastTemplateShown then
-		LastTemplateShown.Visible = false
-	end
-	LastTemplateShown = nil
-	
-	--print(Matched)
-	
-	ApplyTemplates(Selection:Get(), #Matched == 1 and Matched[1] or nil)
-
+	if #Matched > 16 then return end
+	if Matched[1] == nil then return end
+	ApplyTemplates(Selection:Get(), Matched[1])
 end)
 
 MalleabilityCheck = CreateCheckBox(
