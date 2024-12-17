@@ -3,6 +3,6 @@ function module.print(...)
 	warn("[MBEE]:", ...)
 end
 function module.warn(...)
-	warn("[MBEE]:", ...)
+	warn("[MBEE]:", ..., debug.traceback())
 end
 return module
