@@ -2582,21 +2582,6 @@ function CreateOutputScript(content: string, scriptName: string?, open: boolean?
 	return outputScript
 end
 
-local function HistoricEvent(name: string, display_name: string?, callback: ()->()): (boolean, string?)
-	local recordingId = ChangeHistoryService:TryBeginRecording(name, display_name)
-
-	local success, err = pcall(callback)
-
-	local operation = if success then Enum.FinishRecordingOperation.Commit else Enum.FinishRecordingOperation.Cancel
-	ChangeHistoryService:FinishRecording(recordingId, operation)
-
-	if not success then
-		Logger.warn(`Failed to run {name} with error: {err}`)
-	end
-
-	return success, err
-end
-
 function ModernDecompile(content): Model?
 	local model
 	local success = HistoricEvent("MBEEDecompile", "Decompile Model", function()
