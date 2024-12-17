@@ -1112,7 +1112,7 @@ end
 local function SpawnPart(Part, Settings): Model?
 	local SelectedPart
 
-	HistoricEvent("SpawnPart", "Spawn Part", function()
+	HistoricEvent("InsertPart", "Insert Part", function()
 		SelectedPart = Part:IsA("BasePart") and Part:Clone() or MatchQueryToList(tostring(Part), script.Parts:GetChildren())
 		if not SelectedPart then return end
 		local RayResult = workspace:Raycast(Camera.CFrame.Position, Camera.CFrame.LookVector * ((SelectedPart.Size.X + SelectedPart.Size.Y + SelectedPart.Size.Z) / 3 * 1.5 + 10))
