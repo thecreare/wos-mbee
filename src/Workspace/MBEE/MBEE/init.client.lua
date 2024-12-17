@@ -949,7 +949,18 @@ end
 
 local function ApplyTemplates(List, Material)
 	for _, Part in SearchTableWithRecursion(List, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
-		
+		local temp_type_value = Part:FindFirstChild("TempType")
+
+		if Material == nil then
+			Part.Material = Enum.Material.Concrete
+			Part.Transparency = 0
+			Part.Reflectance = 0
+			Part.Name = PartMetadata:GetShape(Part)
+			if temp_type_value then
+				temp_type_value.Value = ""
+			end
+			continue
+		end
 		-- Updated because TempType doesn't matter and all parts have their names correct
 		local TemplatePart = Material and Parts:FindFirstChild(tostring(Material))
 		if not TemplatePart then continue end
@@ -957,6 +968,9 @@ local function ApplyTemplates(List, Material)
 		Part.Transparency = TemplatePart.Transparency
 		Part.Reflectance = TemplatePart.Reflectance
 		Part.Name = TemplatePart.Name
+		if temp_type_value then
+			temp_type_value.Value = TemplatePart.Name
+		end
 		
 		--local Template = Part:FindFirstChild("TempType")
 		--if not Template then continue end
