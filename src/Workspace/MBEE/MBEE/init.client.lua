@@ -2575,9 +2575,9 @@ function CreateOutputScript(content: string, scriptName: string?, open: boolean?
 	return outputScript
 end
 
-function ModernDecompile(content): Model?
+function ModernDecompile(content): (Model?, string?)
 	local model
-	local success = HistoricEvent("Decompile", "Decompile Model", function()
+	local success, err = HistoricEvent("Decompile", "Decompile Model", function()
 		if content:sub(1, 4) == "http" then
 			content = HttpService:GetAsync(content)
 		end
@@ -2606,11 +2606,11 @@ function ModernDecompile(content): Model?
 		
 		Logger.print("SUCCESSFULLY DECOMPILED DATA")
 	end)
-
+	Logger.print(`Modern decompile returned {success}, {err}`)
 	if success then
-		return model
+		return model, nil
 	end
-	return nil
+	return nil, err
 end
 
 function ClassicDecompile(content)
@@ -2628,7 +2628,9 @@ function ClassicDecompile(content)
 	for i,v in SearchTableWithRecursion(DecompileParts, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
 		v.Parent = DecompileGroup
 		ApplyColorCopy(v)
-		ApplyTemplates({v})
+		if IsTemplate(v) then
+			ApplyTemplates({v})
+		end
 
 		if not v:FindFirstChildWhichIsA("ValueBase") then continue end
 
@@ -2648,19 +2650,19 @@ DecompileButton.OnPressed:Connect(function()
 	Logger.print("DECOMPILE STARTED")
 	
 	local saveString = Decompilation.Box.Text
-	local success = pcall(ModernDecompile, saveString)
+	local model = ModernDecompile(saveString)
 	
-	if success then
+	if model then
 		Logger.print("DECOMPILE SUCCESS")
 	else
 		Logger.print("MODERN DECOMPILE FAILED, TRYING CLASSIC DECOMPILER")
 		
-		local success = pcall(ClassicDecompile, saveString)
+		local success, err = pcall(ClassicDecompile, saveString)
 		
 		if success then
-			Logger.print("DECOMPILE SUCCESS")
+			Logger.print("CLASSIC DECOMPILE SUCCESS")
 		else
-			Logger.print("CLASSIC DECOMPILE FAILED")
+			Logger.print("CLASSIC DECOMPILE FAILED WITH ERROR", err)
 		end
 	end
 end)
