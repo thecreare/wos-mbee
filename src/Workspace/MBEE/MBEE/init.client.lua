@@ -48,8 +48,6 @@ local CustomMaterials = {}; pcall(function() CustomMaterials = HttpService:JSOND
 local createSharedToolbar = require(script.createSharedToolbar)
 local PartData = require(script.PartData)
 
---local Compiler = require(script.Compilers["Stable JSON v2.1.0"])
-
 -- Used to print Required Materials for users who have Log Mode enabled in their Output
 local repr = require(3148021300)
 
@@ -65,6 +63,7 @@ local CustomModules = script.Modules
 local Logger = require(CustomModules.Logger)
 local CompileUploader = require(CustomModules.Uploader)
 local CompatabilityReplacements = require(CustomModules.Compatability)
+local InfoConstants = require(CustomModules.Settings)
 
 local Compiler, Decompiler = nil, nil
 local PartMetadata = nil
@@ -332,307 +331,6 @@ local function SyncColors(UIs)
 	end
 end
 
-local MaterialDecals = 
-	{
-		['DiamondPlate'] = 'rbxassetid://6199640978',
-		['Pebble'] = 'rbxassetid://6199682801',
-		['Concrete'] = 'rbxassetid://6199640497',
-		['Grass'] = 'rbxassetid://6199644850',
-		['Slate'] = 'rbxassetid://6199684472',
-		['Sand'] = 'rbxassetid://6199683944',
-		['WoodPlanks'] = 'rbxassetid://6199685792',
-		['Brick'] = 'rbxassetid://6199592405',
-		['Foil'] = 'rbxassetid://6199591431',
-		['Fabric'] = 'rbxassetid://6199641888',
-		['Wood'] = 'rbxassetid://6199685137',
-		["CorrodedMetal"] = 'rbxassetid://6199683451',
-		['Granite'] = 'rbxassetid://6199643524',
-		['Metal'] = 'rbxassetid://6199682276',
-		['Cobblestone'] = 'rbxassetid://6199592990',
-		['ForceField'] = 'rbxassetid://4611376175',
-		['Neon'] = 'rbxassetid://4611376175',
-	}
-
-
-
-local Uncompressable = 
-	{
-		["Cannon"] = true;
-		["Gun"] = true;
-		["Laser"] = true;
-		["BurstLaser"] = true;
-		["EnergyShield"] = true;
-		["EnergyBomb"] = true;
-		["Artillery"] = true;
-		["AutomaticLaser"] = true;
-		["EnergyGun"] = true;
-		["Flamethrower"] = true;
-		["ImpulseCannon"] = true;
-		["MiningLaser"] = true;
-		["Missile"] = true;
-		["PlasmaCannon"] = true;
-		["PowerCell"] = true;
-		["RailGun"] = true;
-		["Bin"] = true;
-		["Rocket"] = true;
-		["Shotgun"] = true;
-		["StasisField"] = true;
-		["Warhead"] = true;
-		["Cooler"] = true;
-		["WaterCooler"] = true;
-		["Heater"] = true;
-		["SolarPanel"] = true;
-		["BurnerGenerator"] = true;
-		["Reactor"] = true;
-		["Battery"] = true;
-		["Pump"] = true;
-		["DarkReactor"] = true;
-		["DarkConverter"] = true;
-		["Extractor"] = true;
-		["Refinery"] = true;
-		["Container"] = true;
-		["SteamTurbine"] = true;
-	}
-
-local SearchCategories =
-	{
-		['templateables'] =
-		{
-			'ruby',
-			'lead',
-			'aliencore',
-			'beryllium',
-			'sand',
-			'neutronium',
-			'iron',
-			'darkmatter',
-			'magnesium',
-			'copper',
-			'diamond',
-			'quartz',
-			'snow',
-			'exoticmatter',
-			'perfectium',
-			'stick',
-			'water',
-			'silicon',
-			'coal',
-			'wood',
-			'glass',
-			'sulfur',
-			'aluminum',
-			'ruby',
-			'jade',
-			'ice',
-			'flint',
-			'stone',
-			'gold',
-			'grass',
-			'titanium',
-			'uranium',
-			'nuclearwaste',
-			'snow',
-			'water',
-			'lava',
-			'hydrgen',
-			'helium',
-			'plasma',
-			'steam',
-			'petroleum',
-			'mustardgas',
-			'nitrogenoxide',
-			'plasma',
-			'oil',
-			'neon',
-			'reinforcedglass',
-			'melter'
-		},
-
-		['resources'] =
-		{
-			'ruby',
-			'lead',
-			'aliencore',
-			'beryllium',
-			'sand',
-			'neutronium',
-			'iron',
-			'darkmatter',
-			'magnesium',
-			'copper',
-			'diamond',
-			'quartz',
-			'snow',
-			'exoticmatter',
-			'perfectium',
-			'stick',
-			'water',
-			'silicon',
-			'coal',
-			'wood',
-			'glass',
-			'sulfur',
-			'aluminum',
-			'ruby',
-			'jade',
-			'ice',
-			'flint',
-			'stone',
-			'gold',
-			'grass',
-			'titanium',
-			'uranium',
-			'nuclearwaste',
-			'snow',
-			'water',
-			'lava',
-			'hydrgen',
-			'helium',
-			'plasma',
-			'steam',
-			'petroleum',
-			'mustardgas',
-			'nitrogenoxide',
-			'plasma',
-			'oil',
-			'neon',
-			'reinforcedglass',
-		},
-
-		['logic'] =
-		{
-			'switch',
-			'microcontroller',
-			'Capacitysensor',
-			'microphone',
-			'touchsensor',
-			'triggerwire',
-			'transformer',
-			'zapwire',
-			'controller',
-			'port',
-			'instrument',
-			'screen',
-			'triggerswitch',
-			'igniter',
-			'keyboard',
-			'deleteswitch',
-			'electromagnet'
-		},
-
-		['propulsion'] =
-		{
-			'propeller',
-			'thruster',
-			'rocket',
-			'hyperdrive',
-			'rotor'
-		},
-
-		['electrical'] =
-		{
-			'scrapper',
-			'extractor',
-			'light',
-			'cooler',
-			'cloningbay',
-			'darkreactor',
-			'regioncloaker',
-			'pulverizer',
-			'laser',
-			'watercooler',
-			'burnergenerator',
-			'servo',
-			'thruster',
-			'combustionturbine',
-			'touchscreen',
-			'electricfence',
-			'pump',
-			'assembler',
-			'diode',
-			'modem',
-			'stasisfield',
-			'lightbridge',
-			'wire',
-			'mininglaser',
-			'darkconverter',
-			'lighttube',
-			'beacon',
-			'steamturbine',
-			'starmap',
-			'kiln',
-			'transformer',
-			'automaticlaser',
-			'solarscoop',
-			'ionrocket',
-			'melter',
-			'freezer',
-			'spotlight',
-			'hydroponic',
-			'studaligner',
-			'railgun',
-			'treads',
-			'switch',
-			'airsupply',
-			'speaker',
-			'energyshield',
-			'motor',
-			'zapwire',
-			'obelisk',
-			'gravitygenerator',
-			'refinery',
-			'gyro',
-			'telescope',
-			'rtg',
-			'conveyorbelt',
-			'hologram',
-			'screen',
-			'floatdevice',
-			'heater',
-			'solarpanel',
-			'boombox',
-			'electromagnet',
-			'blackbox'
-		},
-
-		['templates'] =
-		{
-			'cornertetra',
-			'wedge',
-			'cone',
-			'tetrahedron',
-			'cylinder',
-			'cornerroundwedge2',
-			'cornerroundwedge',
-			'door',
-			'ball',
-			'halfsphere',
-			'hull',
-			'truss',
-			'roundwedge',
-			'blade',
-			'cornerwedge',
-			'roundwedge2'
-		},
-
-		['weapons'] =
-		{
-			'burstlaser',
-			'laser',
-			'energybomb',
-			'energygun',
-			'cannon',
-			'impulsecannon',
-			'warhead',
-			'automaticlaser',
-			'fireworks',
-			'gun',
-			'plasmacannon',
-			'railgun',
-			'zapwire',
-			'explosive'
-		}
-	}
 
 local function RoundPos(part)
 	part.Position = Vector3.new(math.floor(part.Position.X), math.floor(part.Position.Y), math.floor(part.Position.Z))
@@ -750,22 +448,6 @@ local function CreateAdornee(subject, color, issue)
 	Adornees[subject][issue] = box
 	return box
 end
-
---local function checkMalleability(Value)
---	if type(Value) == "number" and not (size.X * size.Y * size.Z <= Value * malleabilityMult) then
---		return WARN_CODES.BAD_SIZE
---	elseif typeof(Value) == "Vector3" and not (Vector3.new(round(size.X),round(size.Y),round(size.Z)) == Value) then
---		return WARN_CODES.BAD_SIZE
---	end
---end
-
---if typeof(partMalleability) == 'table' then
---	for _, Value in partMalleability do
---		if not checkMalleability(Value) then print(Value, issue) issue = nil break else issue = WARN_CODES.BAD_SIZE end
---	end
---else
---	issue = checkMalleability(partMalleability)
---end
 
 local function CheckMalleabilityValue(Part, Value)
 	if typeof(Value) == "number" then
@@ -936,7 +618,7 @@ local function CheckTableOverlap(List)
 		else
 			for _, Overlapping in Overlap do
 				if v == Overlapping then continue end
-				if not Uncompressable[Overlapping.Name] then continue end
+				if not InfoConstants.Uncompressable[Overlapping.Name] then continue end
 				local OverlapBox = CreateAdornee(v, Colors.OverlapCheck, "O")
 				if OverlapBox then table.insert(UIElements.OverlapIndicators, OverlapBox) end
 				break
@@ -971,23 +653,7 @@ local function ApplyTemplates(List, Material)
 		if temp_type_value then
 			temp_type_value.Value = TemplatePart.Name
 		end
-		
-		--local Template = Part:FindFirstChild("TempType")
-		--if not Template then continue end
-		--local TemplatePart = Material and script.Parts:FindFirstChild(tostring(Material)) or nil
-		--if not TemplatePart then
-		--	Template.Value = ""
-		--	Part.Material = "Concrete"
-		--	Part.Transparency = 0
-		--	continue
-		--end
-
-		--Template.Value = TemplatePart.Name
-		--Part.Material = TemplatePart.Material
-		--Part.Transparency = TemplatePart.Transparency
-
 	end
-
 end
 
 local function CreateTextBox(Settings)
@@ -1097,7 +763,7 @@ local function HistoricEvent(name: string, display_name: string?, callback: ()->
 	ChangeHistoryService:FinishRecording(recordingId, operation)
 
 	if not success then
-		Logger.warn(`Failed to run {name} with error: {err}`)
+		Logger.warn(`{name} failed with error: {err}`)
 	end
 
 	return success, err
@@ -1158,9 +824,9 @@ local function CreateObjectButton(Settings)
 	Icon.AnchorPoint = Vector2.new(0, 0.5)
 	Icon.Position = UDim2.new(0, 5, 0.5, 0)
 	Icon.BackgroundColor3 = Settings.Part.Color
-	Icon.Image = Image and Image.Texture or MaterialDecals[tostring(Settings.Part.Material.Name)] or ''
+	Icon.Image = Image and Image.Texture or InfoConstants.MaterialDecals[tostring(Settings.Part.Material.Name)] or ''
 	Icon.ImageColor3 = Image and Image.Color3 or Color3.new(1, 1, 1)
-	Icon.ImageTransparency = Image and Image.Transparency or MaterialDecals[tostring(Settings.Part.Material.Name)] and 0.25 or 1
+	Icon.ImageTransparency = Image and Image.Transparency or InfoConstants.MaterialDecals[tostring(Settings.Part.Material.Name)] and 0.25 or 1
 	Icon.Parent = ResultHolder
 
 	local ResultLabel = Instance.new("TextLabel")
@@ -1218,10 +884,10 @@ end)
 
 --	local Parts = {}
 
---	if SearchCategories[Query:lower()] then
+--	if InfoConstants.SearchCategories[Query:lower()] then
 --		local CategoryItems = {}
 --		for _, Part in script.Parts:GetChildren() do
---			for _, CategoryItem in SearchCategories[Query:lower()] do
+--			for _, CategoryItem in InfoConstants.SearchCategories[Query:lower()] do
 --				if Part.Name:lower() ~= CategoryItem:lower() then continue end
 --				table.insert(CategoryItems, Part)
 --			end
@@ -2180,10 +1846,10 @@ end)
 end)]]
 
 ConnectBoxToAutocomplete(SearchBox, script.Parts:GetChildren()).Event:Connect(function(MatchedParts)
-	if SearchCategories[SearchBox.Text:lower()] then
+	if InfoConstants.SearchCategories[SearchBox.Text:lower()] then
 		local CategoryItems = {}
 		for _, Part in script.Parts:GetChildren() do
-			for _, CategoryItem in SearchCategories[SearchBox.Text:lower()] do
+			for _, CategoryItem in InfoConstants.SearchCategories[SearchBox.Text:lower()] do
 				if Part.Name:lower() ~= CategoryItem:lower() then continue end
 				CategoryItems[Part.Name] = true
 			end
@@ -2296,7 +1962,7 @@ AddMaterialButton.OnPressed:Connect(function()
 	local Material = Selection:Get()[1]
 	if not Material:IsA("BasePart") then return end
 
-	for _, Resource in pairs(SearchCategories.resources) do
+	for _, Resource in pairs(InfoConstants.SearchCategories.resources) do
 		if Resource == Material.Name:lower() then
 			warn('[MB:E:E] ' .. Material.Name:upper() .. ' ALREADY EXISTS')
 			return
@@ -2317,8 +1983,8 @@ AddMaterialButton.OnPressed:Connect(function()
 
 	plugin:SetSetting("SavedCustomMaterials", HttpService:JSONEncode(CustomMaterials))
 	CreateObjectButton({Part = NewMaterial, Deletable = true, Parent = ResultsFrame})
-	table.insert(SearchCategories.resources, NewMaterial.Name:lower())
-	table.insert(SearchCategories.templateables, NewMaterial.Name:lower())
+	table.insert(InfoConstants.SearchCategories.resources, NewMaterial.Name:lower())
+	table.insert(InfoConstants.SearchCategories.templateables, NewMaterial.Name:lower())
 	warn('[MB:E:E] ' .. NewMaterial.Name:upper() .. ' WAS SUCCESSFULLY TURNED INTO A MATERIAL')
 end)
 
@@ -2788,97 +2454,17 @@ CreateButton("Select Compiler", function()
 			end
 		end
 
-		
 		--reset other selections
 		for _,v in pairs(Compilers) do
 			v.Selected = false
 		end
-		--for _,v in pairs(VersonList:GetChildren()) do
-		--	if v:IsA("Frame") then
-		--		SyncColors({v})
-		--	end
-		--end
 
 		comp.Selected = true
 		Components = comp.Components:GetChildren()
 		Compiler = comp
 		Decompiler = Decompilers[i]
 		PartMetadata = require(comp.PartMetadata)
-
-		--if comp.Decompile then
-		--	decompileFilesButton.Disabled = false
-		--	decompileTextButton.Disabled = false
-		--else
-		--	decompileFilesButton.Disabled = true
-		--	decompileTextButton.Disabled = true
-		--end
-
-		--VersionElementHolder.BackgroundColor3 = Color3.fromRGB(51,102,255)
-
-		--VersionLabel.Text = `Select Version (v{Compiler.Version})`
-		
-		--if Choice == "Stable" then
-		--	Compiler = require(script.Compilers["Stable JSON v2.1.0"])
-		--elseif Choice == "Compressed" then
-		--	Compiler = require(script.Compilers["Experimental Compressed JSON v2.2.1"])
-		--end
 	end)
-	
-	--for i,comp in pairs(Compilers) do
-	--	--print(comp)
-	--	local VersionElementHolder = Instance.new("Frame")
-	--	VersionElementHolder.BorderSizePixel = 1
-	--	VersionElementHolder.Size = UDim2.new(1, 0, 0, 40)
-	--	VersionElementHolder.AnchorPoint = Vector2.new(0, 0)
-	--	VersionElementHolder.Position = UDim2.new(0, 0, 0.5, 0)
-	--	VersionElementHolder.Name = comp.Version
-	--	VersionElementHolder.Parent = VersonList
-
-	--	local VersonResultLabel = Instance.new("TextButton")
-	--	VersonResultLabel.BackgroundTransparency = 1
-	--	VersonResultLabel.BorderSizePixel = 0
-	--	VersonResultLabel.Size = UDim2.new(1, 0, 1, 0)
-	--	VersonResultLabel.Position = UDim2.new(0, 10, 0, 0)
-	--	VersonResultLabel.Text = `{comp.Title} (v{comp.Version}) {comp.DateAdded}`
-	--	VersonResultLabel.Font = Enum.Font.SourceSans
-	--	VersonResultLabel.TextXAlignment = Enum.TextXAlignment.Left
-	--	VersonResultLabel.TextSize = 24
-	--	VersonResultLabel.Parent = VersionElementHolder
-	--	--Sync Compiler Selection Result Colors
-	--	SyncColors({VersionElementHolder,VersonResultLabel})
-	--	if comp.Selected == true then
-	--		VersionElementHolder.BackgroundColor3 = Color3.fromRGB(51,102,255)
-	--	end
-
-	--	VersonResultLabel.MouseButton1Click:Connect(function()
-	--		--reset other selections
-	--		for _,v in pairs(Compilers) do
-	--			v.Selected = false
-	--		end
-	--		for _,v in pairs(VersonList:GetChildren()) do
-	--			if v:IsA("Frame") then
-	--				SyncColors({v})
-	--			end
-	--		end
-
-	--		comp.Selected = true
-	--		Compiler = comp
-	--		Decompiler = Decompilers[i]
-
-	--		if comp.Decompile then
-	--			decompileFilesButton.Disabled = false
-	--			decompileTextButton.Disabled = false
-	--		else
-	--			decompileFilesButton.Disabled = true
-	--			decompileTextButton.Disabled = true
-	--		end
-
-	--		VersionElementHolder.BackgroundColor3 = Color3.fromRGB(51,102,255)
-
-	--		VersionLabel.Text = `Select Version (v{Compiler.Version})`
-	--	end)
-
-	--end
 
 	Dialog.Parent = VersionSelectWidget
 
@@ -3095,8 +2681,8 @@ local MaterialsLoaded = pcall(function()
 			NewMaterial[Property] = PropertyValue
 		end
 		NewMaterial.Parent = script.Parts
-		table.insert(SearchCategories.resources, Name:lower())
-		table.insert(SearchCategories.templateables, Name:lower())
+		table.insert(InfoConstants.SearchCategories.resources, Name:lower())
+		table.insert(InfoConstants.SearchCategories.templateables, Name:lower())
 		CreateObjectButton({Part = NewMaterial, Deletable = true, Parent = ResultsFrame})
 		ResultsFrame.CanvasSize = UDim2.new(0, 0, 0, #script.Parts:GetChildren() * 20)
 	end
@@ -3296,7 +2882,6 @@ local function BindToEventWithUndo(event: RBXScriptSignal, name: string, display
 end
 
 local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: string, isComponentConfig: boolean)
-	--local RootObject = ConfigValue.Parent
 	local RootObject = if ConfigValue:IsA("BasePart") then ConfigValue else ConfigValue:FindFirstAncestorWhichIsA("BasePart")
 	local toSync
 	
@@ -3340,7 +2925,6 @@ local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: strin
 		local Check = CreateCheckBox(
 			{
 				HolderSize = HolderSize,
-				--LabelText = ItemIdentifier == "Resource" and ItemIdentifier or ConfigValue.Name,
 				LabelText = ConfigValue.Name,
 				ToggleValue = ConfigValue.Value,
 			})
@@ -3357,7 +2941,6 @@ local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: strin
 		local TextBox = CreateTextBox(
 			{
 				HolderSize = HolderSize,
-				--LabelText = ItemIdentifier == "Resource" and ItemIdentifier or ConfigValue.Name,
 				LabelText = ConfigValue.Name,
 				BoxPlaceholderText = "0 [num/int]",
 				BoxText = ConfigValue.Value,
@@ -3382,7 +2965,6 @@ local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: strin
 		local TextBox = CreateTextBox(
 			{
 				HolderSize = HolderSize,
-				--LabelText = ItemIdentifier == "Resource" and ItemIdentifier or ConfigValue.Name,
 				LabelText = ConfigValue.Name,
 				BoxPlaceholderText = "Text [string]",
 				BoxText = ConfigValue.Value,
@@ -3390,12 +2972,8 @@ local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: strin
 
 		if SpecialMaterialValues[ConfigValue.Name] then
 			SpecialMaterialValues[ConfigValue.Name](TextBox, ConfigValue)
-			--TextBox.Box.Text = val.Value
-			--TextBox.Box.PlaceholderText = "Resource/Part"
-			--ConnectBoxToPartAutocomplete(TextBox.Box)
 		end
 
-		--if CustomEnums[RootObject.Name] and CustomEnums[RootObject.Name][ConfigValue.Name] then
 		if options then
 			if ConfigValue.Name == "TextColor" then
 				local Colors = ConfigValue.Value:gsub(" ", ""):split(",")
@@ -3442,7 +3020,7 @@ local Configs = {}
 local function AddConfigItem(Item: BasePart)
 
 	local ItemIdentifier
-	for i,v in SearchCategories.resources do
+	for i,v in InfoConstants.SearchCategories.resources do
 		if Item.Name:lower() ~= v then continue end
 		ItemIdentifier = "Resource"
 	end
@@ -3506,11 +3084,8 @@ local function AddConfigItem(Item: BasePart)
 			for _, config in component:GetChildren() do
 				if not config:IsA("ValueBase") then continue end
 				CreateConfigElement(config, ItemIdentifier, true).Parent = configContainer
-				--CreateConfigElement(config, Item.Name).Parent = configContainer
 			end		
 
-			--local configCount = #configContainer:GetChildren() - 3
-			--configContainer.Size = UDim2.new(1, 0, 0, 6 + 16 + configCount * 30 + configCount * 6)
 			configContainer.Parent = primaryConfigContainer
 		end
 		
@@ -3523,9 +3098,7 @@ local function AddConfigItem(Item: BasePart)
 				CreateConfigElement(config, ItemIdentifier, false).Parent = primaryConfigContainer
 			end
 		end
-		
-		--local configCount = #primaryConfigContainer:GetChildren() - 3
-		--primaryConfigContainer.Size = UDim2.new(1, 0, 0, 6 + 16 + configCount * 30 + configCount * 6)
+
 		primaryConfigContainer.Parent = ConfigList
 
 		SyncColors({Labels = configLabels, Frames = configContainers})
@@ -3909,7 +3482,6 @@ local function GetSelection()
 			FoundModel = s
 		end
 	end
-	--return SelectionParts, SelectionVectors, FoundModel
 	return SelectionParts, SelectionVectors, SelectionCFrames
 end
 
