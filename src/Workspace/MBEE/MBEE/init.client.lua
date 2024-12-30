@@ -2799,7 +2799,9 @@ local SpecialMaterialValues =
 			if not MicrocontrollerScript then
 				MicrocontrollerScript = ConfigValue:FindFirstChildWhichIsA("Script") or Instance.new("Script")
 				MicrocontrollerScript.Name = "MicrocontrollerCode"
-				MicrocontrollerScript.Source = ConfigValue.Value
+				ScriptEditorService:UpdateSourceAsync(MicrocontrollerScript, function(_)
+					return ConfigValue.Value
+				end)
 				MicrocontrollerScript.Parent = ConfigValue
 			end
 
@@ -2807,7 +2809,7 @@ local SpecialMaterialValues =
 				OpenedMicrocontrollerScript = MicrocontrollerScript
 
 				TextBox.Box.Focused:Connect(function()
-					plugin:OpenScript(OpenedMicrocontrollerScript)
+					ScriptEditorService:OpenScriptDocumentAsync(OpenedMicrocontrollerScript)
 				end)
 
 				TextBox.Box.Destroying:Connect(function()
@@ -2815,17 +2817,17 @@ local SpecialMaterialValues =
 				end)
 
 				OpenedMicrocontrollerScript:GetPropertyChangedSignal("Source"):Connect(function()
-					TextBox.Box.Text = OpenedMicrocontrollerScript.Source
+					TextBox.Box.Text = ScriptEditorService:GetEditorSource(OpenedMicrocontrollerScript)
 				end)
 
 			end
 
 			local ScriptUpdated = OpenedMicrocontrollerScript:GetPropertyChangedSignal("Source"):Connect(function()
-				ConfigValue.Value = MicrocontrollerScript.Source
+				ConfigValue.Value = ScriptEditorService:GetEditorSource(OpenedMicrocontrollerScript)
 			end)
 
 			TextBox.Box.Destroying:Connect(function()
-				ConfigValue.Value = OpenedMicrocontrollerScript.Source
+				ConfigValue.Value = ScriptEditorService:GetEditorSource(OpenedMicrocontrollerScript)
 				ScriptUpdated:Disconnect()
 			end)
 
