@@ -89,7 +89,15 @@ return function(CF, Data)
 				for PropName, PropVal in pairs(PartData[PropertiesIndex] or {}) do
 					local Special = {["true"] = true; ["false"] = false;}
 					local ValObj = Part:FindFirstChild(PropName)
-					local EvaluatedValue = (PropVal and (Special[PropVal:lower()] or tonumber(PropVal) or PropVal)) or tonumber(Data) or Data
+					local EvaluatedValue
+					if PropVal then
+						local bool = Special[PropVal:lower()]
+						local num = tonumber(PropVal)
+						EvaluatedValue = if bool~=nil then bool elseif num~=nil then num else PropVal
+					else
+						local num = tonumber(Data)
+						EvaluatedValue = if num~=nil then num else Data
+					end
 					if not ValObj then
 						if PropName:sub(1,1) == "_" then -- underscore configs are special
 							ValObj = Instance.new(ValueClassLookup[typeof(EvaluatedValue)])
