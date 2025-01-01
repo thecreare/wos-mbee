@@ -2,20 +2,15 @@
   "name": "project",
   "tree": {
     "$className": "DataModel",
-    "ReplicatedStorage": {
-      "$className": "ReplicatedStorage",
-      "$ignoreUnknownInstances": true,
-      "$path": "src/ReplicatedStorage"
-    },
-    "ServerStorage": {
-      "$className": "ServerStorage",
-      "$ignoreUnknownInstances": true,
-      "$path": "src/ServerStorage"
-    },
     "Workspace": {
       "$className": "Workspace",
       "$ignoreUnknownInstances": true,
-      "$path": "src/Workspace"
+      "MBEE": {
+        "$className": "Folder",
+        "MBEE": {
+          "$path": "src"
+        }
+      }
     }
   }
 }
