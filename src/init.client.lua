@@ -2886,9 +2886,7 @@ local function CreateConfigElementsForInstance(
 		local config_type = config_data.Type
 		local config_name = config_data.Name
 
-		-- Insert value instance into part if it doesn't already exist
-		local config_instance: ValueBase? = instance_to_configure:FindFirstChild(config_name)
-		if not config_instance then
+		local function GetDefaultConfigValue()
 			local default_value = config_data.Default
 			if default_value == nil then
 				Logger.warn(`Missing default config value for {config_location}/{instance_key}[{i}]`)
@@ -2901,10 +2899,26 @@ local function CreateConfigElementsForInstance(
 				local c = Color3.fromHex(default_value)
 				default_value = `{math.round(c.R*255)}, {math.round(c.G*255)}, {math.round(c.B*255)}`
 			end
+			return default_value
+		end
 
-			config_instance = Instance.new(CONFIG_TYPE_TO_VALUE_TYPE[config_type] or "StringValue")
+		-- Insert value instance into part if it doesn't already exist
+		local config_instance: ValueBase? = instance_to_configure:FindFirstChild(config_name)
+		local expected_config_class = CONFIG_TYPE_TO_VALUE_TYPE[config_type] or "StringValue"
+
+		local old_value
+		--                                                                            stoooooooooooooooooooopid
+		if config_instance and config_instance.ClassName ~= expected_config_class and config_name ~= "LinkerID" then
+			Logger.warn(`Selected {instance_key} has wrong type for config {config_name}. Expected {expected_config_class}, Found {config_instance.ClassName}. Fixing.`)
+			old_value = config_instance.Value
+			config_instance:Destroy()
+			config_instance = nil
+		end
+
+		if config_instance == nil then
+			config_instance = Instance.new(expected_config_class)
 			config_instance.Name = config_name
-			config_instance.Value = default_value
+			config_instance.Value = old_value or GetDefaultConfigValue()
 			config_instance.Parent = instance_to_configure
 		end
 
