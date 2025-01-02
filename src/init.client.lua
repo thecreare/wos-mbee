@@ -65,23 +65,25 @@ local CompileUploader = require(CustomModules.Uploader)
 local CompatabilityReplacements = require(CustomModules.Compatability)
 local InfoConstants = require(CustomModules.Settings)
 
-local Compiler, Decompiler = nil, nil
+local Compiler = nil
+local Compilers = {}
 local PartMetadata = nil
-local Compilers, Decompilers = {}, {}
+local ConfigData = nil
 local Components: {Configuration} = {}
-local defaultCompiler
 
-for i,comp in pairs(script.Compilers:GetChildren()) do
+local function SelectCompiler(i, comp)
+	Compiler = Compilers[i]
+	Compiler.Selected = true
+	Components = comp.Components:GetChildren()
+	PartMetadata = require(comp.PartMetadata)
+	ConfigData = require(comp.PartMetadata.ConfigData)
+end
+
+for i, comp in pairs(script.Compilers:GetChildren()) do
 	Compilers[i] = require(comp)
 	Compilers[i].Version = comp.Name
-	Decompilers[i] = comp:FindFirstChild("Decompiler") and require(comp.Decompiler)
 	if Compilers[i].Default == true then
-		defaultCompiler = Compilers[i]
-		Compiler = Compilers[i]
-		PartMetadata = require(comp.PartMetadata)
-		Decompiler = Decompilers[i]
-		Compilers[i].Selected = true
-		Components = comp.Components:GetChildren()
+		SelectCompiler(i, comp)
 	end
 end
 
@@ -2459,11 +2461,7 @@ CreateButton("Select Compiler", function()
 			v.Selected = false
 		end
 
-		comp.Selected = true
-		Components = comp.Components:GetChildren()
-		Compiler = comp
-		Decompiler = Decompilers[i]
-		PartMetadata = require(comp.PartMetadata)
+		SelectCompiler(i, comp)
 	end)
 
 	Dialog.Parent = VersionSelectWidget
