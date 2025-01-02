@@ -3030,6 +3030,7 @@ local function AddConfigItem(Item: BasePart)
 
 			-- Create holder for the confgs
 			local configContainer, configLabel = createConfigHolder(`{component.Name} Component`)
+			configContainer.LayoutOrder = 20
 			table.insert(configContainers, configContainer)
 			table.insert(configLabels, configLabel)
 
