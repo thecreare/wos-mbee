@@ -1742,7 +1742,7 @@ local function GetSameConfigOfOtherObject(otherObject: BasePart, referenceConfig
 end
 
 -- Class name of part, Part instance, Value Instance, New Value
-local function ApplyConfigurationValues(ItemIdentifier: string, RootObject: BasePart, Value: ValueBase, ValueStatus: any)	
+local function ApplyConfigurationValues(ItemIdentifier: string, RootObject: BasePart, Value: ValueBase, ValueStatus: any)
 	-- Get a list of objects that need to be configured
 	local objects: {BasePart}
 	if ItemIdentifier then
