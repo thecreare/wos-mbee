@@ -631,6 +631,22 @@ local function CheckTableOverlap(List)
 
 end
 
+-- Returns if given part can be used as a template material (aka set as the Resource for something like Wedge)
+local function IsResource(part: BasePart): boolean
+	for _, v in InfoConstants.SearchCategories.resources do
+		if part.Name:lower() ~= v then continue end
+		return true
+	end
+	return false
+end
+
+-- Returns if given part should have a Resource config (note: the IsResource() call is to allow you to change the resource of Blocks)
+local function IsTemplate(part: BasePart): boolean
+	local temp_type = part:FindFirstChild("TempType")
+	local shape = PartMetadata:GetShape(part)
+	return temp_type or shape or IsResource(part)
+end
+
 local function ApplyTemplates(List, Material)
 	for _, Part in SearchTableWithRecursion(List, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
 		local temp_type_value = Part:FindFirstChild("TempType")
@@ -769,12 +785,6 @@ local function HistoricEvent(name: string, display_name: string?, callback: ()->
 	end
 
 	return success, err
-end
-
-local function IsTemplate(part: BasePart): boolean
-	local temp_type = part:FindFirstChild("TempType")
-	local shape = PartMetadata:GetShape(part)
-	return temp_type or shape
 end
 
 local function SpawnPart(Part, Settings): Model?
