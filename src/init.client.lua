@@ -173,7 +173,7 @@ local UIElements =
 
 local function SyncColors(UIs)
 	if not UIs then
-		warn("[MB:E:E] UPDATING UI COLORS...")
+		Logger.print("UPDATING UI COLORS...")
 		UIs = UIElements
 	end
 
@@ -765,7 +765,7 @@ local function HistoricEvent(name: string, display_name: string?, callback: ()->
 	ChangeHistoryService:FinishRecording(recordingId, operation)
 
 	if not success then
-		Logger.warn(`{name} failed with error: {err}`)
+		Logger.error(`{name} failed with error: {err}`)
 	end
 
 	return success, err
