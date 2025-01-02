@@ -28,6 +28,8 @@ module.COMPAT_NAME_REPLACEMENTS = {
     SpotLight = "Spotlight";
     Airshield = "AirSupply";
     PsiSwitch = "WirelessButton";
+
+    Container = "Tank";
 }
 
 module.COMPAT_CONFIG_REPLACEMENTS = {
