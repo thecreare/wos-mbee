@@ -649,28 +649,22 @@ end
 
 local function ApplyTemplates(List, Material)
 	for _, Part in SearchTableWithRecursion(List, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
-		local temp_type_value = Part:FindFirstChild("TempType")
-
 		if Material == nil then
 			Part.Material = Enum.Material.Concrete
 			Part.Transparency = 0
 			Part.Reflectance = 0
-			Part.Name = PartMetadata:GetShape(Part)
-			if temp_type_value then
-				temp_type_value.Value = ""
-			end
+			Part.Name = PartMetadata:GetShape(Part) -- TODO: This will error on part of shape Block
 			continue
 		end
-		-- Updated because TempType doesn't matter and all parts have their names correct
-		local TemplatePart = Material and Parts:FindFirstChild(tostring(Material))
+
+		local TemplatePart = Parts:FindFirstChild(tostring(Material))
 		if not TemplatePart then continue end
+		if not IsResource(TemplatePart) then continue end -- So you don't set a resource to Hyperdrive or something
+
 		Part.Material = TemplatePart.Material
 		Part.Transparency = TemplatePart.Transparency
 		Part.Reflectance = TemplatePart.Reflectance
 		Part.Name = TemplatePart.Name
-		if temp_type_value then
-			temp_type_value.Value = TemplatePart.Name
-		end
 	end
 end
 
@@ -2863,127 +2857,178 @@ local function BindToEventWithUndo(event: RBXScriptSignal, name: string, display
 	end)
 end
 
-local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: string, isComponentConfig: boolean)
-	local RootObject = if ConfigValue:IsA("BasePart") then ConfigValue else ConfigValue:FindFirstAncestorWhichIsA("BasePart")
-	local toSync
-	
-	local HolderSize = UDim2.new(1, 0, 0, 30)
-	local Holder
-	
-	-- Get possible options
-	local options: string? = ConfigValue:GetAttribute("Options")
-	if options then
-		options = options:split(",")
-	else
-		-- if ConfigData[RootObject.Name]
-		if CustomEnums[RootObject.Name] and CustomEnums[RootObject.Name][ConfigValue.Name] then
-			options = CustomEnums[RootObject.Name][ConfigValue.Name]
-		else
-			options = nil
-		end
+local CONFIG_HOLDER_SIZE = UDim2.new(1, 0, 0, 30)
+-- Anything not in this table defaults to StringValue
+local CONFIG_TYPE_TO_VALUE_TYPE = {
+	boolean = "BoolValue",
+	number = "NumberValue",
+}
+
+local function CreateConfigElementsForInstance(
+	output_container: GuiBase2d,
+	instance_to_configure: BasePart|Configuration,
+	config_location: "Components"|"Parts"
+)
+	local instance_key = CompatabilityReplacements.COMPAT_NAME_REPLACEMENTS[instance_to_configure.Name] or instance_to_configure.Name
+
+	local configurations = ConfigData[config_location][instance_key]
+	-- This function will often be called for parts without configs
+	if not configurations then
+		-- Logger.print(`Missing PartData for {config_location}/{instance_key}`)
+		return
 	end
 
-	if ItemIdentifier == "Resource" and not isComponentConfig then
-		local TextBox = CreateTextBox(
-			{
-				HolderSize = HolderSize,
-				LabelText = ItemIdentifier,
-				BoxPlaceholderText = "Resource [string]",
-				BoxText = ConfigValue.Name,
-			})
+	-- Actuall part that should be effected when this config changes
+	local associated_base_part = if instance_to_configure:IsA("BasePart") then instance_to_configure else instance_to_configure:FindFirstAncestorWhichIsA("BasePart")
+	local associated_base_part_key = associated_base_part.Name
 
-		ConnectBoxToAutocomplete(TextBox.Box, script.Parts:GetChildren())
-		
-		-- On Resource config changed
-		BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
-			ApplyTemplates(ConfigValues[ItemIdentifier], TextBox.Box.Text)
-		end)
+	for i, config_data in configurations do
+		local config_type = config_data.Type
+		local config_name = config_data.Name
 
-		toSync = {Labels = {TextBox.Label}, Boxes = {TextBox.Box}}
-		Holder = TextBox.Holder
-	elseif ConfigValue:IsA("BoolValue") then
-		--checkboxes
-		local Check = CreateCheckBox(
-			{
-				HolderSize = HolderSize,
-				LabelText = ConfigValue.Name,
-				ToggleValue = ConfigValue.Value,
-			})
+		-- Insert value instance into part if it doesn't already exist
+		local config_instance: ValueBase? = instance_to_configure:FindFirstChild(config_name)
+		if not config_instance then
+			local default_value = config_data.Default
+			if default_value == nil then
+				Logger.warn(`Missing default config value for {config_location}/{instance_key}[{i}]`)
+				default_value = ""
+			end
+			-- Convert selection default (numberic index) into string value of default
+			if config_type == "Selection" then default_value = config_data.Options[default_value+1] end
+			-- Convert hex based default (ffffff) into rgb default (255, 255, 255)
+			if config_type == "Color3" then
+				local c = Color3.fromHex(default_value)
+				default_value = `{math.round(c.R*255)}, {math.round(c.G*255)}, {math.round(c.B*255)}`
+			end
 
-		BindToEventWithUndo(Check.Toggle.OnChecked, "Configure", nil, function(On)
-			ApplyConfigurationValues(ItemIdentifier, RootObject, ConfigValue, On)
-		end)
-
-		toSync = {Labels = {Check.Label}, Toggles = {Check.Toggle}}
-		Holder = Check.Holder
-	elseif ConfigValue:IsA("NumberValue") or ConfigValue:IsA("IntValue") then
-		--number inputs
-		local TextBox = CreateTextBox(
-			{
-				HolderSize = HolderSize,
-				LabelText = ConfigValue.Name,
-				BoxPlaceholderText = "0 [num/int]",
-				BoxText = ConfigValue.Value,
-			})
-
-		if options then
-			TextBox.Box.Text = options[ConfigValue.Value] or ConfigValue.Value
-			TextBox.Box.PlaceholderText = ConfigValue.Name
-			CreateTipBoxes(TextBox.Box, options)
+			config_instance = Instance.new(CONFIG_TYPE_TO_VALUE_TYPE[config_type] or "StringValue")
+			config_instance.Name = config_name
+			config_instance.Value = default_value
+			config_instance.Parent = instance_to_configure
 		end
 
-		BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
-			ApplyConfigurationValues(ItemIdentifier, RootObject, ConfigValue, TextBox.Box.Text, TextBox.Box)
-		end)
+		local toSync
 
-		toSync = {Labels = {TextBox.Label}, Boxes = {TextBox.Box}}
-		Holder = TextBox.Holder
-	else
-		--string input / anything else
-
-		local TextBox = CreateTextBox(
-			{
-				HolderSize = HolderSize,
-				LabelText = ConfigValue.Name,
-				BoxPlaceholderText = "Text [string]",
-				BoxText = ConfigValue.Value,
+		local function GenericTextBox(placeholder: string)
+			local TextBox = CreateTextBox({
+				HolderSize = CONFIG_HOLDER_SIZE,
+				LabelText = config_name,
+				BoxPlaceholderText = placeholder or "Text [string]",
+				BoxText = config_instance.Value,
 			})
 
-		if SpecialMaterialValues[ConfigValue.Name] then
-			SpecialMaterialValues[ConfigValue.Name](TextBox, ConfigValue)
+			BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
+				ApplyConfigurationValues(associated_base_part_key, associated_base_part, config_instance, TextBox.Box.Text, TextBox.Box)
+			end)
+
+			toSync = {Labels = {TextBox.Label}, Boxes = {TextBox.Box}}
+			TextBox.Holder.Parent = output_container
+
+			return TextBox
 		end
 
-		if options then
-			if ConfigValue.Name == "TextColor" then
-				local Colors = ConfigValue.Value:gsub(" ", ""):split(",")
-				for i, color in Colors do
-					Colors[i] = math.round((tonumber(Colors[i]) or 0) * 255)
+		-- Depending on the config type create a corresponding input box
+		if config_type == "string" then
+			-- Strings like sign text
+			local TextBox = GenericTextBox("Text [string]")
+	
+			-- Set up things like microcontroller code auto open and autocompleting part names
+			if SpecialMaterialValues[config_name] then
+				SpecialMaterialValues[config_name](TextBox, config_instance)
+			end
+
+		-- TODO: Better parsing and handling of these in the future?
+		elseif config_type == "Color3" then
+			GenericTextBox("0,0,0 [Color3]")
+		elseif config_type == "Vector3" then
+			GenericTextBox("0,0,0 [Vector3]")
+		elseif config_type == "Vector2" then
+			GenericTextBox("0,0 [Vector2]")
+		elseif config_type == "NumberRange" then
+			GenericTextBox("0:0 [NumberRange]")
+		elseif config_type == "Coordinate" then
+			GenericTextBox("0,0,0,0,bool [Coordinate]")
+
+		elseif config_type == "boolean" then
+			-- Booleans like SwitchValue
+			local Check = CreateCheckBox({
+				HolderSize = CONFIG_HOLDER_SIZE,
+				LabelText = config_name,
+				ToggleValue = config_instance.Value,
+			})
+	
+			BindToEventWithUndo(Check.Toggle.OnChecked, "Configure", nil, function(On)
+				ApplyConfigurationValues(associated_base_part_key, associated_base_part, config_instance, On)
+			end)
+	
+			toSync = {Labels = {Check.Label}, Toggles = {Check.Toggle}}
+			Check.Holder.Parent = output_container
+
+		elseif config_type == "number" then
+			-- Numbers/Ints like Gravity or Hologram user id
+			local TextBox = CreateTextBox({
+				HolderSize = CONFIG_HOLDER_SIZE,
+				LabelText = config_name,
+				BoxPlaceholderText = `{ConfigData.Default} [num/int]`,
+				BoxText = config_instance.Value,
+			})
+
+			BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
+				ApplyConfigurationValues(associated_base_part_key, associated_base_part, config_instance, TextBox.Box.Text)
+			end)
+
+			toSync = {Labels = {TextBox.Label}, Boxes = {TextBox.Box}}
+			TextBox.Holder.Parent = output_container
+		elseif config_type == "Selection" then
+			-- Dropdowns like apparel limb
+			local TextBox = GenericTextBox("Option [string]")
+
+			local options = config_data.Options
+			
+			if typeof(options) == "string" then
+				-- Thing like "Natural" in extractor
+				-- Bind to every part autocomplete
+				if SpecialMaterialValues[config_name] then
+					SpecialMaterialValues[config_name](TextBox, config_instance)
 				end
-				TextBox.Box.Text = table.concat(Colors, ", ")
-				TextBox.Box.PlaceholderText = ConfigValue.Name
 			else
-				TextBox.Box.Text = options[ConfigValue.Value] or ConfigValue.Value
-				TextBox.Box.PlaceholderText = ConfigValue.Name
+				TextBox.Box.Text = config_instance.Value
 				CreateTipBoxes(TextBox.Box, options)
 			end
+		else
+			Logger.warn(`Missing handler for type {config_type} @{config_location}/{instance_key}`)
+			GenericTextBox(`undefined [Unknown<{config_type}>]`)
 		end
-
-		BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
-			if ConfigValue.Name == 'TempType' then
-				ApplyTemplates(ConfigValues[ItemIdentifier], TextBox.Box.Text)
-				return
-			end
-
-			ApplyConfigurationValues(ItemIdentifier, RootObject, ConfigValue, TextBox.Box.Text, TextBox.Box)
-		end)
-
-		toSync = {Labels = {TextBox.Label}, Boxes = {TextBox.Box}}
-		Holder = TextBox.Holder
+	
+		SyncColors(toSync)
 	end
+end
 
-	SyncColors(toSync)
+local function CreateResourceConfigElement(
+	output_container: GuiBase2d,
+	instance_to_configure: BasePart
+)
+	-- Pre update this wouldve more or less been Resource
+	local instance_key = instance_to_configure.Name
 
-	return Holder
+	local TextBox = CreateTextBox({
+		HolderSize = CONFIG_HOLDER_SIZE,
+		LabelText = "Resource",
+		BoxPlaceholderText = "Resource [string]",
+		BoxText = instance_key,
+	})
+
+	ConnectBoxToAutocomplete(TextBox.Box, script.Parts:GetChildren())
+	
+	-- On Resource config changed
+	BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
+		ApplyTemplates(ConfigValues["Resource"], TextBox.Box.Text)
+	end)
+
+	TextBox.Holder.Parent = output_container
+
+	SyncColors({Labels = {TextBox.Label}, Boxes = {TextBox.Box}})
 end
 
 local function ForeachSelectedPart(callback: (part: BasePart)->())
@@ -2996,35 +3041,52 @@ end
 
 local Configs = {}
 local function AddConfigItem(Item: BasePart)
-
-	local ItemIdentifier
-	for i,v in InfoConstants.SearchCategories.resources do
-		if Item.Name:lower() ~= v then continue end
-		ItemIdentifier = "Resource"
+	-- Force port templates to the new version
+	-- I am tired of being compatible with TempTypes so its over. No more TempTypes.
+	do
+		local temp_type: StringValue? = Item:FindFirstChild("TempType")
+		if temp_type then
+			Item.Name = temp_type.Value
+			temp_type:Destroy()
+		end
 	end
 
+	-- This controls what group the item is a part of. Items in the same group all get configured when their config entry changes.
+	local ItemIdentifier = Item.Name
+
+	-- Replace names like "Iron" and "Titanium" with "Resource" so they show up as the same config entry
 	if PartMetadata:GetShape(Item) then
+		-- If :GetShape() returned a shape (meaning this is anything but a block) then its a resource
 		ItemIdentifier = "Resource"
+	else
+		-- If :GetShape() returned nil (a block) then check if the item is a resource
+		if IsResource(Item) then
+			ItemIdentifier = "Resource"
+		end
 	end
 
-	if not ItemIdentifier and not (Item:FindFirstChildWhichIsA("ValueBase") or Item:FindFirstChildWhichIsA("Configuration")) then return end
+	-- Skip parts that don't have any configurations and aren't resources
+	-- if ItemIdentifier ~= "Resource" and not Item:FindFirstChildWhichIsA("ValueBase") or not Item:FindFirstChildWhichIsA("Configuration") then return end
 
-	if Item:FindFirstChild("TempType") then
-	-- if IsTemplate(Item) then
-		ItemIdentifier = "TemplateObject"
-	elseif not ItemIdentifier then
-		ItemIdentifier = Item.Name
-	end
-
+	-- Create gui if not already exists
 	if not ConfigValues[ItemIdentifier] then
 		ConfigValues[ItemIdentifier] = {}
 
 		local primaryConfigContainer, primaryConfigLabel = createConfigHolder(ItemIdentifier)
-		
 		local configLabels = {primaryConfigLabel}
 		local configContainers = {primaryConfigContainer}
-		
-		-- Create component configs at the bottom of the list
+
+		-- Create part configs
+		CreateConfigElementsForInstance(primaryConfigContainer, Item, "Parts")
+
+		-- Create change resource config
+		if ItemIdentifier == "Resource" then
+			CreateResourceConfigElement(primaryConfigContainer, Item)
+		end
+
+		-- Create component configs
+		-- TODO: If a selection is {part1, part2} and part1 is Light without components and part2 is Light with components then
+		-- part2 won't have its components show up because its ItemIdentifier already exists in ConfigValues
 		for _, component in Item:GetChildren() do
 			if not component:IsA("Configuration") then continue end
 
@@ -3060,31 +3122,16 @@ local function AddConfigItem(Item: BasePart)
 			end)
 
 			-- Get the configs and create the ui
-			for _, config in component:GetChildren() do
-				if not config:IsA("ValueBase") then continue end
-				CreateConfigElement(config, ItemIdentifier, true).Parent = configContainer
-			end
-
+			CreateConfigElementsForInstance(configContainer, component, "Components")
 			configContainer.Parent = primaryConfigContainer
 		end
 		
-		if ItemIdentifier == "Resource" then
-			CreateConfigElement(Item, "Resource", false).Parent = primaryConfigContainer
-		else
-			-- Create config configs at the top of the list
-			for _, config in Item:GetChildren() do
-				if not config:IsA("ValueBase") then continue end
-				CreateConfigElement(config, ItemIdentifier, false).Parent = primaryConfigContainer
-			end
-		end
-
-		primaryConfigContainer.Parent = ConfigList
-
 		SyncColors({Labels = configLabels, Frames = configContainers})
-
+		primaryConfigContainer.Parent = ConfigList
 		table.insert(Configs, primaryConfigContainer)
 	end
-	
+
+	-- Insert item into its table at key so its configured when the gui is changed
 	table.insert(ConfigValues[ItemIdentifier], Item)
 end
 
