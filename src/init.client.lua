@@ -1741,47 +1741,19 @@ local function ApplyConfigurationValues(ItemIdentifier: string, RootObject: Base
 		objects = {RootObject}
 	end
 	
-	-- Get the AdjustmentFunction and config aliases for this confg
+	-- Get the AdjustmentFunction for this config
 	local customEnum = CustomEnums[RootObject.Name] or ComponentAdjustmentFunctions[Value.Parent.Name]
 	
-	-- If the part doesn't have any custom behavior on configure or config aliases then just do the base configure
-	if customEnum == nil then
-		for _, object in objects do
-			local otherValue = GetSameConfigOfOtherObject(object, Value)
-			if not otherValue then continue end
-			otherValue.Value = ValueStatus
-		end
-		return
-	end
-
-	-- Get the aliases for this config type (Like [1]="Activate")
-	local aliases = customEnum[Value.Name]
-	local hasAliases = aliases and GetTableLength(aliases) > 0 and false -- WOS now supports direct strings so Aliases are not needed anymore
-
-	-- The real config value that the game should interpret
-	local unaliased = ValueStatus
-
-	-- Check through any and all aliases if applicable
-	if hasAliases then
-		for encoded, alias in aliases do
-			-- If the ValueStatus is this alis, updated unaliased and break
-			if alias ~= ValueStatus then continue end
-			unaliased = encoded
-			break
-		end
-
-		-- If you failed to find an alias then that means this is an invalid config
-		if unaliased == nil then
-			return
-		end
-	end
-	
-	-- Finally, set the config and call the adjustment function
+	-- Configure each object
 	for _, object in objects do
 		local otherValue = GetSameConfigOfOtherObject(object, Value)
 		if not otherValue then continue end
-		otherValue.Value = unaliased
-		customEnum.AdjustmentFunction(object, Value.Name, unaliased)
+		otherValue.Value = ValueStatus
+
+		-- Run adjustment function fi it exists
+		if customEnum then
+			customEnum.AdjustmentFunction(object, Value.Name, ValueStatus)
+		end
 	end
 end
 
@@ -2885,7 +2857,6 @@ local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: strin
 	local RootObject = if ConfigValue:IsA("BasePart") then ConfigValue else ConfigValue:FindFirstAncestorWhichIsA("BasePart")
 	local toSync
 	
-	--local HolderSize = UDim2.new(1, -24, 0, 30)
 	local HolderSize = UDim2.new(1, 0, 0, 30)
 	local Holder
 	
@@ -2894,6 +2865,7 @@ local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: strin
 	if options then
 		options = options:split(",")
 	else
+		-- if ConfigData[RootObject.Name]
 		if CustomEnums[RootObject.Name] and CustomEnums[RootObject.Name][ConfigValue.Name] then
 			options = CustomEnums[RootObject.Name][ConfigValue.Name]
 		else
@@ -2905,7 +2877,7 @@ local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: strin
 		local TextBox = CreateTextBox(
 			{
 				HolderSize = HolderSize,
-				LabelText = ItemIdentifier == "Resource" and ItemIdentifier or ConfigValue.Name,
+				LabelText = ItemIdentifier,
 				BoxPlaceholderText = "Resource [string]",
 				BoxText = ConfigValue.Name,
 			})
@@ -2919,7 +2891,6 @@ local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: strin
 
 		toSync = {Labels = {TextBox.Label}, Boxes = {TextBox.Box}}
 		Holder = TextBox.Holder
-
 	elseif ConfigValue:IsA("BoolValue") then
 		--checkboxes
 		local Check = CreateCheckBox(
@@ -2935,7 +2906,6 @@ local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: strin
 
 		toSync = {Labels = {Check.Label}, Toggles = {Check.Toggle}}
 		Holder = Check.Holder
-
 	elseif ConfigValue:IsA("NumberValue") or ConfigValue:IsA("IntValue") then
 		--number inputs
 		local TextBox = CreateTextBox(
@@ -2958,7 +2928,6 @@ local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: strin
 
 		toSync = {Labels = {TextBox.Label}, Boxes = {TextBox.Box}}
 		Holder = TextBox.Holder
-
 	else
 		--string input / anything else
 
@@ -3000,7 +2969,6 @@ local function CreateConfigElement(ConfigValue: ValueBase, ItemIdentifier: strin
 
 		toSync = {Labels = {TextBox.Label}, Boxes = {TextBox.Box}}
 		Holder = TextBox.Holder
-
 	end
 
 	SyncColors(toSync)
@@ -3084,14 +3052,14 @@ local function AddConfigItem(Item: BasePart)
 			for _, config in component:GetChildren() do
 				if not config:IsA("ValueBase") then continue end
 				CreateConfigElement(config, ItemIdentifier, true).Parent = configContainer
-			end		
+			end
 
 			configContainer.Parent = primaryConfigContainer
 		end
 		
 		if ItemIdentifier == "Resource" then
 			CreateConfigElement(Item, "Resource", false).Parent = primaryConfigContainer
-		else			
+		else
 			-- Create config configs at the top of the list
 			for _, config in Item:GetChildren() do
 				if not config:IsA("ValueBase") then continue end
@@ -3108,26 +3076,6 @@ local function AddConfigItem(Item: BasePart)
 	
 	table.insert(ConfigValues[ItemIdentifier], Item)
 end
-
-local FaceVectors =
-	{
-		[Vector3.new(0, 0, -1)] = "Front",
-		[Vector3.new(0, 0, 1)] = "Back",
-		[Vector3.new(1, 0, 0)] = "Right",
-		[Vector3.new(-1, 0, 0)] = "Left",
-		[Vector3.new(0, 1, 0)] = "Top",
-		[Vector3.new(0, -1, 0)] = "Bottom",
-	}
-
-local VectorSizes =
-	{
-		Front = Vector3.new(1.75, 1.75, 0.1),
-		Back = Vector3.new(1.75, 1.75, 0.1),
-		Right = Vector3.new(0.1, 1.75, 1.75),
-		Left = Vector3.new(0.1, 1.75, 1.75),
-		Top = Vector3.new(1.75, 0.1, 1.75),
-		Bottom = Vector3.new(1.75, 0.1, 1.75),
-	}
 
 local SurfacesTypeNames = {}
 for _, SurfaceType in Enum.SurfaceType:GetEnumItems() do
