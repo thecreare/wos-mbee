@@ -1752,7 +1752,7 @@ local function ApplyConfigurationValues(ItemIdentifier: string, RootObject: Base
 	end
 	
 	-- Get the AdjustmentFunction for this config
-	local customEnum = CustomEnums[RootObject.Name] or ComponentAdjustmentFunctions[Value.Parent.Name]
+	local customEnum = ComponentAdjustmentFunctions[Value.Parent.Name] or CustomEnums[RootObject.Name]
 	
 	-- Configure each object
 	for _, object in objects do
