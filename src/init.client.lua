@@ -99,7 +99,7 @@ local Widget = plugin:CreateDockWidgetPluginGui("MBTools", DockWidgetPluginGuiIn
 Widget.Title = "MB: Edited: Edited Tools"
 
 local ConfigWidget = plugin:CreateDockWidgetPluginGui("Config", DockWidgetPluginGuiInfo.new(
-	Enum.InitialDockState.Left,  -- Widget will be initialized in floating panel
+	Enum.InitialDockState.Right,  -- Widget will be initialized in floating panel
 	true,   -- Widget will be initially enabled
 	false,  -- Don't override the previous enabled state
 	plugin:GetSetting("PluginSize") and plugin:GetSetting("PluginSize")[2][1] or 350,    -- Default width of the floating window
@@ -113,8 +113,8 @@ local VersionSelectWidget = plugin:CreateDockWidgetPluginGui("VersionSelect", Do
 	Enum.InitialDockState.Float,
 	false,   -- Widget will be initially enabled
 	true,  -- Don't override the previous enabled state
-	100,    -- Default width of the floating window
-	100,    -- Default height of the floating window
+	350,    -- Default width of the floating window
+	600,    -- Default height of the floating window
 	300,    -- Minimum width of the floating window
 	250     -- Minimum height of the floating window
 	))
