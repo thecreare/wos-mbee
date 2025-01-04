@@ -6,7 +6,7 @@ local function GetPrefix(): string
 end
 
 local function CleanTraceback(traceback: string): string
-	return traceback:gsub("user_MBEE.rbxmx.MBEE.MBEE")
+	return traceback:gsub("user_MBEE.rbxmx.MBEE.MBEE", "MBEE")
 end
 
 local module = {}
