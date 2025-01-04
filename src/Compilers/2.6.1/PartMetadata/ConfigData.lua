@@ -1198,7 +1198,12 @@ return {
 				["Default"] = false,
 			},
 		},
-		["Sorter"] = {
+		["Sorter"] = {--[[PB]]
+			{
+				["Type"] = "number",
+				["Default"] = "1",
+				["Name"] = "TriggerQuantity"
+			},--[[PE]]
 			{
 				["Type"] = "string",
 				["Default"] = "Power",

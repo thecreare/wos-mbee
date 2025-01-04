@@ -1,8 +1,4 @@
---[[PB]]--[[
-This file was automatically modified by tools/compiler_patcher.py
-2025-01-03
-]]
---[[PE]]
+
 
 --!strict
 local HttpService = game:GetService("HttpService")
