@@ -1830,20 +1830,6 @@ OverlapCheck.Toggle.OnChecked:Connect(function(On)
 	CheckTableOverlap(Selection:Get())
 end)
 
-RoundDecimals = CreateCheckBox(
-	{
-		Name = "RoundDecimals",
-		LabelText = "Round Decimals",
-		ToggleValue = plugin:GetSetting("RoundToggle") or false,
-		Parent = BG,
-		LayoutOrder = 3,
-	})
-
-RoundDecimals.Toggle.OnChecked:Connect(function(On)
-	plugin:SetSetting("RoundToggle", On)
-	Settings.Round = On
-end)
-
 ModelOffset = CreateTextBox(
 	{
 		Name = "ModelOffset",
