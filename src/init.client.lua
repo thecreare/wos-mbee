@@ -71,19 +71,24 @@ local PartMetadata = nil
 local ConfigData = nil
 local Components: {Configuration} = {}
 
-local function SelectCompiler(i, comp)
-	Compiler = Compilers[i]
-	Compiler.Selected = true
-	Components = comp.Components:GetChildren()
-	PartMetadata = require(comp.PartMetadata)
-	ConfigData = require(comp.PartMetadata.ConfigData)
+local function SelectCompiler(i)
+	local c = Compilers[i]
+	Compiler = c
+
+	c.Selected = true
+	Components, PartMetadata, ConfigData = c.Components, c.PartMetadata, c.ConfigData
 end
 
 for i, comp in pairs(script.Compilers:GetChildren()) do
-	Compilers[i] = require(comp)
-	Compilers[i].Version = comp.Name
+	local c = require(comp)
+	Compilers[i] = c
+
+	c.Components = comp.Components:GetChildren()
+	c.PartMetadata = require(comp.PartMetadata)
+	c.ConfigData = require(comp.PartMetadata.ConfigData)
+
 	if Compilers[i].Default == true then
-		SelectCompiler(i, comp)
+		SelectCompiler(i)
 	end
 end
 
@@ -2419,15 +2424,13 @@ CreateButton("Select Compiler", function()
 	Dialog.ConfirmText = "SELECT"
 	Dialog.PrimaryColor3 = Color3.fromRGB(255, 133, 51)
 
-	Dialog.OnConfirmed:Connect(function(Player, Choice)
-
+	Dialog.OnConfirmed:Connect(function(_, Choice)
 		if not Choice then return end
 		
-		local comp
+		-- Get compiler id from chosen version
 		local i
 		for oi, otherComp in Compilers do
 			if otherComp.Version == Choice then
-				comp = otherComp
 				i = oi
 			end
 		end
@@ -2437,7 +2440,7 @@ CreateButton("Select Compiler", function()
 			v.Selected = false
 		end
 
-		SelectCompiler(i, comp)
+		SelectCompiler(i)
 	end)
 
 	Dialog.Parent = VersionSelectWidget
