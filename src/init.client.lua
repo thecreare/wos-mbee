@@ -1145,7 +1145,16 @@ local SpecialParts = {
 
 	Heater = function(Object)
 		BasicRadiusVisualizer(Object, 100, Color3.fromRGB(255, 170, 0))
-	end
+	end,
+
+	-- Update light's light color when its part color changes
+	Light = function(Object)
+		table.insert(TemporaryConnections, Object:GetPropertyChangedSignal("Color"):Connect(function()
+			local light = Object:FindFirstChildWhichIsA("PointLight")
+			if not light then return end
+			light.Color = Object.Color
+		end))
+	end,
 }
 
 local ComponentAdjustmentFunctions = {
