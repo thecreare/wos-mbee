@@ -64,6 +64,7 @@ local Logger = require(CustomModules.Logger)
 local CompileUploader = require(CustomModules.Uploader)
 local CompatabilityReplacements = require(CustomModules.Compatability)
 local InfoConstants = require(CustomModules.Settings)
+local ExtractedUtil = require(CustomModules.ExtractedUtil)
 
 -- Fix constants having wrong case
 do
@@ -390,61 +391,6 @@ local function AverageVector3s(v3s)
 		sum = sum + v3
 	end
 	return sum / #v3s
-end
-
-local function GetBoundingBox(model, orientation) --https://devforum.roblox.com/t/how-does-roblox-calculate-the-bounding-boxes-on-models-getextentssize/216581/8
-	if typeof(model) == "Instance" then
-		model = model:GetDescendants()
-	end
-	if not orientation then
-		orientation = CFrame.new()
-	end
-	local abs = math.abs
-	local inf = math.huge
-
-	local minx, miny, minz = inf, inf, inf
-	local maxx, maxy, maxz = -inf, -inf, -inf
-
-	for _, obj in pairs(model) do
-		if obj:IsA("BasePart") then
-			local cf = obj.CFrame
-			cf = orientation:toObjectSpace(cf)
-			local size = obj.Size
-			local sx, sy, sz = size.X, size.Y, size.Z
-
-			local x, y, z, R00, R01, R02, R10, R11, R12, R20, R21, R22 = cf:components()
-
-			local wsx = 0.5 * (abs(R00) * sx + abs(R01) * sy + abs(R02) * sz)
-			local wsy = 0.5 * (abs(R10) * sx + abs(R11) * sy + abs(R12) * sz)
-			local wsz = 0.5 * (abs(R20) * sx + abs(R21) * sy + abs(R22) * sz)
-
-			if minx > x - wsx then
-				minx = x - wsx
-			end
-			if miny > y - wsy then
-				miny = y - wsy
-			end
-			if minz > z - wsz then
-				minz = z - wsz
-			end
-
-			if maxx < x + wsx then
-				maxx = x + wsx
-			end
-			if maxy < y + wsy then
-				maxy = y + wsy
-			end
-			if maxz < z + wsz then
-				maxz = z + wsz
-			end
-		end
-	end
-
-	local omin, omax = Vector3.new(minx, miny, minz), Vector3.new(maxx, maxy, maxz)
-	local omiddle = (omax+omin)/2
-	local wCf = orientation - orientation.p + orientation:pointToWorldSpace(omiddle)
-	local size = (omax-omin)
-	return wCf, size
 end
 
 local function CheckCompat(Name)
@@ -783,28 +729,10 @@ local function CreateCheckBox(Settings)
 	return {Holder = Holder, Label = Label, Toggle = Toggle}
 end
 
-local function HistoricEvent(name: string, display_name: string?, callback: ()->(), ...:any): (boolean, string?)
-	name = "MBEE" .. name
-	display_name = "MBEE " .. (display_name or name)
-
-	local recordingId = ChangeHistoryService:TryBeginRecording(name, display_name)
-
-	local success, err = pcall(callback, ...)
-
-	local operation = if success then Enum.FinishRecordingOperation.Commit else Enum.FinishRecordingOperation.Cancel
-	ChangeHistoryService:FinishRecording(recordingId, operation)
-
-	if not success then
-		Logger.error(`{name} failed with error: {err}`)
-	end
-
-	return success, err
-end
-
 local function SpawnPart(Part, Settings): Model?
 	local SelectedPart
 
-	HistoricEvent("InsertPart", "Insert Part", function()
+	ExtractedUtil.HistoricEvent("InsertPart", "Insert Part", function()
 		SelectedPart = Part:IsA("BasePart") and Part:Clone() or MatchQueryToList(tostring(Part), script.Parts:GetChildren())
 		if not SelectedPart then return end
 		local RayResult = workspace:Raycast(Camera.CFrame.Position, Camera.CFrame.LookVector * ((SelectedPart.Size.X + SelectedPart.Size.Y + SelectedPart.Size.Z) / 3 * 1.5 + 10))
@@ -902,32 +830,6 @@ end
 settings().Studio.ThemeChanged:Connect(function()
 	SyncColors()
 end)
-
---local function MatchQueryToParts(Query)
---	if not Query then
---		return {}
---	end
-
---	local Parts = {}
-
---	if InfoConstants.SearchCategories[Query:lower()] then
---		local CategoryItems = {}
---		for _, Part in script.Parts:GetChildren() do
---			for _, CategoryItem in InfoConstants.SearchCategories[Query:lower()] do
---				if Part.Name:lower() ~= CategoryItem:lower() then continue end
---				table.insert(CategoryItems, Part)
---			end
---		end
-
---		if Query:lower() == "templates" then
---			table.insert(CategoryItems, MatchQueryToList(Query, TemplateMaterial.Box.Text)[1])
---		end
-
---		return CategoryItems
---	end
-
---	return MatchQueryToList(Query, script.Parts:GetChildren())
---end
 
 local function ConnectBoxToAutocomplete(Box : TextBox, List : table)
 
@@ -1113,145 +1015,6 @@ local function CreateTipBoxes(Gui, Table)
 	end)
 end
 
---local function ConnectBoxToPartAutocomplete(Box : TextBox)
-
---	local MatchEvent = ConnectBoxToAutocomplete(Box, script.Parts:GetChildren())
-
---end
-
---local function ConnectBoxToPartAutocomplete(Box : TextBox, List : table)
-
---	local FoundMatchEvent = Instance.new("BindableEvent")
---	FoundMatchEvent.Name = Box.Name .. "AutocompleteEvent"
-
---	local BestMatchLabel, Match
-
---	Box.Focused:Connect(function()
---		BestMatchLabel = Instance.new("TextLabel")
---		BestMatchLabel.BorderSizePixel = 1
---		BestMatchLabel.TextTransparency = 0.25
---		BestMatchLabel.BackgroundTransparency = 1
---		BestMatchLabel.Size = UDim2.new(1, 0, 1, 0)
---		BestMatchLabel.Text = ''
---		BestMatchLabel.Font = Enum.Font.SourceSansLight
---		BestMatchLabel.TextXAlignment = Enum.TextXAlignment.Left
---		BestMatchLabel.TextScaled = true
---		BestMatchLabel.Visible = false
---		BestMatchLabel.Active = false
---		BestMatchLabel.ZIndex = Box.ZIndex + 1
---		BestMatchLabel.Name = "AutocompleteLabel"
---		SyncColors({ContrastLabels = {BestMatchLabel}})
---		BestMatchLabel.Parent = Box
---		table.insert(UIElements.ContrastLabels, BestMatchLabel)
---	end)
-
---	Box:GetPropertyChangedSignal("Text"):Connect(function()
---		task.wait()
---		if not BestMatchLabel then return end
-
---		if Box.Text == "" then
---			BestMatchLabel.Visible = false
---			FoundMatchEvent:Fire({})
---			return
---		end
-
---		if Match and Box.Text:sub(#Box.Text, #Box.Text) == "	" then
---			FoundMatchEvent:Fire({})
---			Box:ReleaseFocus(true)
---			return
---		end
-
---		local MatchedParts = MatchQueryToParts(Box.Text)
---		FoundMatchEvent:Fire(MatchedParts)
-
---		if #MatchedParts <= 0 then
---			BestMatchLabel.Visible = false
---			Match = nil
---		elseif tostring(MatchedParts[1]):lower() == Box.Text:lower() or #MatchedParts == 1 then
---			local MatchStart, MatchEnd = string.find(tostring(MatchedParts[1]):lower(), Box.Text:lower())
-
---			local FinalString = ""
---			for i, Character in tostring(MatchedParts[1]):sub(MatchStart, #tostring(MatchedParts[1])):split("") do
---				if Box.Text:split("")[i] then
---					FinalString ..= Box.Text:split("")[i]
---				else
---					FinalString ..= Character
---				end
---			end
-
---			BestMatchLabel.Text = FinalString
---			BestMatchLabel.Visible = true
---			Match = MatchedParts[1]
---		else
---			BestMatchLabel.Visible = false
---			Match = nil
---		end
---	end)
-
---	Box.FocusLost:Connect(function(EnterPressed)
---		if EnterPressed and Match then
---			Box.Text = Match.Name
---			FoundMatchEvent:Fire({})
---		end
---		BestMatchLabel:Destroy()
---		BestMatchLabel = nil
---		Match = nil
---	end)
-
---	return FoundMatchEvent
-
---end
-
---[[local SearchBox, SearchMatches
-local function OrganiseResults(Query)
-	local ShownItems = 1
-	local function ShowButton(Button, LayoutOrder)
-		ResultsFrame.CanvasSize = UDim2.fromOffset(0, ShownItems * 20)
-		Button.LayoutOrder = LayoutOrder or 0
-		Button.Visible = true
-		ShownItems += 1
-	end
-	
-	SearchMatches.Visible = false
-	
-	local MatchedParts = MatchQueryToParts(Query)
-	
-	if #MatchedParts <= 0 then
-		ListLayout.SortOrder = Enum.SortOrder.Name
-		for i, SearchButton in ResultsFrame:GetChildren() do
-			if not SearchButton:IsA("TextButton") then continue end
-			ShowButton(SearchButton)
-		end
-		return
-	end
-	
-	ListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-	
-	if MatchedParts[1].Name:lower() == Query:lower() or #MatchedParts == 1 then
-		SearchMatches.Text = string.sub(Query, 1, #Query) .. string.sub(MatchedParts[1].Name, #Query + 1, #MatchedParts[1].Name)
-		SearchMatches.Visible = true
-	end
-	
-	for _, SearchButton in ResultsFrame:GetChildren() do
-		if not SearchButton:IsA("TextButton") then continue end
-		SearchButton.Visible = false
-		
-		if SearchButton.Name:lower() == Query:lower() then
-			ShowButton(SearchButton)
-			continue
-		end
-		
-		if SearchButton.Name:lower() == TemplateMaterial.Box.Text:lower() then
-			ShowButton(SearchButton, -1)
-			continue
-		end
-		
-		for i, Part in MatchedParts do
-			if SearchButton.Name:lower() == Part.Name:lower() then ShowButton(SearchButton, i) break end
-		end
-	end
-end]]
-
 local ENUM_NAMES_CACHE = {}
 local function GetEnumNames(enum: Enum): {string}
 	if ENUM_NAMES_CACHE[enum] then return ENUM_NAMES_CACHE[enum] end
@@ -1266,13 +1029,13 @@ local function GetEnumNames(enum: Enum): {string}
 	return names
 end
 
-function GetAndUpdateCapacityLabel(Object, text_creator: (object_volume: number)->())
+local function GetAndUpdateCapacityLabel(Object, text_creator: (object_volume: number)->())
 	local ObjectVolume = Object.Size.X * Object.Size.Y * Object.Size.Z
 	local AverageSize = (Object.Size.X + Object.Size.Y + Object.Size.Z) / 3
-	
+
 	local Capacity = Object:FindFirstChild("Capacity")
 	local CapacityLabel = Capacity and Capacity:FindFirstChild("CapacityLabel")
-	
+
 	-- Create label and bilboard if not exists
 	if not Capacity then
 		Capacity = Instance.new("BillboardGui")
@@ -1297,11 +1060,11 @@ function GetAndUpdateCapacityLabel(Object, text_creator: (object_volume: number)
 		CapacityLabel.Parent = Capacity
 		Capacity.Parent = Object
 	end
-	
+
 	-- Update Visuals	
 	Capacity.Size = UDim2.fromScale(AverageSize, AverageSize)
 	CapacityLabel.Text = text_creator(ObjectVolume)
-	
+
 	-- Detect future updates
 	table.insert(TemporaryConnections, Capacity)
 	table.insert(TemporaryConnections, Object:GetPropertyChangedSignal("Size"):Connect(function()
@@ -1314,7 +1077,7 @@ function GetAndUpdateCapacityLabel(Object, text_creator: (object_volume: number)
 	return CapacityLabel
 end
 
-function BasicCapacityIndicator(storagePerStudCubed: number)
+local function BasicCapacityIndicator(storagePerStudCubed: number)
 	return function(volume: number)
 		local capacity = math.round(volume * storagePerStudCubed)
 		local max = Compiler:GetMalleability("PowerCell") * storagePerStudCubed
@@ -1322,120 +1085,74 @@ function BasicCapacityIndicator(storagePerStudCubed: number)
 	end
 end
 
-local SpecialParts =
-	{
-		PowerCell = function(Object)
-			GetAndUpdateCapacityLabel(Object, BasicCapacityIndicator(200))
-			--CapacityLabel.Text = table.concat({math.round(ObjectVolume) * 50, Malleability.PowerCell * 50}, "/")
-		end,
+local function BasicRadiusVisualizer(Object: BasePart, radius: number, color: Color3?): SphereHandleAdornment
+	local Sphere = Object:FindFirstChild("__MBEERadiusVisualizer") or Instance.new("SphereHandleAdornment")
+	Sphere.Adornee = Object
+	Sphere.Color3 = color or Color3.new(1, 1, 1)
+	Sphere.ZIndex = -1
+	Sphere.AlwaysOnTop = true
+	Sphere.Transparency = 0.95
+	Sphere.Radius = radius
+	Sphere.Name = "__MBEERadiusVisualizer"
+	Sphere.Archivable = false
+	Sphere.Parent = Object
+	table.insert(TemporaryConnections, Sphere)
+end
 
-		Container = function(Object)
-			GetAndUpdateCapacityLabel(Object, BasicCapacityIndicator(10))
-		end,
-		
-		Tank = function(Object)
-			GetAndUpdateCapacityLabel(Object, BasicCapacityIndicator(10))
-		end,
+local SpecialParts = {
+	PowerCell = function(Object)
+		GetAndUpdateCapacityLabel(Object, BasicCapacityIndicator(200))
+		--CapacityLabel.Text = table.concat({math.round(ObjectVolume) * 50, Malleability.PowerCell * 50}, "/")
+	end,
 
-		Bin = function(Object)
-			GetAndUpdateCapacityLabel(Object, BasicCapacityIndicator(1))
-		end,
+	Container = function(Object)
+		GetAndUpdateCapacityLabel(Object, BasicCapacityIndicator(10))
+	end,
+	
+	Tank = function(Object)
+		GetAndUpdateCapacityLabel(Object, BasicCapacityIndicator(10))
+	end,
 
-		AirSupply = function(Object)
-			local ObjectVolume = Object.Size.X * Object.Size.Y * Object.Size.Z
-			local Sphere = Object:FindFirstChild("RadiusVisualizer") or Instance.new("SphereHandleAdornment")
-			Sphere.Adornee = Object
-			Sphere.Color3 = Color3.new(0, 0.5, 1)
-			Sphere.ZIndex = -1
-			Sphere.AlwaysOnTop = true
-			Sphere.Transparency = 0.95
+	Bin = function(Object)
+		GetAndUpdateCapacityLabel(Object, BasicCapacityIndicator(1))
+	end,
+
+	AirSupply = function(Object)
+		local ObjectVolume = Object.Size.X * Object.Size.Y * Object.Size.Z
+		local Sphere = BasicRadiusVisualizer(Object, 18 * ObjectVolume + 0.5 * ObjectVolume, Color3.new(0, 0.5, 1))
+		table.insert(TemporaryConnections, Object:GetPropertyChangedSignal("Size"):Connect(function()
+			ObjectVolume = Object.Size.X * Object.Size.Y * Object.Size.Z
 			Sphere.Radius = 18 * ObjectVolume + 0.5 * ObjectVolume
-			Sphere.Name = "RadiusVisualizer"
-			Sphere.Archivable = false
-			Sphere.Parent = Object
-			table.insert(TemporaryConnections, Sphere)
-			table.insert(TemporaryConnections, Object:GetPropertyChangedSignal("Size"):Connect(function()
-				ObjectVolume = Object.Size.X * Object.Size.Y * Object.Size.Z
-				Sphere.Radius = 18 * ObjectVolume + 0.5 * ObjectVolume
-			end))
-		end,
+		end))
+	end,
 
-		GravityGenerator = function(Object)
-			local Sphere = Object:FindFirstChild("RadiusVisualizer") or Instance.new("SphereHandleAdornment")
-			Sphere.Adornee = Object
-			Sphere.Color3 = Color3.new(0.5, 0, 1)
-			Sphere.ZIndex = -1
-			Sphere.AlwaysOnTop = true
-			Sphere.Transparency = 0.95
-			Sphere.Radius = 300
-			Sphere.Name = "RadiusVisualizer"
-			Sphere.Archivable = false
-			Sphere.Parent = Object
-			table.insert(TemporaryConnections, Sphere)
-		end,
+	GravityGenerator = function(Object)
+		BasicRadiusVisualizer(Object, 300, Color3.new(0.5, 0, 1))
+	end,
 
-		EnergyShield = function(Object)
-			local Sphere = Object:FindFirstChild("RadiusVisualizer") or Instance.new("SphereHandleAdornment")
-			Sphere.Adornee = Object
-			Sphere.Color3 = Object.Color
-			Sphere.ZIndex = -1
-			Sphere.AlwaysOnTop = true
-			Sphere.Transparency = 0.95
+	EnergyShield = function(Object)
+		local radius = Object:FindFirstChild("ShieldRadius") and Object.ShieldRadius.Value or 10
+		local Sphere = BasicRadiusVisualizer(Object, radius, Object.Color)
+		table.insert(TemporaryConnections, Object:FindFirstChild("ShieldRadius") and Object.ShieldRadius:GetPropertyChangedSignal("Value"):Connect(function()
 			Sphere.Radius = Object:FindFirstChild("ShieldRadius") and Object.ShieldRadius.Value or 10
-			Sphere.Name = "RadiusVisualizer"
-			Sphere.Archivable = false
-			Sphere.Parent = Object
-			table.insert(TemporaryConnections, Sphere)
-			table.insert(TemporaryConnections, Object:FindFirstChild("ShieldRadius") and Object.ShieldRadius:GetPropertyChangedSignal("Value"):Connect(function()
-				Sphere.Radius = Object:FindFirstChild("ShieldRadius") and Object.ShieldRadius.Value or 10
-			end))
-			table.insert(TemporaryConnections, Object:GetPropertyChangedSignal("Color"):Connect(function()
-				Sphere.Color3 = Object.Color
-			end))
-		end,
+		end))
+		table.insert(TemporaryConnections, Object:GetPropertyChangedSignal("Color"):Connect(function()
+			Sphere.Color3 = Object.Color
+		end))
+	end,
 
-		Cooler = function(Object)
-			local Sphere = Object:FindFirstChild("RadiusVisualizer") or Instance.new("SphereHandleAdornment")
-			Sphere.Adornee = Object
-			Sphere.Color3 = Color3.fromRGB(0, 255, 255)
-			Sphere.ZIndex = -1
-			Sphere.AlwaysOnTop = true
-			Sphere.Transparency = 0.95
-			Sphere.Radius = 100
-			Sphere.Name = "RadiusVisualizer"
-			Sphere.Archivable = false
-			Sphere.Parent = Object
-			table.insert(TemporaryConnections, Sphere)
-		end,
+	Cooler = function(Object)
+		BasicRadiusVisualizer(Object, 100, Color3.fromRGB(0, 255, 255))
+	end,
 
-		WaterCooler = function(Object)
-			local Sphere = Object:FindFirstChild("RadiusVisualizer") or Instance.new("SphereHandleAdornment")
-			Sphere.Adornee = Object
-			Sphere.Color3 = Color3.fromRGB(0, 255, 255)
-			Sphere.ZIndex = -1
-			Sphere.AlwaysOnTop = true
-			Sphere.Transparency = 0.95
-			Sphere.Radius = 100
-			Sphere.Name = "RadiusVisualizer"
-			Sphere.Archivable = false
-			Sphere.Parent = Object
-			table.insert(TemporaryConnections, Sphere)
-		end,
+	WaterCooler = function(Object)
+		BasicRadiusVisualizer(Object, 100, Color3.fromRGB(0, 255, 255))
+	end,
 
-		Heater = function(Object)
-			local Sphere = Object:FindFirstChild("RadiusVisualizer") or Instance.new("SphereHandleAdornment")
-			Sphere.Adornee = Object
-			Sphere.Color3 = Color3.fromRGB(255, 170, 0)
-			Sphere.ZIndex = -1
-			Sphere.AlwaysOnTop = true
-			Sphere.Transparency = 0.95
-			Sphere.Radius = 100
-			Sphere.Name = "RadiusVisualizer"
-			Sphere.Archivable = false
-			Sphere.Parent = Object
-			table.insert(TemporaryConnections, Sphere)
-		end
-	}
+	Heater = function(Object)
+		BasicRadiusVisualizer(Object, 100, Color3.fromRGB(255, 170, 0))
+	end
+}
 
 local ComponentAdjustmentFunctions = {
 	-- Component called Door
@@ -2026,7 +1743,7 @@ end
 
 function ModernDecompile(content): (Model?, string?)
 	local model
-	local success, err = HistoricEvent("Decompile", "Decompile Model", function()
+	local success, err = ExtractedUtil.HistoricEvent("Decompile", "Decompile Model", function()
 		if content:sub(1, 4) == "http" then
 			content = HttpService:GetAsync(content)
 		end
@@ -2654,12 +2371,6 @@ local function createConfigHolder(HeaderText: string)
 	return Holder, HeaderLabel
 end
 
-local function BindToEventWithUndo(event: RBXScriptSignal, name: string, display_name: string?, callback: (...any)->())
-	event:Connect(function(...)
-		HistoricEvent(name, display_name, callback, ...)
-	end)
-end
-
 local CONFIG_HOLDER_SIZE = UDim2.new(1, 0, 0, 30)
 -- Anything not in this table defaults to StringValue
 local CONFIG_TYPE_TO_VALUE_TYPE = {
@@ -2765,7 +2476,7 @@ local function CreateConfigElementsForInstance(
 					BoxText = config_instance.Value,
 				})
 
-				BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
+				ExtractedUtil.BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
 					ApplyConfigurationValues(associated_base_part_key, associated_base_part, config_instance, TextBox.Box.Text)
 				end)
 
@@ -2800,7 +2511,7 @@ local function CreateConfigElementsForInstance(
 					ToggleValue = config_instance.Value,
 				})
 		
-				BindToEventWithUndo(Check.Toggle.OnChecked, "Configure", nil, function(On)
+				ExtractedUtil.BindToEventWithUndo(Check.Toggle.OnChecked, "Configure", nil, function(On)
 					ApplyConfigurationValues(associated_base_part_key, associated_base_part, config_instance, On)
 				end)
 		
@@ -2851,7 +2562,7 @@ local function CreateResourceConfigElement(
 	ConnectBoxToAutocomplete(TextBox.Box, script.Parts:GetChildren())
 	
 	-- On Resource config changed
-	BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
+	ExtractedUtil.BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
 		ApplyTemplates(ConfigValues[instance_key], TextBox.Box.Text)
 	end)
 
@@ -3396,7 +3107,7 @@ CompileButton.OnPressed:Connect(function()
 		
 
 		--calculate offset
-		local BoundingCF,BoundingSize = GetBoundingBox(SelectionParts)
+		local BoundingCF, BoundingSize = ExtractedUtil.GetBoundingBox(SelectionParts)
 		local AverageVector = AverageVector3s(SelectionVectors)
 
 		compilerSettings.Offset = Vector3.new(-AverageVector.X,-AverageVector.Y + (BoundingSize.Y)-30,-AverageVector.Z) --(BoundingSize.Y/2)-15
