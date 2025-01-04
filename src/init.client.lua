@@ -2751,7 +2751,7 @@ local OpenedMicrocontrollerScript
 
 local SpecialMaterialValues =
 	{
-		["Fitler"] = ConvertTextBoxInputToResource,
+		["Filter"] = ConvertTextBoxInputToResource,
 		["TempType"] = ConvertTextBoxInputToResource,
 		["MaterialToExtract"] = ConvertTextBoxInputToResource,
 		["LiquidToPump"] = ConvertTextBoxInputToResource,
