@@ -1,7 +1,6 @@
 local Selection = game:GetService("Selection")
 local TweenService = game:GetService("TweenService")
 local HttpService = game:GetService("HttpService")
-local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 local ScriptEditorService = game:GetService("ScriptEditorService")
@@ -9,7 +8,6 @@ local ScriptEditorService = game:GetService("ScriptEditorService")
 local Parts = script:WaitForChild("Parts")
 local Camera = workspace:FindFirstChildWhichIsA("Camera")
 
-local Settings = {Offset = Vector3.new(0,-1,0)}
 local MalleabilityConnections = {}
 local Adornees = {}
 
@@ -140,7 +138,6 @@ local VersionSelectWidget = plugin:CreateDockWidgetPluginGui("VersionSelect", Do
 VersionSelectWidget.Title = "Advanced Settings"
 
 local ConfigValues = {}
-local ValueTipBoxes = {}
 
 local OverlapConnections = {}
 local TemporaryConnections = {}
@@ -359,7 +356,7 @@ end
 
 local function GetTableLength(Table)
 	local Total = 0
-	for i,_ in Table do
+	for _, _ in Table do
 		Total += 1
 	end
 	return Total
@@ -482,7 +479,7 @@ local function CheckTableMalleability(List)
 		Adornees[i].M = nil
 	end
 	
-	for i,v in pairs(MalleabilityConnections) do
+	for _, v in pairs(MalleabilityConnections) do
 		v:Disconnect()
 	end
 
@@ -510,7 +507,7 @@ local function CheckTableMalleability(List)
 			continue
 		end
 
-		table.insert(MalleabilityConnections, Template:GetPropertyChangedSignal("Value"):Connect(function(Property)
+		table.insert(MalleabilityConnections, Template:GetPropertyChangedSignal("Value"):Connect(function()
 			CheckMalleability(Part)
 		end))
 
@@ -596,7 +593,7 @@ local function CheckTableOverlap(List)
 end
 
 -- Returns if given part can be used as a template material (aka set as the Resource for something like Wedge)
-local function IsResource(part: BasePart): boolean
+local function IsResource(_: BasePart): boolean
 	-- This just returns true now because basically every part does work as a template.
 	-- Maybe in the future there should be a blacklist or whitelist, or maybe some automatic way of detecting parts that don't work.
 	-- For example, hyperdrives don't work
@@ -876,11 +873,8 @@ local function ConnectBoxToAutocomplete(Box : TextBox, List : table)
 		local Matched = MatchQueryToList(Box.Text, List)
 		FoundMatchEvent:Fire(Matched)
 
-		if #Matched <= 0 then
-			BestMatchLabel.Visible = false
-			Match = nil
-		elseif tostring(Matched[1]):lower() == Box.Text:lower() or #Matched == 1 then
-			local MatchStart, MatchEnd = string.find(tostring(Matched[1]):lower(), Box.Text:lower())
+		if tostring(Matched[1]):lower() == Box.Text:lower() or #Matched == 1 then
+			local MatchStart, _ = string.find(tostring(Matched[1]):lower(), Box.Text:lower())
 
 			local FinalString = ""
 			for i, Character in tostring(Matched[1]):sub(MatchStart, #tostring(Matched[1])):split("") do
@@ -920,14 +914,14 @@ local function CreateTipBoxes(Gui, Table)
 	local HoverGui, HoverList = false, false
 
 	local function TryRemoveTipBoxes()
-		if (HoverGui or HoverList) then return end
+		if HoverGui or HoverList then return end
 		if not Temporary.Container then return end
 		TipBoxVisible = false
 		local ToRemove = Temporary; Temporary = {}
 
 		local FadeOut = TweenService:Create(ToRemove.Container, TweenInfo.new(0.125, Enum.EasingStyle.Quint, Enum.EasingDirection.In), { Size = UDim2.fromOffset(Gui.AbsoluteSize.X, 0) } )
 		FadeOut.Completed:Connect(function()
-			for i,v in ToRemove do
+			for _, v in ToRemove do
 				if not v then continue end
 				v:Destroy()
 			end
@@ -963,7 +957,7 @@ local function CreateTipBoxes(Gui, Table)
 		Temporary['Container'] = OptionsContainer; table.insert(Temporary, OptionsList)
 
 		local Count = 0
-		for i,v in Table do
+		for _, v in Table do
 			local TipBox = Instance.new("TextButton")
 			TipBox.BorderSizePixel = 1
 			TipBox.Size = UDim2.new(1, 0, 0, Gui.AbsoluteSize.Y)
@@ -1185,23 +1179,23 @@ local AdjustmentFunctions = {
 		end
 	end,
 
-	Anchor = function(Object, Index, Value)
+	Anchor = function(Object, _, Value)
 		Object.Color = if Value then Color3.fromRGB(255, 0, 0) else Color3.fromRGB(245, 205, 48)
 	end,
 
-	Valve = function(Object, Index, Value)
+	Valve = function(Object, _, Value)
 		Object.Color = if Value then Color3.fromRGB(159, 161, 172) else ADJUST_OFF_COLOR
 	end,
 
-	TriggerSwitch = function(Object, Index, Value)
+	TriggerSwitch = function(Object, _, Value)
 		Object.Color = if Value then Color3.fromRGB(91, 154, 76) else ADJUST_OFF_COLOR
 	end,
 
-	Switch = function(Object, Index, Value)
+	Switch = function(Object, _, Value)
 		Object.Color = if Value then Color3.fromRGB(0, 255, 0) else Color3.fromRGB(17, 17, 17)
 	end,
 
-	Hatch = function(Object, Index, Value)
+	Hatch = function(Object, _, Value)
 		Object.Color = if Value then Color3.fromRGB(163, 162, 165) else ADJUST_OFF_COLOR
 	end,
 
@@ -1230,7 +1224,7 @@ local AdjustmentFunctions = {
 		end	
 	end,
 
-	Instrument = function(Object, Index, Value)
+	Instrument = function(Object, _, Value)
 		local InstrumentGui = Object:FindFirstChildWhichIsA("SurfaceGui")
 		InstrumentGui.Default.Type.Text = Value
 	end,
@@ -1395,7 +1389,7 @@ ConnectBoxToAutocomplete(SearchBox, script.Parts:GetChildren()).Event:Connect(fu
 	if SearchBox.Text == "" then
 		ResultsFrame.CanvasSize = UDim2.fromOffset(0, #script.Parts:GetChildren() * 20)
 		ListLayout.SortOrder = Enum.SortOrder.Name
-		for i, SearchButton in ResultsFrame:GetChildren() do
+		for _, SearchButton in ResultsFrame:GetChildren() do
 			if not SearchButton:IsA("TextButton") then continue end
 			SearchButton.Visible = true
 		end
@@ -2097,7 +2091,7 @@ RequiredMatsButton.OnPressed:Connect(function()
 		end
 	end
 
-	for i,v in pairs(Selection:Get()) do
+	for _, v in pairs(Selection:Get()) do
 		if v:IsA('BasePart') and Parts:FindFirstChild(v.Name) then
 			if v:FindFirstChild("TempType") then
 				AddAmount(v.TempType.Value, 1, 'All Parts')
@@ -2116,7 +2110,7 @@ RequiredMatsButton.OnPressed:Connect(function()
 
 		if typeof(v) ~= 'Instance' then continue end
 
-		for i,v in v:GetDescendants() do
+		for _, v in v:GetDescendants() do
 			if v:IsA('BasePart') and Parts:FindFirstChild(v.Name) then
 				local Compat = CheckCompat(v.Name)
 				if not v:FindFirstChild("TempType") and PartData[v.Name] and PartData[v.Name].Recipe or Compat then
