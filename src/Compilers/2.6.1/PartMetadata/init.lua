@@ -1,3 +1,8 @@
+--[[
+This file was automatically modified by tools/compiler_patcher.py
+]]
+
+
 --!strict
 local HttpService = game:GetService("HttpService")
 
@@ -102,7 +107,9 @@ function PartMetadata:GetShape(part: BasePart): string?
 	local mesh = part:FindFirstChildWhichIsA("SpecialMesh")
 	if mesh and mesh.MeshType == Enum.MeshType.Sphere then
 		return "Spheroid"
-	elseif part:IsA("Part") then
+	--[[PB]]elseif mesh and shapesByMeshId[mesh.MeshId] then
+		return shapesByMeshId[mesh.MeshId]
+	--[[PE]]elseif part:IsA("Part") then
 		local shape = part.Shape
 
 		-- If the part is a block, return nil
