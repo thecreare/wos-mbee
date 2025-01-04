@@ -2872,154 +2872,162 @@ local function CreateConfigElementsForInstance(
 	instance_to_configure: BasePart|Configuration,
 	config_location: "Components"|"Parts"
 )
-	local instance_key = CompatabilityReplacements.COMPAT_NAME_REPLACEMENTS[instance_to_configure.Name] or instance_to_configure.Name
+	xpcall(function()
+		local instance_key = CompatabilityReplacements.COMPAT_NAME_REPLACEMENTS[instance_to_configure.Name] or instance_to_configure.Name
 
-	local configurations = ConfigData[config_location][instance_key]
-	-- This function will often be called for parts without configs
-	if not configurations then
-		-- Logger.print(`Missing PartData for {config_location}/{instance_key}`)
-		return
-	end
-
-	-- Actuall part that should be effected when this config changes
-	local associated_base_part = if instance_to_configure:IsA("BasePart") then instance_to_configure else instance_to_configure:FindFirstAncestorWhichIsA("BasePart")
-	local associated_base_part_key = associated_base_part.Name
-
-	for i, config_data in configurations do
-		local config_type = config_data.Type
-		local config_name = config_data.Name
-
-		local function GetDefaultConfigValue()
-			local default_value = config_data.Default
-			if default_value == nil then
-				Logger.warn(`Missing default config value for {config_location}/{instance_key}[{i}]`)
-				default_value = ""
-			end
-			-- Convert selection default (numberic index) into string value of default
-			if config_type == "Selection" then default_value = config_data.Options[default_value+1] end
-			-- Convert hex based default (ffffff) into rgb default (255, 255, 255)
-			if config_type == "Color3" then
-				local c = Color3.fromHex(default_value)
-				default_value = `{math.round(c.R*255)}, {math.round(c.G*255)}, {math.round(c.B*255)}`
-			end
-			return default_value
+		local configurations = ConfigData[config_location][instance_key]
+		-- This function will often be called for parts without configs
+		if not configurations then
+			-- Logger.print(`Missing PartData for {config_location}/{instance_key}`)
+			return
 		end
 
-		-- Insert value instance into part if it doesn't already exist
-		local config_instance: ValueBase? = instance_to_configure:FindFirstChild(config_name)
-		local expected_config_class = CONFIG_TYPE_TO_VALUE_TYPE[config_type] or "StringValue"
+		-- Actuall part that should be effected when this config changes
+		local associated_base_part = if instance_to_configure:IsA("BasePart") then instance_to_configure else instance_to_configure:FindFirstAncestorWhichIsA("BasePart")
+		local associated_base_part_key = associated_base_part.Name
 
-		local old_value
-		--                                                                            stoooooooooooooooooooopid
-		if config_instance and config_instance.ClassName ~= expected_config_class and config_name ~= "LinkerID" then
-			Logger.warn(`Selected {instance_key} has wrong type for config {config_name}. Expected {expected_config_class}, Found {config_instance.ClassName}. Fixing.`)
-			old_value = config_instance.Value
-			config_instance:Destroy()
-			config_instance = nil
-		end
+		for i, config_data in configurations do
+			local config_type = config_data.Type
+			local config_name = config_data.Name
 
-		if config_instance == nil then
-			config_instance = Instance.new(expected_config_class)
-			config_instance.Name = config_name
-			config_instance.Value = old_value or GetDefaultConfigValue()
-			config_instance.Parent = instance_to_configure
-		end
-
-		local toSync
-
-		local function GenericTextBox(placeholder: string)
-			local TextBox = CreateTextBox({
-				HolderSize = CONFIG_HOLDER_SIZE,
-				LabelText = config_name,
-				BoxPlaceholderText = placeholder or "Text [string]",
-				BoxText = config_instance.Value,
-			})
-
-			BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
-				ApplyConfigurationValues(associated_base_part_key, associated_base_part, config_instance, TextBox.Box.Text, TextBox.Box)
-			end)
-
-			toSync = {Labels = {TextBox.Label}, Boxes = {TextBox.Box}}
-			TextBox.Holder.Parent = output_container
-
-			return TextBox
-		end
-
-		-- Depending on the config type create a corresponding input box
-		if config_type == "string" then
-			-- Strings like sign text
-			local TextBox = GenericTextBox("Text [string]")
-	
-			-- Set up things like microcontroller code auto open and autocompleting part names
-			if SpecialMaterialValues[config_name] then
-				SpecialMaterialValues[config_name](TextBox, config_instance)
+			local function GetDefaultConfigValue()
+				local default_value = config_data.Default
+				if default_value == nil then
+					Logger.warn(`Missing default config value for {config_location}/{instance_key}[{i}]`)
+					return ""
+				end
+				-- Convert selection default (numberic index) into string value of default
+				if config_type == "Selection" then
+					-- Edge case for natural
+					if config_data.Options == "Natural" then return "Coal" end
+					return config_data.Options[(tonumber(default_value) or 0)+1]
+				end
+				-- Convert hex based default (ffffff) into rgb default (255, 255, 255)
+				if config_type == "Color3" then
+					local c = Color3.fromHex(default_value)
+					return `{math.round(c.R*255)}, {math.round(c.G*255)}, {math.round(c.B*255)}`
+				end
+				return default_value
 			end
 
-		-- TODO: Better parsing and handling of these in the future?
-		elseif config_type == "Color3" then
-			GenericTextBox("0,0,0 [Color3]")
-		elseif config_type == "Vector3" then
-			GenericTextBox("0,0,0 [Vector3]")
-		elseif config_type == "Vector2" then
-			GenericTextBox("0,0 [Vector2]")
-		elseif config_type == "NumberRange" then
-			GenericTextBox("0:0 [NumberRange]")
-		elseif config_type == "Coordinate" then
-			GenericTextBox("0,0,0,0,bool [Coordinate]")
+			-- Insert value instance into part if it doesn't already exist
+			local config_instance: ValueBase? = instance_to_configure:FindFirstChild(config_name)
+			local expected_config_class = CONFIG_TYPE_TO_VALUE_TYPE[config_type] or "StringValue"
 
-		elseif config_type == "boolean" then
-			-- Booleans like SwitchValue
-			local Check = CreateCheckBox({
-				HolderSize = CONFIG_HOLDER_SIZE,
-				LabelText = config_name,
-				ToggleValue = config_instance.Value,
-			})
-	
-			BindToEventWithUndo(Check.Toggle.OnChecked, "Configure", nil, function(On)
-				ApplyConfigurationValues(associated_base_part_key, associated_base_part, config_instance, On)
-			end)
-	
-			toSync = {Labels = {Check.Label}, Toggles = {Check.Toggle}}
-			Check.Holder.Parent = output_container
+			local old_value
+			--                                                                            stoooooooooooooooooooopid
+			if config_instance and config_instance.ClassName ~= expected_config_class and config_name ~= "LinkerID" then
+				Logger.warn(`Selected {instance_key} has wrong type for config {config_name}. Expected {expected_config_class}, Found {config_instance.ClassName}. Fixing.`)
+				old_value = config_instance.Value
+				config_instance:Destroy()
+				config_instance = nil
+			end
 
-		elseif config_type == "number" then
-			-- Numbers/Ints like Gravity or Hologram user id
-			local TextBox = CreateTextBox({
-				HolderSize = CONFIG_HOLDER_SIZE,
-				LabelText = config_name,
-				BoxPlaceholderText = `{ConfigData.Default} [num/int]`,
-				BoxText = config_instance.Value,
-			})
+			if config_instance == nil then
+				config_instance = Instance.new(expected_config_class)
+				config_instance.Name = config_name
+				config_instance.Value = old_value or GetDefaultConfigValue()
+				config_instance.Parent = instance_to_configure
+			end
 
-			BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
-				ApplyConfigurationValues(associated_base_part_key, associated_base_part, config_instance, TextBox.Box.Text)
-			end)
+			local toSync
 
-			toSync = {Labels = {TextBox.Label}, Boxes = {TextBox.Box}}
-			TextBox.Holder.Parent = output_container
-		elseif config_type == "Selection" then
-			-- Dropdowns like apparel limb
-			local TextBox = GenericTextBox("Option [string]")
+			local function GenericTextBox(placeholder: string)
+				local TextBox = CreateTextBox({
+					HolderSize = CONFIG_HOLDER_SIZE,
+					LabelText = config_name,
+					BoxPlaceholderText = placeholder or "Text [string]",
+					BoxText = config_instance.Value,
+				})
 
-			local options = config_data.Options
-			
-			if typeof(options) == "string" then
-				-- Thing like "Natural" in extractor
-				-- Bind to every part autocomplete
+				BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
+					ApplyConfigurationValues(associated_base_part_key, associated_base_part, config_instance, TextBox.Box.Text, TextBox.Box)
+				end)
+
+				toSync = {Labels = {TextBox.Label}, Boxes = {TextBox.Box}}
+				TextBox.Holder.Parent = output_container
+
+				return TextBox
+			end
+
+			-- Depending on the config type create a corresponding input box
+			if config_type == "string" then
+				-- Strings like sign text
+				local TextBox = GenericTextBox("Text [string]")
+		
+				-- Set up things like microcontroller code auto open and autocompleting part names
 				if SpecialMaterialValues[config_name] then
 					SpecialMaterialValues[config_name](TextBox, config_instance)
 				end
+
+			-- TODO: Better parsing and handling of these in the future?
+			elseif config_type == "Color3" then
+				GenericTextBox("0,0,0 [Color3]")
+			elseif config_type == "Vector3" then
+				GenericTextBox("0,0,0 [Vector3]")
+			elseif config_type == "Vector2" then
+				GenericTextBox("0,0 [Vector2]")
+			elseif config_type == "NumberRange" then
+				GenericTextBox("0:0 [NumberRange]")
+			elseif config_type == "Coordinate" then
+				GenericTextBox("0,0,0,0,bool [Coordinate]")
+
+			elseif config_type == "boolean" then
+				-- Booleans like SwitchValue
+				local Check = CreateCheckBox({
+					HolderSize = CONFIG_HOLDER_SIZE,
+					LabelText = config_name,
+					ToggleValue = config_instance.Value,
+				})
+		
+				BindToEventWithUndo(Check.Toggle.OnChecked, "Configure", nil, function(On)
+					ApplyConfigurationValues(associated_base_part_key, associated_base_part, config_instance, On)
+				end)
+		
+				toSync = {Labels = {Check.Label}, Toggles = {Check.Toggle}}
+				Check.Holder.Parent = output_container
+
+			elseif config_type == "number" then
+				-- Numbers/Ints like Gravity or Hologram user id
+				local TextBox = CreateTextBox({
+					HolderSize = CONFIG_HOLDER_SIZE,
+					LabelText = config_name,
+					BoxPlaceholderText = `{ConfigData.Default} [num/int]`,
+					BoxText = config_instance.Value,
+				})
+
+				BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
+					ApplyConfigurationValues(associated_base_part_key, associated_base_part, config_instance, TextBox.Box.Text)
+				end)
+
+				toSync = {Labels = {TextBox.Label}, Boxes = {TextBox.Box}}
+				TextBox.Holder.Parent = output_container
+			elseif config_type == "Selection" then
+				-- Dropdowns like apparel limb
+				local TextBox = GenericTextBox("Option [string]")
+
+				local options = config_data.Options
+				
+				if typeof(options) == "string" then
+					-- Thing like "Natural" in extractor
+					-- Bind to every part autocomplete
+					if SpecialMaterialValues[config_name] then
+						SpecialMaterialValues[config_name](TextBox, config_instance)
+					end
+				else
+					TextBox.Box.Text = config_instance.Value
+					CreateTipBoxes(TextBox.Box, options)
+				end
 			else
-				TextBox.Box.Text = config_instance.Value
-				CreateTipBoxes(TextBox.Box, options)
+				Logger.warn(`Missing handler for type {config_type} @{config_location}/{instance_key}`)
+				GenericTextBox(`undefined [Unknown<{config_type}>]`)
 			end
-		else
-			Logger.warn(`Missing handler for type {config_type} @{config_location}/{instance_key}`)
-			GenericTextBox(`undefined [Unknown<{config_type}>]`)
+		
+			SyncColors(toSync)
 		end
-	
-		SyncColors(toSync)
-	end
+	end, function(err)
+		Logger.error(`Failed to create configuration UI with error: {err}`)
+	end)
 end
 
 local function CreateResourceConfigElement(
