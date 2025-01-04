@@ -1421,29 +1421,15 @@ local ComponentAdjustmentFunctions = {
 	}
 }
 
-local CustomEnums; CustomEnums =
-	{
-		Polysilicon =
-		{
-			AdjustmentFunction = function(Object, Index, Value)
-				local BladeMesh = Object:FindFirstChildWhichIsA("SpecialMesh")
-				if Index == "PolysiliconMode" then
-				if Value == "Activate" then
-					Object.Color = Color3.fromRGB(255, 0, 191)
-				elseif Value == "Deactivate" then
-					Object.Color = Color3.fromRGB(0, 0, 255)
-				elseif Value == "FlipFlop" then
-					Object.Color = Color3.fromRGB(204, 142, 105)
-				end
-			end
-			end,
-			PolysiliconMode =
-			{
-				[0] = "Activate",
-				[1] = "Deactivate",
-				[2] = "FlipFlop"
-			}
-		},
+	Light = {
+		AdjustmentFunction = function(Object, Index, Value)
+			local light = Object:FindFirstChild("Light")
+			if not light then return end
+			pcall(function()
+				light[Index] = Value
+			end)
+		end,
+	},
 
 		Anchor =
 		{
