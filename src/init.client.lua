@@ -65,6 +65,19 @@ local CompileUploader = require(CustomModules.Uploader)
 local CompatabilityReplacements = require(CustomModules.Compatability)
 local InfoConstants = require(CustomModules.Settings)
 
+-- Fix constants having wrong case
+do
+	local LOWER_TO_CORRECT = {}
+	for _, v in Parts:GetChildren() do
+		LOWER_TO_CORRECT[v.Name:lower()] = v.Name
+	end
+	for _, cat_parts in InfoConstants.SearchCategories do
+		for i, part in cat_parts do
+			cat_parts[i] = LOWER_TO_CORRECT[part] or part
+		end
+	end
+end
+
 local Compiler = nil
 local Compilers = {}
 local PartMetadata = nil
@@ -2673,9 +2686,54 @@ local function CreateConfigElementsForInstance(
 	instance_to_configure: BasePart|Configuration,
 	config_location: "Components"|"Parts"
 )
-	xpcall(function()
-		local instance_key = CompatabilityReplacements.COMPAT_NAME_REPLACEMENTS[instance_to_configure.Name] or instance_to_configure.Name
+	local instance_key = CompatabilityReplacements.COMPAT_NAME_REPLACEMENTS[instance_to_configure.Name] or instance_to_configure.Name
 
+	local function GetDefaultConfigValue(config_data)
+		local default_value = config_data.Default
+		local config_type = config_data.Type
+		local config_name = config_data.Name
+
+		if default_value == nil then
+			Logger.warn(`Missing default config value for {config_location}/{instance_key}/{config_name}`)
+			return ""
+		end
+		-- Convert selection default (numberic index) into string value of default
+		if config_type == "Selection" then
+			-- Edge case for natural
+			if config_data.Options == "Natural" then return "Coal" end
+
+			-- Edge case for sign's TextFont
+			if config_data.Options.Kind == "Enum" then
+				return Enum[config_data.Options.Enum][default_value.Name]
+			end
+
+			return config_data.Options[(tonumber(default_value) or 0)+1]
+		end
+		-- Convert hex based default (ffffff) into rgb default (255, 255, 255)
+		if config_type == "Color3" then
+			local c = Color3.fromHex(default_value)
+			return `{math.round(c.R*255)}, {math.round(c.G*255)}, {math.round(c.B*255)}`
+		end
+		return default_value
+	end
+
+	local function GetOptions(config_data): {string}
+		local config_type = config_data.Type
+		if config_type ~= "Selection" then
+			Logger.warn(`GetOptions called with non-Selection config`)
+			return {""}
+		end
+
+		if config_data.Options == "Natural" then return InfoConstants.SearchCategories.resources end
+
+		if config_data.Options.Kind == "Enum" then
+			return GetEnumNames(Enum[config_data.Options.Enum])
+		end
+
+		return config_data.Options
+	end
+
+	xpcall(function()
 		local configurations = ConfigData[config_location][instance_key]
 		-- This function will often be called for parts without configs
 		if not configurations then
@@ -2690,26 +2748,6 @@ local function CreateConfigElementsForInstance(
 		for i, config_data in configurations do
 			local config_type = config_data.Type
 			local config_name = config_data.Name
-
-			local function GetDefaultConfigValue()
-				local default_value = config_data.Default
-				if default_value == nil then
-					Logger.warn(`Missing default config value for {config_location}/{instance_key}[{i}]`)
-					return ""
-				end
-				-- Convert selection default (numberic index) into string value of default
-				if config_type == "Selection" then
-					-- Edge case for natural
-					if config_data.Options == "Natural" then return "Coal" end
-					return config_data.Options[(tonumber(default_value) or 0)+1]
-				end
-				-- Convert hex based default (ffffff) into rgb default (255, 255, 255)
-				if config_type == "Color3" then
-					local c = Color3.fromHex(default_value)
-					return `{math.round(c.R*255)}, {math.round(c.G*255)}, {math.round(c.B*255)}`
-				end
-				return default_value
-			end
 
 			-- Insert value instance into part if it doesn't already exist
 			local config_instance: ValueBase? = instance_to_configure:FindFirstChild(config_name)
@@ -2727,12 +2765,12 @@ local function CreateConfigElementsForInstance(
 			if config_instance == nil then
 				config_instance = Instance.new(expected_config_class)
 				config_instance.Name = config_name
-				config_instance.Value = old_value or GetDefaultConfigValue()
+				config_instance.Value = old_value or GetDefaultConfigValue(config_data)
 				config_instance.Parent = instance_to_configure
 			end
 
 			local toSync
-
+			local GENERATED_BOX
 			local function GenericTextBox(placeholder: string)
 				local TextBox = CreateTextBox({
 					HolderSize = CONFIG_HOLDER_SIZE,
@@ -2742,25 +2780,20 @@ local function CreateConfigElementsForInstance(
 				})
 
 				BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
-					ApplyConfigurationValues(associated_base_part_key, associated_base_part, config_instance, TextBox.Box.Text, TextBox.Box)
+					ApplyConfigurationValues(associated_base_part_key, associated_base_part, config_instance, TextBox.Box.Text)
 				end)
 
 				toSync = {Labels = {TextBox.Label}, Boxes = {TextBox.Box}}
 				TextBox.Holder.Parent = output_container
-
+				GENERATED_BOX = TextBox
 				return TextBox
 			end
 
 			-- Depending on the config type create a corresponding input box
 			if config_type == "string" then
 				-- Strings like sign text
-				local TextBox = GenericTextBox("Text [string]")
+				GenericTextBox("Text [string]")
 		
-				-- Set up things like microcontroller code auto open and autocompleting part names
-				if SpecialMaterialValues[config_name] then
-					SpecialMaterialValues[config_name](TextBox, config_instance)
-				end
-
 			-- TODO: Better parsing and handling of these in the future?
 			elseif config_type == "Color3" then
 				GenericTextBox("0,0,0 [Color3]")
@@ -2790,38 +2823,22 @@ local function CreateConfigElementsForInstance(
 
 			elseif config_type == "number" then
 				-- Numbers/Ints like Gravity or Hologram user id
-				local TextBox = CreateTextBox({
-					HolderSize = CONFIG_HOLDER_SIZE,
-					LabelText = config_name,
-					BoxPlaceholderText = `{ConfigData.Default} [num/int]`,
-					BoxText = config_instance.Value,
-				})
-
-				BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
-					ApplyConfigurationValues(associated_base_part_key, associated_base_part, config_instance, TextBox.Box.Text)
-				end)
-
+				local TextBox = GenericTextBox(`{ConfigData.Default} [num/int]`)
 				toSync = {Labels = {TextBox.Label}, Boxes = {TextBox.Box}}
-				TextBox.Holder.Parent = output_container
 			elseif config_type == "Selection" then
 				-- Dropdowns like apparel limb
 				local TextBox = GenericTextBox("Option [string]")
 
-				local options = config_data.Options
-				
-				if typeof(options) == "string" then
-					-- Thing like "Natural" in extractor
-					-- Bind to every part autocomplete
-					if SpecialMaterialValues[config_name] then
-						SpecialMaterialValues[config_name](TextBox, config_instance)
-					end
-				else
-					TextBox.Box.Text = config_instance.Value
-					CreateTipBoxes(TextBox.Box, options)
-				end
+				TextBox.Box.Text = config_instance.Value
+				CreateTipBoxes(TextBox.Box, GetOptions(config_data))
 			else
 				Logger.warn(`Missing handler for type {config_type} @{config_location}/{instance_key}`)
 				GenericTextBox(`undefined [Unknown<{config_type}>]`)
+			end
+
+			-- Bind to every part autocomplete if applicable
+			if GENERATED_BOX and SpecialMaterialValues[config_name] then
+				SpecialMaterialValues[config_name](GENERATED_BOX, config_instance)
 			end
 		
 			SyncColors(toSync)
