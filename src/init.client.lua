@@ -1158,15 +1158,15 @@ local ComponentAdjustmentFunctions = {
 
 local ADJUST_OFF_COLOR = Color3.fromRGB(17, 17, 17)
 local AdjustmentFunctions = {
-	Light = {
-		AdjustmentFunction = function(Object, Index, Value)
-			local light = Object:FindFirstChild("Light")
-			if not light then return end
-			pcall(function()
-				light[Index] = Value
-			end)
-		end,
-	},
+	Light = function(Object, Index, Value)
+		local light = Object:FindFirstChild("Light")
+		if not light then return end
+		if Index == "LightRange" then Index = "Range" end
+		pcall(function()
+			light[Index] = Value
+		end)
+	end,
+
 	Polysilicon = function(Object, Index, Value)
 		if Index == "PolysiliconMode" then
 			if Value == "Activate" then
@@ -1199,10 +1199,9 @@ local AdjustmentFunctions = {
 		Object.Color = if Value then Color3.fromRGB(163, 162, 165) else ADJUST_OFF_COLOR
 	end,
 
-
 	Apparel = function(Object, Index, Value)
 		if Index ~= "Limb" then return end
-		
+
 		if Value == "Torso" then
 			Object.Size = Vector3.new(2, 2, 1)
 		elseif Value == "Head" then
@@ -1214,7 +1213,7 @@ local AdjustmentFunctions = {
 
 	Prosthetic = function(Object, Index, Value)
 		if Index ~= "Limb" then return end
-		
+
 		if Value == "Torso" then
 			Object.Size = Vector3.new(2, 2, 1)
 		elseif Value == "Head" then
@@ -1274,10 +1273,10 @@ local function ApplyConfigurationValues(ItemIdentifier: string, RootObject: Base
 	else
 		objects = {RootObject}
 	end
-	
+
 	-- Get the AdjustmentFunction for this config
 	local AdjustmentFunction = ComponentAdjustmentFunctions[Value.Parent.Name] or AdjustmentFunctions[RootObject.Name]
-	
+
 	-- Configure each object
 	for _, object in objects do
 		local otherValue = GetSameConfigOfOtherObject(object, Value)
