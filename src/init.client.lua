@@ -1239,6 +1239,20 @@ local function OrganiseResults(Query)
 	end
 end]]
 
+local ENUM_NAMES_CACHE = {}
+local function GetEnumNames(enum: Enum): {string}
+	if ENUM_NAMES_CACHE[enum] then return ENUM_NAMES_CACHE[enum] end
+
+	local names = {}
+
+	for _, name in enum:GetEnumItems() do
+		table.insert(names, name.Name)
+	end
+
+	ENUM_NAMES_CACHE[enum] = names
+	return names
+end
+
 function GetAndUpdateCapacityLabel(Object, text_creator: (object_volume: number)->())
 	local ObjectVolume = Object.Size.X * Object.Size.Y * Object.Size.Z
 	local AverageSize = (Object.Size.X + Object.Size.Y + Object.Size.Z) / 3
@@ -1412,15 +1426,14 @@ local SpecialParts =
 
 local ComponentAdjustmentFunctions = {
 	-- Component called Door
-	Door = {
-		AdjustmentFunction = function(object: BasePart, key: string, value: string|boolean)
-			if key ~= "Switch" then return end
-			object.Transparency = if value then 0.5 else 0
-		end,
-		Switch = {},
-	}
+	Door = function(object: BasePart, key: string, value: string|boolean)
+		if key ~= "Switch" then return end
+		object.Transparency = if value then 0.5 else 0
+	end,
 }
 
+local ADJUST_OFF_COLOR = Color3.fromRGB(17, 17, 17)
+local AdjustmentFunctions = {
 	Light = {
 		AdjustmentFunction = function(Object, Index, Value)
 			local light = Object:FindFirstChild("Light")
@@ -1430,294 +1443,94 @@ local ComponentAdjustmentFunctions = {
 			end)
 		end,
 	},
-
-		Anchor =
-		{
-			AdjustmentFunction = function(Object, Index, Value)
-				if Value then
-				Object.Color = Color3.fromRGB(255, 0, 0)
-			else
-				Object.Color = Color3.fromRGB(245, 205, 48)
-			end	
-			end,
-			Anchored = {},
-		},
-
-		Valve =
-		{
-			AdjustmentFunction = function(Object, Index, Value)
-				if Value then
-				Object.Color = Color3.fromRGB(159, 161, 172)
-			else
-				Object.Color = Color3.fromRGB(17, 17, 17)
-			end	
-			end,
-			SwitchValue = {},
-		},
-
-		TriggerSwitch =
-		{
-			AdjustmentFunction = function(Object, Index, Value)
-				if Value then
-				Object.Color = Color3.fromRGB(91, 154, 76)
-			else
-				Object.Color = Color3.fromRGB(17, 17, 17)
-			end	
-			end,
-			SwitchValue = {},
-		},
-
-		Switch =
-		{
-			AdjustmentFunction = function(Object, Index, Value)
-				if Value then
-				Object.Color = Color3.fromRGB(0, 255, 0)
-			else
-				Object.Color = Color3.fromRGB(17, 17, 17)
-			end	
-			end,
-			SwitchValue = {},
-		},
-
-		Hatch =
-		{
-			AdjustmentFunction = function(Object, Index, Value)
-				if Value then
-				Object.Color = Color3.fromRGB(163, 162, 165)
-			else
-				Object.Color = Color3.fromRGB(17, 17, 17)
-			end	
-			end,
-			SwitchValue = {},
-		},
-
-		--Door =
-		--{
-		--	AdjustmentFunction = function(Object, Index, Value)
-		--		if Value then
-		--		Object.Transparency = 0.5
-		--	else
-		--		Object.Transparency = 0
-		--	end	
-		--	end,
-		--	DoorSwitch = {},
-		--},
-
-		Apparel =
-		{
-			AdjustmentFunction = function(Object, Index, Value)
-				if Index ~= "Limb" then return end
-				if Value == "Torso" then
-				Object.Size = Vector3.new(2, 2, 1)
-			elseif Value == "Head" then
-				Object.Size = Vector3.new(1, 1, 1)
-			else
-				Object.Size = Vector3.new(1, 2, 1)
-			end	
-			end,
-			Limb = {
-				['Right Arm'] = 'Right Arm',
-				['Left Arm'] = 'Left Arm',
-				['Right Leg'] = 'Right Leg',
-				['Left Leg'] = 'Left Leg',
-				['Torso'] = 'Torso',
-				['Head'] = 'Head',
-			}
-		},
-
-		Prosthetic =
-		{
-			AdjustmentFunction = function(Object, Index, Value)
-				if Index ~= "Limb" then return end
-				if Value == "Torso" then
-				Object.Size = Vector3.new(2, 2, 1)
-			elseif Value == "Head" then
-				Object.Size = Vector3.new(2, 1, 1)
-			else
-				Object.Size = Vector3.new(1, 2, 1)
-			end	
-			end,
-			Limb = {
-				['Right Arm'] = 'Right Arm',
-				['Left Arm'] = 'Left Arm',
-				['Right Leg'] = 'Right Leg',
-				['Left Leg'] = 'Left Leg',
-				['Torso'] = 'Torso',
-				['Head'] = 'Head',
-			}
-		},
-
-		Blade =
-		{
-			AdjustmentFunction = function(Object, Index, Value)
-				local BladeMesh = Object:FindFirstChildWhichIsA("SpecialMesh")
-				if Index == "Shape" then
-				if Value == "Block" then
-					BladeMesh.MeshId = ''
-					BladeMesh.MeshType = Enum.MeshType.Brick
-					BladeMesh.Scale = Vector3.new(1, 1, 1)
-				elseif Value == "Spheroid" then
-					BladeMesh.MeshId = ''
-					BladeMesh.MeshType = Enum.MeshType.Sphere
-					BladeMesh.Scale = Vector3.new(1, 1, 1)
-				elseif Value == "Cone" then
-					BladeMesh.MeshType = Enum.MeshType.FileMesh
-					BladeMesh.MeshId = 'rbxassetid://6456626973'
-					BladeMesh.Scale = Object.Size / 2
-				end
+	Polysilicon = function(Object, Index, Value)
+		if Index == "PolysiliconMode" then
+			if Value == "Activate" then
+				Object.Color = Color3.fromRGB(255, 0, 191)
+			elseif Value == "Deactivate" then
+				Object.Color = Color3.fromRGB(0, 0, 255)
+			elseif Value == "FlipFlop" then
+				Object.Color = Color3.fromRGB(204, 142, 105)
 			end
-			end,
-			Shape = 
-			{
-				[0] = "Block",
-				[1] = "Spheroid",
-				[2] = "Cone",
-			}
-		},
+		end
+	end,
 
-		Handle =
-		{
-			AdjustmentFunction = function(Object, Index, Value) end,
-			Swing = 
-			{
-				[0] = "None",
-				[1] = "Swing",
-				[2] = "Point",
-			},
+	Anchor = function(Object, Index, Value)
+		Object.Color = if Value then Color3.fromRGB(255, 0, 0) else Color3.fromRGB(245, 205, 48)
+	end,
 
-			TriggerMode =
-			{
-				[0] = "MouseDown",
-				[1] = "MouseUp",
-				[2] = "Both"
-			},
-		},
+	Valve = function(Object, Index, Value)
+		Object.Color = if Value then Color3.fromRGB(159, 161, 172) else ADJUST_OFF_COLOR
+	end,
 
-		Instrument =
-		{
-			AdjustmentFunction = function(Object, Index, Value)
-				local InstrumentGui = Object:FindFirstChildWhichIsA("SurfaceGui")
-				--InstrumentGui.Default.Type.Text = CustomEnums.Instrument.Type[Value]
-				InstrumentGui.Default.Type.Text = Value
-			end,
-			Type =
-			{
-				[0] = "Speed",
-				[1] = "RotSpeed",
-				[2] = "Temperature",
-				[3] = "Time",
-				[4] = "Power",
-				[5] = "Size",
-				[6] = "Position",
-				[7] = "TemperatureF",
-				[8] = "Orientation",
-			}
-		},
+	TriggerSwitch = function(Object, Index, Value)
+		Object.Color = if Value then Color3.fromRGB(91, 154, 76) else ADJUST_OFF_COLOR
+	end,
 
-		Relay =
-		{
-			AdjustmentFunction = function(Object, Index, Value) end,
-			Mode =
-			{
-				[0] = "Send",
-				[1] = "Recieve",
-			}
-		},
+	Switch = function(Object, Index, Value)
+		Object.Color = if Value then Color3.fromRGB(0, 255, 0) else Color3.fromRGB(17, 17, 17)
+	end,
 
-		VehicleSeat =
-		{
-			AdjustmentFunction = function(Object, Index, Value) end,
-			Mode =
-			{
-				[0] = "Horizontal",
-				[1] = "Yaw/Pitch",
-				[2] = "Full",
-				[3] = "Mouse",
-			}
-		},
+	Hatch = function(Object, Index, Value)
+		Object.Color = if Value then Color3.fromRGB(163, 162, 165) else ADJUST_OFF_COLOR
+	end,
 
-		Sign =
-		{
-			AdjustmentFunction = function(Object, Index, Value)
-				local SignGui = Object:FindFirstChildWhichIsA("SurfaceGui")
-				if Index == "SignText" then
-				if 'id:' ~= Value:sub(1, 3) then
-					SignGui.SignLabel.Text = Value
-					Object:FindFirstChildWhichIsA('Decal').Texture = ''
-					SignGui.Enabled = true
-					return
-				end
-				SignGui.Enabled = false
-				Object:FindFirstChildWhichIsA('Decal').Texture = "rbxassetid://" .. string.gsub(Value:sub(4, #Value), ' ', '')
-				return
-			elseif Index == "TextColor" then
-				local Color = StringToColor3(Value)
-				Object:FindFirstChild("TextColor").Value = table.concat({Color.R, Color.G, Color.B}, ", ")
-				SignGui.SignLabel.TextColor3 = Color
-				return
-			elseif Index == "TextFont" then
-				for i,v in pairs(Enum.Font:GetEnumItems()) do
-					if Value ~= tostring(v) then continue end
-					SignGui.SignLabel.Font = v
-				end
+
+	Apparel = function(Object, Index, Value)
+		if Index ~= "Limb" then return end
+		
+		if Value == "Torso" then
+			Object.Size = Vector3.new(2, 2, 1)
+		elseif Value == "Head" then
+			Object.Size = Vector3.new(1, 1, 1)
+		else
+			Object.Size = Vector3.new(1, 2, 1)
+		end	
+	end,
+
+	Prosthetic = function(Object, Index, Value)
+		if Index ~= "Limb" then return end
+		
+		if Value == "Torso" then
+			Object.Size = Vector3.new(2, 2, 1)
+		elseif Value == "Head" then
+			Object.Size = Vector3.new(2, 1, 1)
+		else
+			Object.Size = Vector3.new(1, 2, 1)
+		end	
+	end,
+
+	Instrument = function(Object, Index, Value)
+		local InstrumentGui = Object:FindFirstChildWhichIsA("SurfaceGui")
+		InstrumentGui.Default.Type.Text = Value
+	end,
+
+	Sign = function(Object, Index, Value)
+		local SignGui = Object:FindFirstChildWhichIsA("SurfaceGui")
+		if Index == "SignText" then
+			if 'id:' ~= Value:sub(1, 3) then
+				SignGui.SignLabel.Text = Value
+				Object:FindFirstChildWhichIsA('Decal').Texture = ''
+				SignGui.Enabled = true
 				return
 			end
-			end,
-			SignText = {},
-			TextColor = {},
-			TextFont = 
-			{
-				['Enum.Font.Legacy'] = 'Legacy',
-				['Enum.Font.Arial'] = 'Arial',
-				['Enum.Font.ArialBold'] = 'ArialBold',
-				['Enum.Font.SourceSans'] = 'SourceSans',
-				['Enum.Font.SourceSansBold'] = 'SourceSansBold',
-				['Enum.Font.SourceSansSemibold'] = 'SourceSansSemibold',
-				['Enum.Font.SourceSansLight'] = 'SourceSansLight',
-				['Enum.Font.SourceSansItalic'] = 'SourceSansItalic',
-				['Enum.Font.Bodoni'] = 'Bodoni',
-				['Enum.Font.Garamond'] = 'Garamond',
-				['Enum.Font.Cartoon'] = 'Cartoon',
-				['Enum.Font.Code'] = 'Code',
-				['Enum.Font.Highway'] = 'Highway',
-				['Enum.Font.SciFi'] = 'SciFi',
-				['Enum.Font.Arcade'] = 'Arcade',
-				['Enum.Font.Fantasy'] = 'Fantasy',
-				['Enum.Font.Antique'] = 'Antique',
-				['Enum.Font.Gotham'] = 'Gotham',
-				['Enum.Font.GothamMedium'] = 'GothamMedium',
-				['Enum.Font.GothamBold'] = 'GothamBold',
-				['Enum.Font.GothamBlack'] = 'GothamBlack',
-				['Enum.Font.AmaticSC'] = 'AmaticSC',
-				['Enum.Font.Bangers'] = 'Bangers',
-				['Enum.Font.Creepster'] = 'Creepster',
-				['Enum.Font.DenkOne'] = 'DenkOne',
-				['Enum.Font.Fondamento'] = 'Fondamento',
-				['Enum.Font.FredokaOne'] = 'FredokaOne',
-				['Enum.Font.GrenzeGotisch'] = 'GrenzeGotisch',
-				['Enum.Font.IndieFlower'] = 'IndieFlower',
-				['Enum.Font.JosefinSans'] = 'JosefinSans',
-				['Enum.Font.Jura'] = 'Jura',
-				['Enum.Font.Kalam'] = 'Kalam',
-				['Enum.Font.LuckiestGuy'] = 'LuckiestGuy',
-				['Enum.Font.Merriweather'] = 'Merriweather',
-				['Enum.Font.Michroma'] = 'Michroma',
-				['Enum.Font.Nunito'] = 'Nunito',
-				['Enum.Font.Oswald'] = 'Oswald',
-				['Enum.Font.PatrickHand'] = 'PatrickHand',
-				['Enum.Font.PermanentMarker'] = 'PermanentMarker',
-				['Enum.Font.Roboto'] = 'Roboto',
-				['Enum.Font.RobotoCondensed'] = 'RobotoCondensed',
-				['Enum.Font.RobotoMono'] = 'RobotoMono',
-				['Enum.Font.Sarpanch'] = 'Sarpanch',
-				['Enum.Font.SpecialElite'] = 'SpecialElite',
-				['Enum.Font.TitilliumWeb'] = 'TitilliumWeb',
-				['Enum.Font.Ubuntu'] = 'Ubuntu',
-			},
-		}
-
-
-	}
+			SignGui.Enabled = false
+			Object:FindFirstChildWhichIsA('Decal').Texture = "rbxassetid://" .. string.gsub(Value:sub(4, #Value), ' ', '')
+			return
+		elseif Index == "TextColor" then
+			local Color = StringToColor3(Value)
+			Object:FindFirstChild("TextColor").Value = table.concat({Color.R, Color.G, Color.B}, ", ")
+			SignGui.SignLabel.TextColor3 = Color
+			return
+		elseif Index == "TextFont" then
+			for _, v in GetEnumNames(Enum.Font) do
+				if Value:lower() ~= v:lower() then continue end
+				SignGui.SignLabel.Font = v
+			end
+			return
+		end
+	end,
+}
 
 local function GetSameConfigOfOtherObject(otherObject: BasePart, referenceConfig: ValueBase): ValueBase
 	if referenceConfig.Parent:IsA("Configuration") then
@@ -1739,7 +1552,7 @@ local function ApplyConfigurationValues(ItemIdentifier: string, RootObject: Base
 	end
 	
 	-- Get the AdjustmentFunction for this config
-	local customEnum = ComponentAdjustmentFunctions[Value.Parent.Name] or CustomEnums[RootObject.Name]
+	local AdjustmentFunction = ComponentAdjustmentFunctions[Value.Parent.Name] or AdjustmentFunctions[RootObject.Name]
 	
 	-- Configure each object
 	for _, object in objects do
@@ -1748,8 +1561,8 @@ local function ApplyConfigurationValues(ItemIdentifier: string, RootObject: Base
 		otherValue.Value = ValueStatus
 
 		-- Run adjustment function fi it exists
-		if customEnum then
-			customEnum.AdjustmentFunction(object, Value.Name, ValueStatus)
+		if AdjustmentFunction then
+			AdjustmentFunction(object, Value.Name, ValueStatus)
 		end
 	end
 end
