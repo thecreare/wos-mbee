@@ -638,18 +638,20 @@ end
 
 -- Returns if given part can be used as a template material (aka set as the Resource for something like Wedge)
 local function IsResource(part: BasePart): boolean
-	for _, v in InfoConstants.SearchCategories.resources do
-		if part.Name:lower() ~= v then continue end
-		return true
-	end
-	return false
+	-- This just returns true now because basically every part does work as a template.
+	-- Maybe in the future there should be a blacklist or whitelist, or maybe some automatic way of detecting parts that don't work.
+	-- For example, hyperdrives don't work
+	return true
 end
 
+-- Returns if a given part is a shaped part like wedge (returns false for block)
+local function IsSpecialTemplate(part: BasePart): boolean
+	return PartMetadata:GetShape(part) ~= nil
+end
 -- Returns if given part should have a Resource config (note: the IsResource() call is to allow you to change the resource of Blocks)
 local function IsTemplate(part: BasePart): boolean
-	local temp_type = part:FindFirstChild("TempType")
 	local shape = PartMetadata:GetShape(part)
-	return temp_type or shape or IsResource(part)
+	return shape or IsResource(part)
 end
 
 local function ApplyTemplates(List, Material)
@@ -798,7 +800,7 @@ local function SpawnPart(Part, Settings): Model?
 
 		SelectedPart.Parent = workspace
 
-		if IsTemplate(SelectedPart) then
+		if IsSpecialTemplate(SelectedPart) then
 			local query = TemplateMaterial.Box.Text
 			if query == "" or query == nil then return SelectedPart end
 			local Matched = MatchQueryToList(query, script.Parts:GetChildren())
