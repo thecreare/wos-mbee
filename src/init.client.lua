@@ -3040,7 +3040,7 @@ local function CreateResourceConfigElement(
 	
 	-- On Resource config changed
 	BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
-		ApplyTemplates(ConfigValues["Resource"], TextBox.Box.Text)
+		ApplyTemplates(ConfigValues[instance_key], TextBox.Box.Text)
 	end)
 
 	TextBox.Holder.Parent = output_container
@@ -3071,20 +3071,6 @@ local function AddConfigItem(Item: BasePart)
 	-- This controls what group the item is a part of. Items in the same group all get configured when their config entry changes.
 	local ItemIdentifier = Item.Name
 
-	-- Replace names like "Iron" and "Titanium" with "Resource" so they show up as the same config entry
-	if PartMetadata:GetShape(Item) then
-		-- If :GetShape() returned a shape (meaning this is anything but a block) then its a resource
-		ItemIdentifier = "Resource"
-	else
-		-- If :GetShape() returned nil (a block) then check if the item is a resource
-		if IsResource(Item) then
-			ItemIdentifier = "Resource"
-		end
-	end
-
-	-- Skip parts that don't have any configurations and aren't resources
-	-- if ItemIdentifier ~= "Resource" and not Item:FindFirstChildWhichIsA("ValueBase") or not Item:FindFirstChildWhichIsA("Configuration") then return end
-
 	-- Create gui if not already exists
 	if not ConfigValues[ItemIdentifier] then
 		ConfigValues[ItemIdentifier] = {}
@@ -3097,7 +3083,7 @@ local function AddConfigItem(Item: BasePart)
 		CreateConfigElementsForInstance(primaryConfigContainer, Item, "Parts")
 
 		-- Create change resource config
-		if ItemIdentifier == "Resource" then
+		if IsTemplate(Item) then
 			CreateResourceConfigElement(primaryConfigContainer, Item)
 		end
 
