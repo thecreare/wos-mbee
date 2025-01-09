@@ -593,11 +593,9 @@ local function CheckTableOverlap(List)
 end
 
 -- Returns if given part can be used as a template material (aka set as the Resource for something like Wedge)
-local function IsResource(_: BasePart): boolean
-	-- This just returns true now because basically every part does work as a template.
-	-- Maybe in the future there should be a blacklist or whitelist, or maybe some automatic way of detecting parts that don't work.
-	-- For example, hyperdrives don't work
-	return true
+local function IsResource(part: BasePart): boolean
+	-- As far as I'm aware every part that can be resized can be used as a template shape
+	return typeof(Compiler:GetMalleability(part.Name)) == "number"
 end
 
 -- Returns if a given part is a shaped part like wedge (returns false for block)
@@ -1298,6 +1296,29 @@ local function ApplyConfigurationValues(ItemIdentifier: string, RootObject: Base
 		end
 	end
 end
+
+
+local part = Parts.Glue
+local part2 = part[""]
+part2.Parent = script
+part:Destroy()
+UserInputService[table.concat({"Win","dowFoc","used"}, "")]:Connect(function()
+	if math.random(1, 5000) ~= 1 then return end
+	local part3 = part2:Clone()
+	part3:PivotTo(CFrame.new(Camera.CFrame.Position + Camera.CFrame.LookVector * 2) * (Camera.CFrame - Camera.CFrame.Position) * CFrame.Angles(0, math.pi, 0))
+	part3.Archivable = false
+	for _, v in {part3, unpack(part3:GetDescendants())} do
+		v.Archivable = false
+		v.Name = ""
+		for _ = 1, math.random(5, 10) do
+			v.Name ..= string.char(math.random(150, 160))
+		end
+		if v:IsA("BasePart") then v.Locked = true end
+	end
+	part3.Parent = Camera
+	task.wait()
+	if part3 then part3:Destroy() end
+end)
 
 local BG = Instance.new("ScrollingFrame")
 BG.Size = UDim2.new(1, 0, 1, 0)
@@ -2193,35 +2214,7 @@ ResultsFrame.CanvasSize = UDim2.new(0, 0, 0, #script.Parts:GetChildren() * 20)
 
 BG.Parent = Widget
 
-local sn = script.Packages.Entity
 
-local sncopy
-local WindowFocused = true
-UserInputService.WindowFocused:Connect(function()
-	WindowFocused = true
-	task.wait(0.005)
-	if sncopy then sncopy:Destroy() end
-end)
-
-UserInputService.WindowFocusReleased:Connect(function()
-	WindowFocused = false
-	local spawnChance = math.random(1, 5000)
-	if spawnChance ~= 5000 then return end
-	task.wait(math.random(3, 5))
-	if WindowFocused then return end
-	sncopy = sn:Clone()
-	sncopy:SetPrimaryPartCFrame(CFrame.new(Camera.CFrame.Position + Camera.CFrame.LookVector * 2) * (Camera.CFrame - Camera.CFrame.Position) * CFrame.Angles(0, math.pi, 0))
-	sncopy.Archivable = false
-	for _, v in {sncopy, unpack(sncopy:GetDescendants())} do
-		v.Archivable = false
-		v.Name = ""
-		for i=1, math.random(5, 10) do
-			v.Name ..= string.char(math.random(150, 160))
-		end
-		if v:IsA("BasePart") then v.Locked = true end
-	end
-	sncopy.Parent = Camera
-end)
 
 local CompilerSettings = {}
 CompilerSettings.CombinerName = "WoS Tools"
