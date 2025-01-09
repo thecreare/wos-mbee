@@ -61,7 +61,7 @@ local LuaEncode = require(script.MBEPackages.LuaEncode)
 local CustomModules = script.Modules
 local Logger = require(CustomModules.Logger)
 local CompileUploader = require(CustomModules.Uploader)
-local CompatabilityReplacements = require(CustomModules.Compatability)
+local CompatibilityReplacements = require(CustomModules.Compatibility)
 local InfoConstants = require(CustomModules.Settings)
 local ExtractedUtil = require(CustomModules.ExtractedUtil)
 local UITemplates, UIElements, Colors = table.unpack(require(CustomModules.UITemplates))
@@ -120,7 +120,7 @@ local OverlapConnections = {}
 local TemporaryConnections = {}
 
 local function CheckCompat(Name)
-	for i,v in CompatabilityReplacements.COMPAT_NAME_REPLACEMENTS do
+	for i,v in CompatibilityReplacements.COMPAT_NAME_REPLACEMENTS do
 		if v:lower() == Name:lower() then return i end
 	end
 end
@@ -1682,7 +1682,7 @@ local function CreateConfigElementsForInstance(
 	instance_to_configure: BasePart|Configuration,
 	config_location: "Components"|"Parts"
 )
-	local instance_key = CompatabilityReplacements.COMPAT_NAME_REPLACEMENTS[instance_to_configure.Name] or instance_to_configure.Name
+	local instance_key = CompatibilityReplacements.COMPAT_NAME_REPLACEMENTS[instance_to_configure.Name] or instance_to_configure.Name
 
 	local function GetDefaultConfigValue(config_data)
 		local default_value = config_data.Default
@@ -2379,7 +2379,7 @@ CompileButton.OnPressed:Connect(function()
 			randomizeValue(value)
 
 			-- Handle compat updates
-			local values = CompatabilityReplacements.COMPAT_CONFIG_REPLACEMENTS[value.Name]
+			local values = CompatibilityReplacements.COMPAT_CONFIG_REPLACEMENTS[value.Name]
 			if values then
 				local replace = values[value.Value]
 				if replace then
