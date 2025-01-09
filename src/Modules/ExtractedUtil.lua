@@ -2,10 +2,10 @@ local ChangeHistoryService = game:GetService("ChangeHistoryService")
 
 local Logger = require(script.Parent.Logger)
 
-local Util = {}
+local ExtractedUtil = {}
 
 --https://devforum.roblox.com/t/how-does-roblox-calculate-the-bounding-boxes-on-models-getextentssize/216581/8
-function Util.GetBoundingBox(model, orientation)
+function ExtractedUtil.GetBoundingBox(model, orientation)
 	if typeof(model) == "Instance" then
 		model = model:GetDescendants()
 	end
@@ -61,7 +61,7 @@ function Util.GetBoundingBox(model, orientation)
 end
 
 -- History and stuff
-function Util.HistoricEvent(name: string, display_name: string?, callback: ()->(), ...:any): (boolean, string?)
+function ExtractedUtil.HistoricEvent(name: string, display_name: string?, callback: ()->(), ...:any): (boolean, string?)
 	name = "MBEE" .. name
 	display_name = "MBEE " .. (display_name or name)
 
@@ -79,10 +79,65 @@ function Util.HistoricEvent(name: string, display_name: string?, callback: ()->(
 	return success, err
 end
 
-function Util.BindToEventWithUndo(event: RBXScriptSignal, name: string, display_name: string?, callback: (...any)->())
+function ExtractedUtil.BindToEventWithUndo(event: RBXScriptSignal, name: string, display_name: string?, callback: (...any)->())
 	event:Connect(function(...)
-		Util.HistoricEvent(name, display_name, callback, ...)
+		ExtractedUtil.HistoricEvent(name, display_name, callback, ...)
 	end)
 end
 
-return Util
+-- Misc things
+-- ExtractedUtil
+function ExtractedUtil.RoundPos(part)
+	part.Position = Vector3.new(math.floor(part.Position.X), math.floor(part.Position.Y), math.floor(part.Position.Z))
+end
+
+function ExtractedUtil.GetTableLength(Table)
+	local Total = 0
+	for _, _ in Table do
+		Total += 1
+	end
+	return Total
+end
+
+function ExtractedUtil.SearchTableWithRecursion(Table, ComparsionFunction)
+	local Finds = {}
+	for _, Element in Table do
+		local Result = ComparsionFunction(Element)
+
+		if Result == true then
+			table.insert(Finds, Element)
+		elseif typeof(Result) == 'table' then
+			for _, v in ExtractedUtil.SearchTableWithRecursion(Result, ComparsionFunction) do
+				table.insert(Finds, v)
+			end
+		end
+	end
+	return Finds
+end
+
+function ExtractedUtil.AverageVector3s(v3s)
+	local sum = Vector3.new()
+	for _,v3 in pairs(v3s) do
+		sum = sum + v3
+	end
+	return sum / #v3s
+end
+
+function ExtractedUtil.CheckMalleabilityValue(Part, Value)
+	if typeof(Value) == "number" then
+		return (math.ceil(Part.Size.X) * math.ceil(Part.Size.Y) * math.ceil(Part.Size.Z)) <= Value
+	end
+
+	if typeof(Value) == "Vector3" then
+		return Part.Size == Value
+	end
+
+	if typeof(Value) == "table" then
+		for _, _Value in Value do
+			if ExtractedUtil.CheckMalleabilityValue(Part, _Value) then return true end
+		end
+		return false
+	end
+end
+
+return ExtractedUtil

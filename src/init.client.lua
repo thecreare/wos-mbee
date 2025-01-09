@@ -350,45 +350,11 @@ local function SyncColors(UIs)
 end
 
 
-local function RoundPos(part)
-	part.Position = Vector3.new(math.floor(part.Position.X), math.floor(part.Position.Y), math.floor(part.Position.Z))
-end
 
-local function GetTableLength(Table)
-	local Total = 0
-	for _, _ in Table do
-		Total += 1
-	end
-	return Total
-end
 
-local function SearchTableWithRecursion(Table, ComparsionFunction)
 
-	local Finds = {}
 
-	for _, Element in Table do
-		local Result = ComparsionFunction(Element)
 
-		if Result == true then
-			table.insert(Finds, Element)
-		elseif typeof(Result) == 'table' then
-			for _, v in SearchTableWithRecursion(Result, ComparsionFunction) do
-				table.insert(Finds, v)
-			end
-		end
-	end
-
-	return Finds
-
-end
-
-local function AverageVector3s(v3s)
-	local sum = Vector3.new()
-	for _,v3 in pairs(v3s) do
-		sum = sum + v3
-	end
-	return sum / #v3s
-end
 
 local function CheckCompat(Name)
 	for i,v in CompatabilityReplacements.COMPAT_NAME_REPLACEMENTS do
@@ -412,45 +378,26 @@ local function CreateAdornee(subject, color, issue)
 	return box
 end
 
-local function CheckMalleabilityValue(Part, Value)
-	if typeof(Value) == "number" then
-		return (math.ceil(Part.Size.X) * math.ceil(Part.Size.Y) * math.ceil(Part.Size.Z)) <= Value
-	end
-
-	if typeof(Value) == "Vector3" then
-		return Part.Size == Value
-	end
-	
-	if typeof(Value) == "table" then
-		for _, _Value in Value do
-			if CheckMalleabilityValue(Part, _Value) then return true end
-		end
-		return false
-	end
-end
-
 local function CheckMalleability(Value)
-	
 	if typeof(Value) == "table" then
 		for _, _Value in Value do
 			CheckMalleability(_Value)
 		end
 		return
 	end
-	
+
 	if not (typeof(Value) == "Instance" and Value:IsA("BasePart")) then return end
-	
+
 	local PartMalleability
 	if Value:FindFirstChild("TempType") then
-		--PartMalleability = Malleability[tostring(Value.TempType.Value or Value)]
 		PartMalleability = Compiler:GetMalleability(tostring(Value.TempType.Value or Value))
 	else
-		--PartMalleability = Malleability[tostring(Value)]
 		PartMalleability = Compiler:GetMalleability(tostring(Value))
 	end
+
 	if not PartMalleability then return end
 	
-	if CheckMalleabilityValue(Value, PartMalleability) then
+	if ExtractedUtil.CheckMalleabilityValue(Value, PartMalleability) then
 		if Adornees[Value] and Adornees[Value].M then
 			Adornees[Value].M:Destroy()
 			Adornees[Value].M = nil
@@ -459,7 +406,6 @@ local function CheckMalleability(Value)
 		local MalleabilityBox = CreateAdornee(Value, Colors.MalleabilityCheck, "M")
 		if MalleabilityBox then table.insert(UIElements.MalleabilityIndicators, MalleabilityBox) end
 	end
-	
 end
 
 local function ApplyColorCopy(Object)
@@ -490,7 +436,7 @@ local function CheckTableMalleability(List)
 	if typeof(List) ~= 'table' then return end
 	if not Widget.Enabled then return end
 
-	for _, Part in SearchTableWithRecursion(List, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
+	for _, Part in ExtractedUtil.SearchTableWithRecursion(List, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
 
 		local Template = Part:FindFirstChild("TempType")
 
@@ -564,7 +510,7 @@ local function CheckTableOverlap(List)
 
 	if not plugin:GetSetting("OverlapToggle") then return end
 
-	for _, v in SearchTableWithRecursion(List, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
+	for _, v in ExtractedUtil.SearchTableWithRecursion(List, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
 
 		table.insert(OverlapConnections, v:GetPropertyChangedSignal("Size"):Connect(function()
 			CheckTableOverlap(Selection:Get())
@@ -614,7 +560,7 @@ local function IsTemplate(part: BasePart): boolean
 end
 
 local function ApplyTemplates(List, Material)
-	for _, Part in SearchTableWithRecursion(List, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
+	for _, Part in ExtractedUtil.SearchTableWithRecursion(List, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
 		if Material == nil then
 			Part.Material = Enum.Material.Concrete
 			Part.Transparency = 0
@@ -737,7 +683,7 @@ local function SpawnPart(Part, Settings): Model?
 		if not SelectedPart then return end
 		local RayResult = workspace:Raycast(Camera.CFrame.Position, Camera.CFrame.LookVector * ((SelectedPart.Size.X + SelectedPart.Size.Y + SelectedPart.Size.Z) / 3 * 1.5 + 10))
 		SelectedPart.Position = RayResult and RayResult.Position and Vector3.new(RayResult.Position.X, RayResult.Position.Y + SelectedPart.Size.Y / 2, RayResult.Position.Z) or Camera.CFrame.Position + Camera.CFrame.LookVector * 12
-		RoundPos(SelectedPart)
+		ExtractedUtil.RoundPos(SelectedPart)
 
 		SelectedPart.Parent = workspace
 
@@ -1458,7 +1404,7 @@ ConnectBoxToAutocomplete(SearchBox, script.Parts:GetChildren()).Event:Connect(fu
 			SearchButton.Visible = true
 		end
 		
-		ResultsFrame.CanvasSize = UDim2.fromOffset(0, GetTableLength(CategoryItems) * 20)
+		ResultsFrame.CanvasSize = UDim2.fromOffset(0, ExtractedUtil.GetTableLength(CategoryItems) * 20)
 		
 		return
 	end
@@ -1864,7 +1810,7 @@ function ClassicDecompile(content)
 
 	local DecompileGroup = Instance.new("Model")
 
-	for i,v in SearchTableWithRecursion(DecompileParts, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
+	for i,v in ExtractedUtil.SearchTableWithRecursion(DecompileParts, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
 		v.Parent = DecompileGroup
 		ApplyColorCopy(v)
 		if IsTemplate(v) then
@@ -2970,7 +2916,7 @@ function RefreshSelection()
 
 	ConfigValues = {}
 	
-	local SelectedParts = SearchTableWithRecursion(Selection:Get(), function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end)
+	local SelectedParts = ExtractedUtil.SearchTableWithRecursion(Selection:Get(), function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end)
 	
 	CheckTableMalleability(SelectedParts)
 	CheckTableOverlap(SelectedParts)
@@ -3007,12 +2953,12 @@ function RefreshSelection()
 			end
 		end
 
-		GetFaces(SearchTableWithRecursion(Selection:Get(), function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end))
+		GetFaces(ExtractedUtil.SearchTableWithRecursion(Selection:Get(), function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end))
 		UpdateFaceSelectionViewport()
 		FaceSelectionHolder.Visible = true
 
 		TemporaryConnections["FaceRenderCamera"] = Camera:GetPropertyChangedSignal("CFrame"):Connect(function()
-			GetFaces(SearchTableWithRecursion(Selection:Get(), function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end))
+			GetFaces(ExtractedUtil.SearchTableWithRecursion(Selection:Get(), function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end))
 			UpdateFaceSelectionViewport()
 		end)
 
@@ -3153,7 +3099,7 @@ CompileButton.OnPressed:Connect(function()
 
 		--calculate offset
 		local BoundingCF, BoundingSize = ExtractedUtil.GetBoundingBox(SelectionParts)
-		local AverageVector = AverageVector3s(SelectionVectors)
+		local AverageVector = ExtractedUtil.AverageVector3s(SelectionVectors)
 
 		compilerSettings.Offset = Vector3.new(-AverageVector.X,-AverageVector.Y + (BoundingSize.Y)-30,-AverageVector.Z) --(BoundingSize.Y/2)-15
 		--get offset from offset input
