@@ -80,10 +80,10 @@ PrependPatchTo(
 )
 
 ### Sorters missing TriggerQuantity
-AppendPatchTo(
+PrependPatchTo(
     CONFIG_DATA,
     '\n\t\t\t{\n\t\t\t\t["Type"] = "number",\n\t\t\t\t["Default"] = "1",\n\t\t\t\t["Name"] = "TriggerQuantity"\n\t\t\t},',
-    '["Sorter"] = {',
+    '\n\t\t},\n\t\t["ProximityButton"] = {', # I know it says proximity button but its because sorter is the config before it
 )
 
 WritebackFiles()

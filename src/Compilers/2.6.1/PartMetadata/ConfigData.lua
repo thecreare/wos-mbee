@@ -1198,12 +1198,7 @@ return {
 				["Default"] = false,
 			},
 		},
-		["Sorter"] = {--[[PB]]
-			{
-				["Type"] = "number",
-				["Default"] = "1",
-				["Name"] = "TriggerQuantity"
-			},--[[PE]]
+		["Sorter"] = {
 			{
 				["Type"] = "string",
 				["Default"] = "Power",
@@ -1223,7 +1218,12 @@ return {
 					1,
 				},
 				["Name"] = "Rate",
-			},
+			},--[[PB]]
+			{
+				["Type"] = "number",
+				["Default"] = "1",
+				["Name"] = "TriggerQuantity"
+			},--[[PE]]
 		},
 		["ProximityButton"] = {
 			{
