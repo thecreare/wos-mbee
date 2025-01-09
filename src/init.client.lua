@@ -423,8 +423,6 @@ local SpecialParts = {
 			return (18 * volume + 0.5 * volume)
 		end, Color3.new(0, 0.5, 1))
 
-		-- Heat grid
-		local LOCAL_HEAT_GRID_RESOLUTION = 6
 		-- I don't want this to be slow, hence no `GetVolume(Parts:FindFirstChild("AirSupply"))`
 		-- I could cache it somewhere but I'm lazy and its not a big deal
 		-- The chance it changes is like... nearly zero
@@ -432,7 +430,8 @@ local SpecialParts = {
 		local BASE_AIR_SUPPLY_VOLUME = 16
 		BasicGridVisualizer(Object, function()
 			-- https://discord.com/channels/616089055532417036/1047587493693886547/1326707636405801052
-			return Vector3.one * (300 * ExtractedUtil.GetVolume(Object) / BASE_AIR_SUPPLY_VOLUME / LOCAL_HEAT_GRID_RESOLUTION)
+			-- https://discord.com/channels/616089055532417036/616089055532417040/1314957945536249988
+			return Vector3.one * (300 * ExtractedUtil.GetVolume(Object) / BASE_AIR_SUPPLY_VOLUME)
 		end, Color3.new(1, 0.3, 0))
 	end,
 
