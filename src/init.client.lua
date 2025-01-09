@@ -592,6 +592,11 @@ local function CheckTableOverlap(List)
 
 end
 
+-- Gets the volume of the given BasePart
+local function GetVolume(part: BasePart): number
+	return part.Size.X * part.Size.Y * part.Size.Z
+end
+
 -- Returns if given part can be used as a template material (aka set as the Resource for something like Wedge)
 local function IsResource(part: BasePart): boolean
 	-- As far as I'm aware every part that can be resized can be used as a template shape
@@ -1022,7 +1027,7 @@ local function GetEnumNames(enum: Enum): {string}
 end
 
 local function GetAndUpdateCapacityLabel(Object, text_creator: (object_volume: number)->())
-	local ObjectVolume = Object.Size.X * Object.Size.Y * Object.Size.Z
+	local ObjectVolume = GetVolume(Object)
 	local AverageSize = (Object.Size.X + Object.Size.Y + Object.Size.Z) / 3
 
 	local Capacity = Object:FindFirstChild("Capacity")
@@ -1060,7 +1065,7 @@ local function GetAndUpdateCapacityLabel(Object, text_creator: (object_volume: n
 	-- Detect future updates
 	table.insert(TemporaryConnections, Capacity)
 	table.insert(TemporaryConnections, Object:GetPropertyChangedSignal("Size"):Connect(function()
-		ObjectVolume = Object.Size.X * Object.Size.Y * Object.Size.Z
+		ObjectVolume = GetVolume(Object)
 		AverageSize = (Object.Size.X + Object.Size.Y + Object.Size.Z) / 3
 		Capacity.Size = UDim2.fromScale(AverageSize, AverageSize)
 		CapacityLabel.Text = text_creator(ObjectVolume)
@@ -1077,18 +1082,52 @@ local function BasicCapacityIndicator(storagePerStudCubed: number)
 	end
 end
 
-local function BasicRadiusVisualizer(Object: BasePart, radius: number, color: Color3?): SphereHandleAdornment
+local function BasicRadiusVisualizer(Object: BasePart, radius: number|()->(number), color: Color3?): SphereHandleAdornment
 	local Sphere = Object:FindFirstChild("__MBEERadiusVisualizer") or Instance.new("SphereHandleAdornment")
 	Sphere.Adornee = Object
 	Sphere.Color3 = color or Color3.new(1, 1, 1)
 	Sphere.ZIndex = -1
 	Sphere.AlwaysOnTop = true
 	Sphere.Transparency = 0.95
-	Sphere.Radius = radius
 	Sphere.Name = "__MBEERadiusVisualizer"
 	Sphere.Archivable = false
 	Sphere.Parent = Object
 	table.insert(TemporaryConnections, Sphere)
+
+	if typeof(radius) == "function" then
+		Sphere.Radius = radius(GetVolume(Object))
+		table.insert(TemporaryConnections, Object:GetPropertyChangedSignal("Size"):Connect(function()
+			Sphere.Radius = radius(GetVolume(Object))
+		end))
+	else
+		Sphere.Radius = radius
+	end
+
+	return Sphere
+end
+
+local function BasicGridVisualizer(Object: BasePart, size: Vector3|()->(Vector3), color: Color3?): BoxHandleAdornment
+	local Box = Object:FindFirstChild("__MBEEGridVisualizer") or Instance.new("BoxHandleAdornment")
+	Box.Adornee = Object
+	Box.Color3 = color or Color3.new(1, 1, 1)
+	Box.ZIndex = -1
+	Box.AlwaysOnTop = true
+	Box.Transparency = 0.95
+	Box.Name = "__MBEEGridVisualizer"
+	Box.Archivable = false
+	Box.Parent = Object
+	table.insert(TemporaryConnections, Box)
+
+	if typeof(size) == "function" then
+		Box.Size = size(GetVolume(Object))
+		table.insert(TemporaryConnections, Object:GetPropertyChangedSignal("Size"):Connect(function()
+			Box.Size = size(GetVolume(Object))
+		end))
+	else
+		Box.Size = size
+	end
+
+	return Box
 end
 
 local SpecialParts = {
@@ -1110,12 +1149,23 @@ local SpecialParts = {
 	end,
 
 	AirSupply = function(Object)
-		local ObjectVolume = Object.Size.X * Object.Size.Y * Object.Size.Z
-		local Sphere = BasicRadiusVisualizer(Object, 18 * ObjectVolume + 0.5 * ObjectVolume, Color3.new(0, 0.5, 1))
-		table.insert(TemporaryConnections, Object:GetPropertyChangedSignal("Size"):Connect(function()
-			ObjectVolume = Object.Size.X * Object.Size.Y * Object.Size.Z
-			Sphere.Radius = 18 * ObjectVolume + 0.5 * ObjectVolume
-		end))
+		-- Air radius
+		BasicRadiusVisualizer(Object, function()
+			local volume = GetVolume(Object)
+			return (18 * volume + 0.5 * volume)
+		end, Color3.new(0, 0.5, 1))
+
+		-- Heat grid
+		local LOCAL_HEAT_GRID_RESOLUTION = 6
+		-- I don't want this to be slow, hence no `GetVolume(Parts:FindFirstChild("AirSupply"))`
+		-- I could cache it somewhere but I'm lazy and its not a big deal
+		-- The chance it changes is like... nearly zero
+		-- probably...
+		local BASE_AIR_SUPPLY_VOLUME = 16
+		BasicGridVisualizer(Object, function()
+			-- https://discord.com/channels/616089055532417036/1047587493693886547/1326707636405801052
+			return Vector3.one * (300 * GetVolume(Object) / BASE_AIR_SUPPLY_VOLUME / LOCAL_HEAT_GRID_RESOLUTION)
+		end, Color3.new(1, 0.3, 0))
 	end,
 
 	GravityGenerator = function(Object)
