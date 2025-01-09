@@ -1,7 +1,7 @@
 local plugin = _G.plugin
 local TweenService = game:GetService("TweenService")
 
-local PseudoInstance = require(script.Parent.Parent.Packages.PseudoInstance)
+local PseudoInstance = require(script.Parent.Parent.MBEPackages.PseudoInstance)
 local InfoConstants = require(script.Parent.Settings)
 local ExtractedUtil = require(script.Parent.ExtractedUtil)
 local CustomMaterials = require(script.Parent.CustomMaterials)

@@ -1,6 +1,6 @@
 local HttpService = game:GetService("HttpService")
 
-local Sift = require(script.Parent.Parent.Packages.Sift)
+local Sift = require(script.Parent.Parent.--[[PB]]MBEPackages--[[PE]]--[[RM;Packages;RM]].Sift)
 
 -- Copy parts into PartMetadata
 local OBJECT_ASSETS_FOLDER = script.Parent.Parent.Parts:Clone()

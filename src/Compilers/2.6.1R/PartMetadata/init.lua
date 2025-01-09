@@ -102,7 +102,17 @@ function PartMetadata:GetShape(part: BasePart): string?
 	local mesh = part:FindFirstChildWhichIsA("SpecialMesh")
 	if mesh and mesh.MeshType == Enum.MeshType.Sphere then
 		return "Spheroid"
-	elseif part:IsA("Part") then
+	--[[PB]]elseif mesh and mesh.MeshType == Enum.MeshType.Brick then
+		return "nil"
+	--[[PE]]--[[PB]]elseif mesh and mesh.MeshType == Enum.MeshType.Wedge then
+		return "Wedge"
+	--[[PE]]--[[PB]]elseif mesh and mesh.MeshType == Enum.MeshType.Cylinder then
+		return "Cylinder"
+	--[[PE]]--[[PB]]elseif mesh and shapesByMeshId[mesh.MeshId] then
+		return shapesByMeshId[mesh.MeshId]
+	--[[PE]]--[[PB]]elseif mesh and mesh.MeshId == "http://www.roblox.com/asset/?id=11294911" then
+		return "CornerWedge"
+	--[[PE]]elseif part:IsA("Part") then
 		local shape = part.Shape
 
 		-- If the part is a block, return nil

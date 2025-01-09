@@ -3,13 +3,14 @@ Is this cursed? Yes.
 Is it better than copy-pasting changes for every new compiler? Also yes.
 """
 import re
-import datetime
 
-COMPILER = "2.6.1"
-FILE_PATH = f"./src/Compilers/{COMPILER}"
+COMPILERS = ["2.6.1", "2.6.1R"]
 
 PATCH_BEGIN = "--[[PB]]"
 PATCH_END = "--[[PE]]"
+
+REMOVAL_BEGIN = "--[[RM;"
+REMOVAL_END = ";RM]]"
 
 opened_files = {}
 
@@ -24,10 +25,17 @@ def GetContents(path):
 
     # Remove old patches
     contents = re.sub(MATCH_PATCHES, "", contents)
+    contents = contents.replace(REMOVAL_BEGIN, "", -1).replace(REMOVAL_END, "", -1)
 
     # Remember the contents for future open attempts and for when contents are written back at the end
     opened_files[path] = contents
     return contents
+
+def GetAllPaths(end):
+    out = []
+    for compiler in COMPILERS:
+        out.insert(0, f"./src/Compilers/{compiler}/{end}")
+    return out
 
 # For every opened file write its contents back to its file path.
 def WritebackFiles():
@@ -36,22 +44,35 @@ def WritebackFiles():
             f.write(contents)
 
 def AppendPatchTo(path, patch, find):
-    full_path = f"{FILE_PATH}/{path}"
+    for full_path in GetAllPaths(path):
+        contents = GetContents(full_path)
+        index = contents.find(find) + len(find)
 
-    contents = GetContents(full_path)
-    index = contents.find(find) + len(find)
-
-    contents = contents[:index] + PATCH_BEGIN + patch + PATCH_END + contents[index:]
-    opened_files[full_path] = contents
+        contents = contents[:index] + PATCH_BEGIN + patch + PATCH_END + contents[index:]
+        opened_files[full_path] = contents
 
 def PrependPatchTo(path, patch, find):
-    full_path = f"{FILE_PATH}/{path}"
+    for full_path in GetAllPaths(path):
+        contents = GetContents(full_path)
+        index = contents.find(find)
 
-    contents = GetContents(full_path)
-    index = contents.find(find)
+        contents = contents[:index] + PATCH_BEGIN + patch + PATCH_END + contents[index:]
+        opened_files[full_path] = contents
 
-    contents = contents[:index] + PATCH_BEGIN + patch + PATCH_END + contents[index:]
-    opened_files[full_path] = contents
+def PatchOver(path, patch, find):
+    for full_path in GetAllPaths(path):
+        contents = GetContents(full_path)
+
+        amt_to_skip = len(find)+len(patch)+len(PATCH_BEGIN)+len(PATCH_END)+len(REMOVAL_BEGIN)+len(REMOVAL_END)
+        index = -amt_to_skip
+        while True:
+            index = contents.find(find, index+amt_to_skip)
+            if index == -1:
+                break
+
+            end_of_match = index+len(find)
+            contents = contents[:index] + PATCH_BEGIN + patch + PATCH_END + REMOVAL_BEGIN + contents[index:end_of_match] + REMOVAL_END + contents[end_of_match:]
+            opened_files[full_path] = contents
 
 ### Patch :GetShape() to support base parts with `SpecialMesh`'s
 ### Request: https://discord.com/channels/616089055532417036/1047587493693886547/1324649555526025278
@@ -84,6 +105,12 @@ PrependPatchTo(
     CONFIG_DATA,
     '\n\t\t\t{\n\t\t\t\t["Type"] = "number",\n\t\t\t\t["Default"] = "1",\n\t\t\t\t["Name"] = "TriggerQuantity"\n\t\t\t},',
     '\n\t\t},\n\t\t["ProximityButton"] = {', # I know it says proximity button but its because sorter is the config before it
+)
+
+PatchOver(
+    "init.lua",
+    "MBEPackages",
+    "Packages",
 )
 
 WritebackFiles()

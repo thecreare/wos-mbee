@@ -8,7 +8,11 @@
       "MBEE": {
         "$className": "Folder",
         "MBEE": {
-          "$path": "src"
+          "$path": "src",
+          "Packages": {
+            "$className": "Folder",
+            "$path": "Packages"
+          }
         }
       }
     }

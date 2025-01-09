@@ -51,12 +51,12 @@ local PartData = require(script.PartData)
 local repr = require(3148021300)
 
 --rostrap preloading
-require(script.Packages.Checkbox)
-require(script.Packages.RippleButton)
-require(script.Packages.ReplicatedPseudoInstance)
-local PseudoInstance = require(script.Packages.PseudoInstance)
+require(script.MBEPackages.Checkbox)
+require(script.MBEPackages.RippleButton)
+require(script.MBEPackages.ReplicatedPseudoInstance)
+local PseudoInstance = require(script.MBEPackages.PseudoInstance)
 
-local LuaEncode = require(script.Packages.LuaEncode)
+local LuaEncode = require(script.MBEPackages.LuaEncode)
 
 local CustomModules = script.Modules
 local Logger = require(CustomModules.Logger)
