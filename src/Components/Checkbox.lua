@@ -18,10 +18,10 @@ local function Checkbox(
             ZIndex: UsedAs<number>?,
             Size: UsedAs<UDim2>?,
             AutomaticSize: UsedAs<Enum.AutomaticSize>?,
-        },
+        }?,
     }
 ): Fusion.Child
-    props.Layout = props.Layout or {}
+    props.Layout = props.Layout or {}; assert(props.Layout)
 
     local holder = scope:New "Frame" {
         Name = "Holder",

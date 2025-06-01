@@ -11,14 +11,20 @@ local function ScrollingFrame(
         Name: UsedAs<string>?,
         ScrollingDirection: UsedAs<"X"|"Y"|"XY">?,
         BackgroundTransparency: UsedAs<number>?,
+        ListPadding: UsedAs<UDim>?,
         Parent: UsedAs<Instance>?,
+        Active: UsedAs<boolean>?,
+
+        --- Sum of left and right padding
+        HorizontalWidthConsumedByPaddingOut: Fusion.Value<number>?,
+
         Padding: {
             All: UsedAs<UDim>?,
-            Bottom: UsedAs<number>?,
-            Left: UsedAs<number>?,
-            Right: UsedAs<number>?,
-            Top: UsedAs<number>?,
-        },
+            Bottom: UsedAs<UDim>?,
+            Left: UsedAs<UDim>?,
+            Right: UsedAs<UDim>?,
+            Top: UsedAs<UDim>?,
+        }?,
         Layout: {
             LayoutOrder: UsedAs<number>?,
             Position: UsedAs<UDim2>?,
@@ -26,27 +32,58 @@ local function ScrollingFrame(
             ZIndex: UsedAs<number>?,
             Size: UsedAs<UDim2>?,
             AutomaticSize: UsedAs<Enum.AutomaticSize>?,
-        },
+        }?,
+        RemoveListLayout: boolean?,
         [typeof(Children)]: Fusion.Child,
     }
 ): Fusion.Child
-    props.Layout = props.Layout or {}
-    local isScrollbarVisible = scope:Value(true)
+    local is_scrollbar_visible = scope:Value(true)
+    local bar_thickness = 8
+    props.Padding = props.Padding or {}; assert(props.Padding, "Can't happen")
+    props.Layout = props.Layout or {}; assert(props.Layout)
+
+    local padding_left = props.Padding.Left or props.Padding.All
+    local padding_right = scope:Computed(function(use)
+        local pad = use(props.Padding.Right) or use(props.Padding.All) or UDim.new(0, 0)
+        local padding_right = if use(is_scrollbar_visible) then UDim.new(pad.Scale, pad.Offset+bar_thickness) else pad
+        if props.HorizontalWidthConsumedByPaddingOut then
+            local l = if padding_left then use(padding_left).Offset else 0
+            props.HorizontalWidthConsumedByPaddingOut:set(padding_right.Offset + l)
+        end
+        return padding_right
+    end)
+
 
     local scrolling_frame = scope:New "ScrollingFrame" {
         Name = props.Name,
 
         AutomaticCanvasSize = props.ScrollingDirection or "Y",
         ScrollingDirection = props.ScrollingDirection or "Y",
-        CanvasSize = UDim2.fromScale(1, 0),
-        TopImage = "rbxassetid://7058754954",
-		BottomImage = "rbxassetid://7058754954",
-		MidImage = "rbxassetid://7058754954",
+        CanvasSize = UDim2.fromScale(0, 0),
+        Active = props.Active,
+
+        -- Rounded
+        TopImage = "rbxassetid://3062506445",
+        MidImage = "rbxassetid://3062506202",
+        BottomImage = "rbxassetid://3062505976",
+
+        -- Square
+        -- TopImage = "rbxassetid://7058754954",
+		-- BottomImage = "rbxassetid://7058754954",
+		-- MidImage = "rbxassetid://7058754954",
+
+        -- W/Arrow
+        -- TopImage = "rbxassetid://13458742509",
+		-- BottomImage = "rbxassetid://13458740792",
+		-- MidImage = "rbxassetid://13458741869",
+
         ScrollBarImageColor3 = THEME.COLORS.ScrollBar,
         BackgroundColor3 = THEME.COLORS.ScrollBarBackground,
         BackgroundTransparency = props.BackgroundTransparency,
-        ScrollBarImageTransparency = 0,
-        ScrollBarThickness = 6,
+        ScrollBarImageTransparency = scope:Computed(function(use)
+            return if use(is_scrollbar_visible) then 0 else 1
+        end),
+        ScrollBarThickness = bar_thickness,
 
         -- Layout
         LayoutOrder = props.Layout.LayoutOrder,
@@ -58,34 +95,29 @@ local function ScrollingFrame(
 
         Parent = props.Parent,
         [Children] = {
-            scope:New "UIListLayout" {
-                Padding = UDim.new(0, 3),
+            if props.RemoveListLayout == true then nil else scope:New "UIListLayout" {
+                Padding = props.ListPadding or UDim.new(0, 2),
                 SortOrder = Enum.SortOrder.LayoutOrder,
+            } :: Fusion.Child,
+            scope:New "UIPadding" {
+                PaddingBottom = props.Padding.Bottom or props.Padding.All,
+                PaddingLeft = padding_left,
+                PaddingRight = padding_right,
+                PaddingTop = props.Padding.Top or props.Padding.All,
             },
-            props.Padding and
-                scope:New "UIPadding" {
-                    PaddingBottom = props.Padding.Bottom or props.Padding.All,
-                    PaddingLeft = props.Padding.Left or props.Padding.All,
-                    PaddingRight = scope:Computed(function(use)
-                        local pad = use(props.Padding.Right) or use(props.Padding.All) or UDim.new(0, 0)
-                        return if use(isScrollbarVisible) then UDim.new(pad.Scale, pad.Offset+12) else pad
-                    end),
-                    PaddingTop = props.Padding.Top or props.Padding.All,
-                }
-            ,
             props[Children],
         },
-    }
+    } :: ScrollingFrame
 
     -- Update scrollbar visiblity reflection when the canvas or window size changes
     local function UpdateExtraPadEnabled()
-        isScrollbarVisible:set(scrolling_frame.AbsoluteCanvasSize.Y > scrolling_frame.AbsoluteWindowSize.Y)
+        is_scrollbar_visible:set(scrolling_frame.AbsoluteCanvasSize.Y > scrolling_frame.AbsoluteWindowSize.Y)
     end
     scrolling_frame:GetPropertyChangedSignal("AbsoluteCanvasSize"):Connect(UpdateExtraPadEnabled)
     scrolling_frame:GetPropertyChangedSignal("AbsoluteWindowSize"):Connect(UpdateExtraPadEnabled)
 
 
-    return peek(scrolling_frame)
+    return scrolling_frame
 end
 
 return ScrollingFrame

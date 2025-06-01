@@ -21,15 +21,15 @@ local function TextBox(
             ZIndex: UsedAs<number>?,
             Size: UsedAs<UDim2>?,
             AutomaticSize: UsedAs<Enum.AutomaticSize>?,
-        },
+        }?,
         Box: {
             BackgroundColor3: UsedAs<Color3>?,
             TextColor3: UsedAs<Color3>?,
-        },
+        }?,
     }
 ): Fusion.Child
-    props.Layout = props.Layout or {}
-    props.Box = props.Box or {}
+    props.Layout = props.Layout or {}; assert(props.Layout)
+    props.Box = props.Box or {}; assert(props.Box)
     local tips_open = scope:Value(false)
     local holder_size = scope:Value(UDim2.fromOffset(30, 30))
 
