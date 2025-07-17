@@ -259,7 +259,7 @@ AddMaterialButton.OnPressed:Connect(function()
 	end
 
 	local NewMaterial = Material:Clone()
-	NewMaterial.Parent = script.Parts
+	NewMaterial.Parent = PartsFolder
 
 	CustomMaterialsModule.Add(NewMaterial.Name, {
 		Material = NewMaterial.Material.Name,
