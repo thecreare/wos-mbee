@@ -15,12 +15,6 @@ local Adornees = {}
 -- Apparently module scripts don't get the plugin global so I need to do this.
 _G.plugin = plugin
 
-local OpenCompilerScripts = plugin:GetSetting("OpenCompilerScripts") or true
-local ReplaceCompiles = plugin:GetSetting("ReplaceCompiles") or false
-local ReplaceUploads = plugin:GetSetting("ReplaceUploads") or false
-local VisualizeSpecial = plugin:GetSetting("VisualizeSpecial") or false
-local CompileHost = plugin:GetSetting("CompileHost") or ''
-
 local compilerSettings = {
 	Offset = Vector3.zero,
 	ShowTODO = false,
@@ -59,15 +53,35 @@ local PseudoInstance = require(script.MBEPackages.PseudoInstance)
 local LuaEncode = require(script.MBEPackages.LuaEncode)
 
 local CustomModules = script.Modules
+local Components = script.Components
+
+local Fusion = require(script.Packages.fusion)
+local Children = Fusion.Children
+local scope = Fusion.scoped(Fusion, {
+	Divider = require(Components.Divider),
+	ScrollingFrame = require(Components.DynamicScrollingFrame),
+	Container = require(Components.Container),
+	Padding = require(Components.Padding),
+	CheckBox = require(Components.Checkbox),
+	TextBox = require(Components.TextBox),
+	RippleButton = require(Components.RippleButton),
+	UIListLayout = require(Components.UIListLayout),
+})
+local peek = Fusion.peek
+
+local THEME = require(script.Theme)
+local PluginSettingsModule = require(CustomModules.PluginSettings)
 local Logger = require(CustomModules.Logger)
 local CompileUploader = require(CustomModules.Uploader)
 local CompatibilityReplacements = require(CustomModules.Compatibility)
 local InfoConstants = require(CustomModules.Settings)
+local Branding = require(CustomModules.Branding)
 local ExtractedUtil = require(CustomModules.ExtractedUtil)
 local UITemplates, UIElements, Colors = table.unpack(require(CustomModules.UITemplates))
 local CustomMaterialsModule = require(CustomModules.CustomMaterials)
 local CompilersModule = require(CustomModules.Compilers)
 
+local PluginSettings = PluginSettingsModule.CreateFusionValues(scope)
 -- Fix constants having wrong case
 do
 	local LOWER_TO_CORRECT = {}
@@ -81,7 +95,7 @@ do
 	end
 end
 
-local Widget = plugin:CreateDockWidgetPluginGui("MBTools", DockWidgetPluginGuiInfo.new(
+local PrimaryWidget = plugin:CreateDockWidgetPluginGui("MBTools", DockWidgetPluginGuiInfo.new(
 	Enum.InitialDockState.Left,  -- Widget will be initialized in floating panel
 	true,   -- Widget will be initially enabled
 	false,  -- Don't override the previous enabled state
@@ -90,7 +104,8 @@ local Widget = plugin:CreateDockWidgetPluginGui("MBTools", DockWidgetPluginGuiIn
 	100,    -- Minimum width of the floating window
 	300     -- Minimum height of the floating window
 	))
-Widget.Title = "MB: Edited: Edited Tools"
+PrimaryWidget.Title = Branding.NAME
+PrimaryWidget.Name = Branding.NAME_ABBREVIATION .. "PrimaryWidget"
 
 local ConfigWidget = plugin:CreateDockWidgetPluginGui("Config", DockWidgetPluginGuiInfo.new(
 	Enum.InitialDockState.Right,  -- Widget will be initialized in floating panel
@@ -102,8 +117,9 @@ local ConfigWidget = plugin:CreateDockWidgetPluginGui("Config", DockWidgetPlugin
 	130     -- Minimum height of the floating window
 	))
 ConfigWidget.Title = "Part Configurer"
+ConfigWidget.Name = Branding.NAME_ABBREVIATION .. "ConfigWidget"
 
-local VersionSelectWidget = plugin:CreateDockWidgetPluginGui("VersionSelect", DockWidgetPluginGuiInfo.new(
+local SettingsWidget = plugin:CreateDockWidgetPluginGui("VersionSelect", DockWidgetPluginGuiInfo.new(
 	Enum.InitialDockState.Float,
 	false,   -- Widget will be initially enabled
 	true,  -- Don't override the previous enabled state
@@ -112,7 +128,8 @@ local VersionSelectWidget = plugin:CreateDockWidgetPluginGui("VersionSelect", Do
 	300,    -- Minimum width of the floating window
 	250     -- Minimum height of the floating window
 	))
-VersionSelectWidget.Title = "Advanced Settings"
+SettingsWidget.Title = "Advanced Settings"
+SettingsWidget.Name = Branding.NAME_ABBREVIATION .. "SettingsWidget"
 
 local ConfigValues = {}
 
@@ -160,7 +177,7 @@ local function CheckMalleability(Value)
 	end
 
 	if not PartMalleability then return end
-	
+
 	if ExtractedUtil.CheckMalleabilityValue(Value, PartMalleability) then
 		if Adornees[Value] and Adornees[Value].M then
 			Adornees[Value].M:Destroy()
@@ -182,23 +199,23 @@ local function ApplyColorCopy(Object)
 end
 
 local function CheckTableMalleability(List)
-	
+
 	for i,v in Adornees do
 		if not v.M then continue end
 		v.M:Destroy()
 		Adornees[i].M = nil
 	end
-	
+
 	for _, v in pairs(MalleabilityConnections) do
 		v:Disconnect()
 	end
 
 	MalleabilityConnections = {}
 
-	if not plugin:GetSetting("MalleabilityToggle") then return end
+	if not peek(PluginSettings.MalleabilityToggle) then return end
 	if not List then return end
 	if typeof(List) ~= 'table' then return end
-	if not Widget.Enabled then return end
+	if not PrimaryWidget.Enabled then return end
 
 	for _, Part in ExtractedUtil.SearchTableWithRecursion(List, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
 
@@ -246,7 +263,7 @@ local function CheckTableOverlap(List)
 	end
 	OverlapConnections = {}
 
-	if not plugin:GetSetting("OverlapToggle") then return end
+	if not peek(PluginSettings.OverlapToggle) then return end
 
 	for _, v in ExtractedUtil.SearchTableWithRecursion(List, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
 
@@ -326,7 +343,7 @@ local function GetAndUpdateCapacityLabel(Object, text_creator: (object_volume: n
 		Capacity.Parent = Object
 	end
 
-	-- Update Visuals	
+	-- Update Visuals
 	Capacity.Size = UDim2.fromScale(AverageSize, AverageSize)
 	CapacityLabel.Text = text_creator(ObjectVolume)
 
@@ -407,7 +424,7 @@ local SpecialParts = {
 	Container = function(Object)
 		GetAndUpdateCapacityLabel(Object, BasicCapacityIndicator(10))
 	end,
-	
+
 	Tank = function(Object)
 		GetAndUpdateCapacityLabel(Object, BasicCapacityIndicator(10))
 	end,
@@ -532,7 +549,7 @@ local AdjustmentFunctions = {
 			Object.Size = Vector3.new(1, 1, 1)
 		else
 			Object.Size = Vector3.new(1, 2, 1)
-		end	
+		end
 	end,
 
 	Prosthetic = function(Object, Index, Value)
@@ -544,7 +561,7 @@ local AdjustmentFunctions = {
 			Object.Size = Vector3.new(2, 1, 1)
 		else
 			Object.Size = Vector3.new(1, 2, 1)
-		end	
+		end
 	end,
 
 	Instrument = function(Object, _, Value)
@@ -653,14 +670,14 @@ BGUIList.Padding = UDim.new(0, 10)
 BGUIList.Parent = BG
 
 local SearchBoxHolder = Instance.new("Frame")
-SearchBoxHolder.Size = UDim2.new(1, -6, 0, Widget.AbsoluteSize.Y - 248) -- UDim2.new(1, -6, 0, 30)
+SearchBoxHolder.Size = UDim2.new(1, -6, 0, PrimaryWidget.AbsoluteSize.Y - 248) -- UDim2.new(1, -6, 0, 30)
 SearchBoxHolder.LayoutOrder = 0
 SearchBoxHolder.Parent = BG
 
-Widget.Changed:Connect(function(Property)
+PrimaryWidget.Changed:Connect(function(Property)
 	if Property ~= "AbsoluteSize" then return end
-	TweenService:Create(SearchBoxHolder, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Size = UDim2.new(1, 0, 0, Widget.AbsoluteSize.Y - 248) } ):Play()
-	plugin:SetSetting("PluginSize", {{Widget.AbsoluteSize.X, Widget.AbsoluteSize.Y}, {ConfigWidget.AbsoluteSize.X, ConfigWidget.AbsoluteSize.Y}})
+	TweenService:Create(SearchBoxHolder, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Size = UDim2.new(1, 0, 0, PrimaryWidget.AbsoluteSize.Y - 248) } ):Play()
+	plugin:SetSetting("PluginSize", {{PrimaryWidget.AbsoluteSize.X, PrimaryWidget.AbsoluteSize.Y}, {ConfigWidget.AbsoluteSize.X, ConfigWidget.AbsoluteSize.Y}})
 end)
 
 SearchBox = Instance.new("TextBox")
@@ -723,14 +740,14 @@ UITemplates.ConnectBoxToAutocomplete(SearchBox, script.Parts:GetChildren()).Even
 			end
 			SearchButton.Visible = true
 		end
-		
+
 		ResultsFrame.CanvasSize = UDim2.fromOffset(0, ExtractedUtil.GetTableLength(CategoryItems) * 20)
-		
+
 		return
 	end
-	
+
 	--task.wait()
-	
+
 	if SearchBox.Text == "" then
 		ResultsFrame.CanvasSize = UDim2.fromOffset(0, #script.Parts:GetChildren() * 20)
 		ListLayout.SortOrder = Enum.SortOrder.Name
@@ -740,13 +757,13 @@ UITemplates.ConnectBoxToAutocomplete(SearchBox, script.Parts:GetChildren()).Even
 		end
 		return
 	end
-	
+
 	ResultsFrame.CanvasSize = UDim2.fromOffset(0, #MatchedParts * 20)
 	ListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 	for _, SearchButton in ResultsFrame:GetChildren() do
 		if not SearchButton:IsA("TextButton") then continue end
 		for ListOrder, Part in MatchedParts do
-			if SearchButton.Name ~= tostring(Part) then 
+			if SearchButton.Name ~= tostring(Part) then
 				SearchButton.Visible = false
 				continue
 			end
@@ -760,9 +777,9 @@ end)
 
 SearchBox.FocusLost:Connect(function(EnterPressed)
 	task.wait()
-	
+
 	if not EnterPressed then return end
-	
+
 	local MatchTo = SearchMatches.Visible and string.lower(SearchMatches.Text) or string.lower(SearchBox.Text)
 	local Part
 	for _, _Part in script.Parts:GetChildren() do
@@ -771,14 +788,14 @@ SearchBox.FocusLost:Connect(function(EnterPressed)
 	end
 
 	if not Part then return end
-	
+
 	ListLayout.SortOrder = Enum.SortOrder.Name
 	for i, SearchButton in ResultsFrame:GetChildren() do
 		if not SearchButton:IsA("TextButton") then continue end
 		SearchButton.Visible = true
 	end
 	ResultsFrame.CanvasSize = UDim2.fromOffset(0, #script.Parts:GetChildren() * 20)
-	
+
 	SearchBox.Text, SearchMatches.Text, SearchMatches.Visible = "", "", false
 
 	ExtractedUtil.SpawnPart(Part)
@@ -854,33 +871,47 @@ UITemplates.ConnectBoxToAutocomplete(TemplateMaterial.Box, script.Parts:GetChild
 end)
 ExtractedUtil.StupidGlobals.TemplateMaterial = TemplateMaterial
 
-MalleabilityCheck = UITemplates.CreateCheckBox(
-	{
-		Name = "MalleabilityCheck",
-		LabelText = "Malleability Check",
-		ToggleValue = plugin:GetSetting("MalleabilityToggle") or false,
-		Parent = BG,
-		LayoutOrder = 1,
-	})
+-- MARK: Setting UI
+-- Create the UI buttons and stuff to control internal setting states
+do
+	local CATEGORY_CONTAINERS = {
+		-- advanced = _, -- TODO
+		main = BG,
+	}
+	for i, setting in PluginSettingsModule.InfoArray do
+		for _, category in setting.Categories do
+			local container = CATEGORY_CONTAINERS[category]
+			if not container then continue end
+			local layout = {
+				LayoutOrder = i
+			}
+			-- This will eventually be integrated entierly into fusion based UI
+			-- For now its this hack until then
+			if setting.Type == "boolean" then
+				scope:CheckBox {
+					Label = setting.Key,
+					Parent = container,
+					Checked = PluginSettings[setting.Key],
+					Layout = layout,
+				}
+			else
+				scope:TextBox {
+					Label = setting.Key,
+					Parent = container,
+					Text = PluginSettings[setting.Key],
+					Layout = layout,
+				}
+			end
 
-MalleabilityCheck.Toggle.OnChecked:Connect(function(On)
-	plugin:SetSetting("MalleabilityToggle", On)
-	task.wait()
+		end
+	end
+end
+
+scope:Observer(PluginSettings.MalleabilityToggle):onChange(function()
 	CheckTableMalleability(Selection:Get())
 end)
 
-OverlapCheck = UITemplates.CreateCheckBox(
-	{
-		Name = "OverlapCheck",
-		LabelText = "Overlap Check",
-		ToggleValue = plugin:GetSetting("OverlapToggle") or false,
-		Parent = BG,
-		LayoutOrder = 2,
-	})
-
-OverlapCheck.Toggle.OnChecked:Connect(function(On)
-	plugin:SetSetting("OverlapToggle", On)
-	task.wait()
+scope:Observer(PluginSettings.OverlapToggle):onChange(function()
 	CheckTableOverlap(Selection:Get())
 end)
 
@@ -905,35 +936,15 @@ CompileButton.LayoutOrder = 5
 CompileButton.Parent = BG
 table.insert(UIElements.Buttons, CompileButton)
 
-UploadReplace = UITemplates.CreateCheckBox(
-	{
-		Name = "UploadReplace",
-		LabelText = "Replace Old Uploads",
-		ToggleValue = plugin:GetSetting("ReplaceUploads") or false,
-		Parent = BG,
-		HolderVisible = if (CompileHost:lower() == "gist" or CompileHost:lower() == "hastebin") then true else false,
-		LayoutOrder = 6,
-	})
 
-UploadReplace.Toggle.OnChecked:Connect(function(On)
-	ReplaceUploads = On
-	plugin:SetSetting("ReplaceUploads", ReplaceCompiles)
-end)	
+--[[
+Things to re-add
 
-ReplaceScripts = UITemplates.CreateCheckBox(
-	{
-		Name = "ReplaceScripts",
-		LabelText = "Replace Old Compiles",
-		ToggleValue = plugin:GetSetting("ReplaceCompiles") or false,
-		Parent = BG,
-		HolderVisible = if (CompileHost:lower() == "gist" or CompileHost:lower() == "hastebin") then false else true,
-		LayoutOrder = 7,
-	})
+ReplaceUploads only visible if CompileHost is valid
+ReplaceCompiles only visible if CompileHost not valid
+]]
+--[[
 
-ReplaceScripts.Toggle.OnChecked:Connect(function(On)
-	ReplaceCompiles = On
-	plugin:SetSetting("ReplaceCompiles", ReplaceCompiles)
-end)
 
 UploadTo = UITemplates.UITemplatesCreateTextBox(
 	{
@@ -997,7 +1008,7 @@ UploadTo.Box:GetPropertyChangedSignal("Text"):Connect(function()
 		UploadName.Holder.Visible = true
 		UploadReplace.Holder.Visible = true
 		ReplaceScripts.Holder.Visible = false
-		
+
 		UpladExpiry.Holder.Visible = false
 	elseif UploadTo.Box.Text:lower() == "hastebin" then
 		UploadTo.Box.Font = "SourceSans"
@@ -1005,7 +1016,7 @@ UploadTo.Box:GetPropertyChangedSignal("Text"):Connect(function()
 		UploadName.Holder.Visible = false
 		UploadReplace.Holder.Visible = true
 		ReplaceScripts.Holder.Visible = false
-		
+
 		UpladExpiry.Holder.Visible = true
 	else
 		UploadTo.Box.Font = "SourceSansLight"
@@ -1014,7 +1025,7 @@ UploadTo.Box:GetPropertyChangedSignal("Text"):Connect(function()
 		UploadName.Holder.Visible = false
 		UploadReplace.Holder.Visible = false
 		ReplaceScripts.Holder.Visible = true
-		
+
 		UpladExpiry.Holder.Visible = false
 	end
 	CompileHost = UploadTo.Box.Text
@@ -1025,14 +1036,13 @@ UpladExpiry.Box:GetPropertyChangedSignal("Text"):Connect(function()
 	UploadExpireTime = UpladExpiry.Box.Text
 	plugin:SetSetting("UploadExpireTime", UploadExpireTime)
 end)
+]]
 
-local DecompileSeparator = Instance.new("Frame")
-DecompileSeparator.BorderSizePixel = 0
-DecompileSeparator.Size = UDim2.new(1, -10, 0, 1)
-DecompileSeparator.Position = UDim2.new(0, 0, 1, 0)
-DecompileSeparator.LayoutOrder = 11
-DecompileSeparator.Parent = BG
-table.insert(UIElements.ContrastFrames, DecompileSeparator)
+scope:Divider {
+	Thickness = 1,
+	LayoutOrder = 11,
+	Parent = BG,
+}
 
 Decompilation = UITemplates.UITemplatesCreateTextBox(
 	{
@@ -1059,20 +1069,20 @@ function CreateOutputScript(content: string, scriptName: string?, open: boolean?
 	if content == nil then
 		return
 	end
-	
+
 	local outputScript = Instance.new("Script")
 	outputScript.Name = scriptName or "MBEOutput"
 	ScriptEditorService:UpdateSourceAsync(outputScript, function(_)
 		return content
 	end)
 	outputScript.Parent = workspace
-	if open and OpenCompilerScripts then
+	if open and PluginSettings.OpenCompilerScripts then
 		local success, err = ScriptEditorService:OpenScriptDocumentAsync(outputScript)
 		if not success then
 			Logger.warn(`Failed to open script document: {err}`)
 		end
 	end
-	
+
 	return outputScript
 end
 
@@ -1082,29 +1092,29 @@ function ModernDecompile(content): (Model?, string?)
 		if content:sub(1, 4) == "http" then
 			content = HttpService:GetAsync(content)
 		end
-	
+
 		local instances, saveData = CompilersModule:GetSelectedCompiler():Decompile(content, compilerSettings)
-	
+
 		model = Instance.new("Model")
 		model.Name = "Decompilation"
-	
+
 		for _, instance in instances do
 			instance.Parent = model
 		end
-	
+
 		model.Parent = workspace
-	
+
 		model:MoveTo(workspace.InsertPoint)
-	
+
 		-- Create a script to put the details in
 		local source = `-- The following is a summary of the data contained in the model's save format generated by LuaEncode. Your model has been selected in the explorer. \nreturn {LuaEncode(saveData, {
 			Prettify = true
 		})}`
 		CreateOutputScript(source, "MBDetails", true)
-	
+
 		-- Select model
 		Selection:Set({model})
-		
+
 		Logger.print("SUCCESSFULLY DECOMPILED DATA")
 	end)
 	Logger.print(`Modern decompile returned {success}, {err}`)
@@ -1149,17 +1159,17 @@ end
 
 DecompileButton.OnPressed:Connect(function()
 	Logger.print("DECOMPILE STARTED")
-	
+
 	local saveString = Decompilation.Box.Text
 	local model = ModernDecompile(saveString)
-	
+
 	if model then
 		Logger.print("DECOMPILE SUCCESS")
 	else
 		Logger.print("MODERN DECOMPILE FAILED, TRYING CLASSIC DECOMPILER")
-		
+
 		local success, err = pcall(ClassicDecompile, saveString)
-		
+
 		if success then
 			Logger.print("CLASSIC DECOMPILE SUCCESS")
 		else
@@ -1209,60 +1219,8 @@ ResetLabel.MouseButton1Click:Connect(function()
 	warn('[MB:E:E] SUCCESSFULLY RESET MATERIAL DATA')
 end)
 
-----==== Configure Widget ====----
-local CBG = Instance.new("Frame")
-CBG.Size = UDim2.new(1, 0, 1, 0)
-CBG.Parent = ConfigWidget
-table.insert(UIElements.Frames, CBG)
-
-local ConfigList = Instance.new("ScrollingFrame")
-ConfigList.Size = UDim2.new(1, 0, 1, 0)
-ConfigList.AnchorPoint = Vector2.new(0.5, 0.5)
-ConfigList.Position = UDim2.new(0.5, 0, 0.5, 0)
-ConfigList.ScrollBarThickness = 6
-ConfigList.ScrollingDirection = Enum.ScrollingDirection.Y
-ConfigList.AutomaticCanvasSize = Enum.AutomaticSize.Y
-ConfigList.CanvasSize = UDim2.new(1, 0, 0, 0)
-ConfigList.Parent = CBG
-table.insert(UIElements.Scrolls, ConfigList)
-
-local ConfigListSort = Instance.new("UIListLayout")
-ConfigListSort.SortOrder = Enum.SortOrder.LayoutOrder
-ConfigListSort.Padding = UDim.new(0, 1)
-ConfigListSort.Parent = ConfigList
-
-----==== Version Selection Widget ====----
-local VersionScroll = Instance.new("ScrollingFrame")
-VersionScroll.Size = UDim2.new(1, 0, 1, 0)
-VersionScroll.AnchorPoint = Vector2.new(0.5, 1)
-VersionScroll.Position = UDim2.new(0.5, 0, 1, 0)
-VersionScroll.CanvasSize = UDim2.new(1, -12, 0, 0)
-VersionScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-VersionScroll.ScrollBarThickness = 6
-VersionScroll.Parent = VersionSelectWidget
-table.insert(UIElements.Scrolls, VersionScroll)
-
-function CreateButton(buttonText: string, on_click: ()->()?)
-	local button = PseudoInstance.new("RippleButton")
-	button.PrimaryColor3 = Color3.fromRGB(255, 133, 51)
-	button.Size = UDim2.new(1, -10, 0, 32)
-	button.BorderRadius = 0
-	button.Style = "Outlined"
-	button.Text = buttonText
-	button.Font = Enum.Font.SourceSans
-	button.TextSize = 24
-	button.LayoutOrder = 1
-	button.Parent = VersionScroll
-	table.insert(UIElements.InsetButtons, button)
-
-	if on_click then
-		button.OnPressed:Connect(on_click)
-	end
-	return button
-end
-
-CreateButton("Select Compiler", function()
-	
+----==== These functions are connected to buttons in the settings menu ====----
+local function SelectCompilerButton()
 	local options = {}
 	local VERSION_TO_COMPILER_ID = {}
 	for compiler_id, comp in CompilersModule:GetCompilers() do
@@ -1279,20 +1237,16 @@ CreateButton("Select Compiler", function()
 
 	Dialog.OnConfirmed:Connect(function(_, Choice)
 		if not Choice then return end
-		
+
 		-- Get compiler id from chosen version
 		local i = VERSION_TO_COMPILER_ID[Choice]
 		CompilersModule:SelectCompiler(i)
 	end)
 
-	Dialog.Parent = VersionSelectWidget
+	Dialog.Parent = SettingsWidget
+end
 
-end)
-
-local RequiredMatsButton = CreateButton("Get Required Materials for Selection")
-
-
-CreateButton("Migrate Selection", function()
+local function MigrateSelectionButton()
 	local Compiler = CompilersModule:GetSelectedCompiler()
 	local function tryMigrateTemplates(instances: {Instance})
 		for _, instance in instances do
@@ -1304,17 +1258,15 @@ CreateButton("Migrate Selection", function()
 			Compiler:TryMigrateTemplates(instance)
 		end
 	end
-	
-	local recordingId = ChangeHistoryService:TryBeginRecording("MBEEMigrateTemplates", "Migrate Templates")
 
-	for _, selection in Selection:Get() do
-		tryMigrateTemplates(selection:GetDescendants())
-	end
+	ExtractedUtil.HistoricEvent("MigrateTemplates", nil, function()
+		for _, selection in Selection:Get() do
+			tryMigrateTemplates(selection:GetDescendants())
+		end
+	end)
+end
 
-	ChangeHistoryService:FinishRecording(recordingId, Enum.FinishRecordingOperation.Commit)
-end)
-
-CreateButton("Migrate Configurables", function()
+local function MigrateConfigurablesButton()
 	local Compiler = CompilersModule:GetSelectedCompiler()
 	local function migrateConfigurables(instances: {Instance})
 		for _, instance in instances do
@@ -1327,84 +1279,23 @@ CreateButton("Migrate Configurables", function()
 		end
 	end
 
-	local recordingId = ChangeHistoryService:TryBeginRecording("MBEMigrateConfigurables", "Migrate Configurables")
-	local selectedInstances = Selection:Get()
+	ExtractedUtil.HistoricEvent("MigrateConfigurables", nil, function()
+		local selectedInstances = Selection:Get()
 
-	migrateConfigurables(selectedInstances)
-	for _, selection in selectedInstances do
-		migrateConfigurables(selection:GetDescendants())
-	end
+		migrateConfigurables(selectedInstances)
+		for _, selection in selectedInstances do
+			migrateConfigurables(selection:GetDescendants())
+		end
+	end)
+end
 
-	ChangeHistoryService:FinishRecording(recordingId, Enum.FinishRecordingOperation.Commit)
-end)
-
-local VisualizeSpecialHolder = Instance.new("Frame")
-VisualizeSpecialHolder.BackgroundTransparency = 1
-VisualizeSpecialHolder.Size = UDim2.new(1, 0, 0, 32)
-VisualizeSpecialHolder.Parent = VersionScroll
-table.insert(UIElements.Frames, VisualizeSpecialHolder)
-
-local VisualizeSpecialLabel = Instance.new("TextLabel")
-VisualizeSpecialLabel.BackgroundTransparency = 1
-VisualizeSpecialLabel.BorderSizePixel = 0
-VisualizeSpecialLabel.TextColor3 = Color3.fromRGB(255, 133, 51)
-VisualizeSpecialLabel.Size = UDim2.fromScale(1, 1)
-VisualizeSpecialLabel.Position = UDim2.fromOffset(-24, 0)
-VisualizeSpecialLabel.Text = "Visualize Special Parts"
-VisualizeSpecialLabel.Font = Enum.Font.SourceSans
-VisualizeSpecialLabel.TextXAlignment = Enum.TextXAlignment.Center
-VisualizeSpecialLabel.TextSize = 24
-VisualizeSpecialLabel.Parent = VisualizeSpecialHolder
-table.insert(UIElements.ContrastLabels, VisualizeSpecialLabel)
-
-local VisualizeSpecialToggle = PseudoInstance.new("Checkbox")
-VisualizeSpecialToggle.PrimaryColor3 = Color3.fromRGB(255, 133, 51)
-VisualizeSpecialToggle.AnchorPoint = Vector2.new(1, 0.5)
-VisualizeSpecialToggle.Position = UDim2.new(0.5, VisualizeSpecialLabel.TextBounds.X / 2 + 12, 0.5, 0)
-VisualizeSpecialToggle.Checked = VisualizeSpecial
-VisualizeSpecialToggle.Parent = VisualizeSpecialHolder
-table.insert(UIElements.Toggles, VisualizeSpecialToggle)
-
-local ScrollingTextHolder = Instance.new("Frame")
-ScrollingTextHolder.BackgroundTransparency = 1
-ScrollingTextHolder.Size = UDim2.new(1, 0, 0, 32)
-ScrollingTextHolder.Parent = VersionScroll
-table.insert(UIElements.Frames, ScrollingTextHolder)
-
-local ScrollingTextLabel = Instance.new("TextLabel")
-ScrollingTextLabel.BackgroundTransparency = 1
-ScrollingTextLabel.BorderSizePixel = 0
-ScrollingTextLabel.TextColor3 = Color3.fromRGB(255, 133, 51)
-ScrollingTextLabel.Size = UDim2.fromScale(1, 1)
-ScrollingTextLabel.Position = UDim2.fromOffset(-24, 0)
-ScrollingTextLabel.Text = "Scrolling Text"
-ScrollingTextLabel.Font = Enum.Font.SourceSans
-ScrollingTextLabel.TextXAlignment = Enum.TextXAlignment.Center
-ScrollingTextLabel.TextSize = 24
-ScrollingTextLabel.Parent = ScrollingTextHolder
-table.insert(UIElements.ContrastLabels, ScrollingTextLabel)
-
-local ScrollingTextToggle = PseudoInstance.new("Checkbox")
-ScrollingTextToggle.PrimaryColor3 = Color3.fromRGB(255, 133, 51)
-ScrollingTextToggle.AnchorPoint = Vector2.new(1, 0.5)
-ScrollingTextToggle.Position = UDim2.new(0.5, VisualizeSpecialLabel.TextBounds.X / 2 + 12, 0.5, 0)
-ScrollingTextToggle.Checked = UITemplates.ScrollingText
-ScrollingTextToggle.Parent = ScrollingTextHolder
-table.insert(UIElements.Toggles, ScrollingTextToggle)
-
-ScrollingTextToggle.OnChecked:Connect(function(State)
-	plugin:SetSetting("ScrollingText", State)
-	UITemplates.ScrollingText = State
-end)
-
-RequiredMatsButton.OnPressed:Connect(function()
-
+local function GetRequiredMaterialsButton()
 	local Required = {
-			['Raw Materials'] = {},
-			['All Parts'] = {}
-		}
+		['Raw Materials'] = {},
+		['All Parts'] = {}
+	}
 	local PartAmount = 0
-	
+
 	local function AddAmount(Part, Amount, Category)
 		if not Part or (typeof(Part) ~= 'string') and not Part:IsA("BasePart") then return end
 		if not Required[Category] then return end
@@ -1461,31 +1352,153 @@ RequiredMatsButton.OnPressed:Connect(function()
 		end
 	end
 
-	warn('\n[MB:E:E] PART AMOUNT:', PartAmount, '\n[MB:E:E] CALCULATED CREATION REQUIREMENTS:\n', repr(Required, {pretty=true}))
-	
-end)
-
-local VersionSort = Instance.new("UIListLayout")
-VersionSort.SortOrder = Enum.SortOrder.LayoutOrder
-VersionSort.Parent = VersionScroll
-
-for ColorName, Color in Colors do
-	local ColorTextBox = UITemplates.UITemplatesCreateTextBox(
-		{
-			Name = ColorName,
-			LabelText = ColorName .. " Color",
-			BoxText = table.concat({math.round(255 * Color.R), math.round(255 * Color.G), math.round(255 * Color.B)}, ", "),
-			BoxPlaceholderText = "RGB Color (255, 255, 255)",
-			Parent = VersionScroll,
-		})
-
-	ColorTextBox.Box.FocusLost:Connect(function()
-		local newColor = ExtractedUtil.StringToColor3(ColorTextBox.Box.Text)
-		Colors[ColorName] = newColor
-		plugin:SetSetting(ColorName .. "Color", ColorTextBox.Box.Text)
-		UITemplates.SyncColors()
-	end)
+	Logger.print("Part Amount:", PartAmount)
+	Logger.print("Calculated Creation Requirements:\n", repr(Required, {pretty=true}))
 end
+
+-- Eventually `ConfigList` will be removed when fusion is more prevasive
+-- Configure part Widget
+local ConfigList = scope:ScrollingFrame {
+	ScrollingDirection = "Y",
+	BackgroundTransparency = 0,
+	ListPadding = UDim.new(0, 1),
+}
+scope:New "Frame" {
+	Size = UDim2.fromScale(1, 1),
+	Parent = ConfigWidget,
+	BackgroundColor3 = THEME.COLORS.MainBackground,
+	[Children] = {
+		ConfigList,
+	}
+}
+
+----==== Plugin Settings Widget ====----
+local function SettingGroup(
+	scope: Fusion.Scope<typeof(Fusion)>,
+	props: {
+		[typeof(Children)]: Fusion.Child,
+	}
+): Fusion.Child
+	local scope = scope:innerScope({
+		Container = require(Components.Container),
+		UIListLayout = require(Components.UIListLayout),
+	})
+	return scope:Container {
+		BackgroundTransparency = 1,
+		Layout = {
+			AutomaticSize = Enum.AutomaticSize.Y,
+			Size = UDim2.fromScale(1, 0),
+		},
+		[Children] = {
+			scope:UIListLayout {
+				SortOrder = Enum.SortOrder.Name
+			},
+			props[Children],
+		}
+	}
+end
+scope:Container {
+	Parent = SettingsWidget,
+	[Children] = {
+		scope:ScrollingFrame {
+			ScrollingDirection = "Y",
+			ListPadding = UDim.new(0, 4),
+			BackgroundTransparency = 1,
+			[Children] = {
+				-- Action buttons
+				SettingGroup(scope, {
+					[Children] = {
+						scope:RippleButton {
+							Label = "Select Compiler",
+							Style = "Outlined",
+							OnPressed = SelectCompilerButton,
+						},
+						scope:RippleButton {
+							Label = "Get Required Materials for Selection",
+							Style = "Outlined",
+							OnPressed = GetRequiredMaterialsButton,
+						},
+						scope:RippleButton {
+							Label = "Migrate Selection",
+							Style = "Outlined",
+							OnPressed = MigrateSelectionButton,
+						},
+						scope:RippleButton {
+							Label = "Migrate Configurables",
+							Style = "Outlined",
+							OnPressed = MigrateConfigurablesButton,
+						},
+					}
+				}),
+
+				scope:Divider {},
+
+				-- Settings
+				SettingGroup(scope, {
+					[Children] = scope:ForPairs(PluginSettings, function(use, scope: typeof(scope), key, value)
+						local setting = PluginSettingsModule.Info[key]
+
+						if setting.Type == "boolean" then
+							return key, scope:CheckBox {
+								Label = setting.Key,
+								Checked = value,
+							}
+						else
+							return key, scope:TextBox {
+								Label = setting.Key,
+								Text = value,
+							}
+						end
+					end),
+				}),
+
+				scope:Divider {},
+
+				scope:RippleButton {
+					Label = "Reset Colors",
+					Style = "Outlined",
+					OnPressed = function()
+						THEME.Set("Classic")
+					end,
+				},
+				SettingGroup(scope, {
+					[Children] = {
+		
+						-- Color Settings
+						-- TODO: fix formatting
+						scope:ForPairs(THEME.COLORS, function(use, scope: typeof(scope), key, value: Fusion.Value<Color3>)
+							local box_value = scope:Value(ExtractedUtil.Color3ToString(peek(value)))
+							scope:Observer(box_value):onChange(function()
+								local new_color = ExtractedUtil.StringToColor3(peek(box_value))
+								if new_color then
+									value:set(new_color)
+								end
+							end)
+							return key, scope:TextBox {
+								Label = key,
+								Text = box_value,
+								BoxPlaceholderText = scope:Computed(function(use)
+									return `RGB Color ({ExtractedUtil.Color3ToString(use(value))})`
+								end),
+								Box = {
+									TextColor3 = scope:Computed(function(use)
+										return ExtractedUtil.ContrastColor(use(value))
+									end),
+									BackgroundColor3 = value
+								},
+								Layout = {
+									LayoutOrder = 100 + key:byte(1, 1) :: number + key:byte(2, 2) :: number * 26
+								},
+							}
+						end)
+					}
+				}),
+			}
+		}
+	}
+}
+
+
 
 for _, Part in pairs(script.Parts:GetChildren()) do
 	UITemplates.CreateObjectButton({Part = Part, Parent = ResultsFrame})
@@ -1515,7 +1528,7 @@ end
 
 ResultsFrame.CanvasSize = UDim2.new(0, 0, 0, #script.Parts:GetChildren() * 20)
 
-BG.Parent = Widget
+BG.Parent = PrimaryWidget
 
 
 
@@ -1528,7 +1541,7 @@ CompilerSettings.ButtonText = "Compiler"
 CompilerSettings.ButtonIcon = "rbxassetid://97909283646131" -- MBEE
 CompilerSettings.ButtonTooltip = "WoS Compiler."
 CompilerSettings.ClickedFn = function()
-	Widget.Enabled = not Widget.Enabled
+	PrimaryWidget.Enabled = not PrimaryWidget.Enabled
 	for i,v in pairs(Adornees) do
 		if v.M then
 			v.M:Destroy()
@@ -1555,10 +1568,10 @@ end
 createSharedToolbar(plugin, ConfigureSettings)
 
 VersionLabel.MouseButton1Click:Connect(function()
-	VersionSelectWidget.Enabled = not VersionSelectWidget.Enabled
+	SettingsWidget.Enabled = not SettingsWidget.Enabled
 end)
 
---[[local MaterialValues = 
+--[[local MaterialValues =
 	{
 		["Filter"] = true,
 		["TempType"] = true,
@@ -1656,16 +1669,16 @@ local function createConfigHolder(HeaderText: string)
 	List.Parent = Holder
 
 	HeaderLabel.Parent = Holder
-	
+
 	local pad = Instance.new("UIPadding")
 	pad.PaddingBottom = UDim.new(0, 6)
 	pad.PaddingLeft = UDim.new(0, 12)
 	pad.PaddingRight = UDim.new(0, 12)
 	pad.Parent = Holder
-	
+
 	Holder.AutomaticSize = Enum.AutomaticSize.Y
 	Holder.Size = UDim2.new(1, 0, 0, 0)
-	
+
 	return Holder, HeaderLabel
 end
 
@@ -1788,7 +1801,7 @@ local function CreateConfigElementsForInstance(
 			if config_type == "string" then
 				-- Strings like sign text
 				GenericTextBox("Text [string]")
-		
+
 			-- TODO: Better parsing and handling of these in the future?
 			elseif config_type == "Color3" then
 				GenericTextBox("0,0,0 [Color3]")
@@ -1808,11 +1821,11 @@ local function CreateConfigElementsForInstance(
 					LabelText = config_name,
 					ToggleValue = config_instance.Value,
 				})
-		
+
 				ExtractedUtil.BindToEventWithUndo(Check.Toggle.OnChecked, "Configure", nil, function(On)
 					ApplyConfigurationValues(associated_base_part_key, associated_base_part, config_instance, On)
 				end)
-		
+
 				toSync = {Labels = {Check.Label}, Toggles = {Check.Toggle}}
 				Check.Holder.Parent = output_container
 
@@ -1835,7 +1848,7 @@ local function CreateConfigElementsForInstance(
 			if GENERATED_BOX and SpecialMaterialValues[config_name] then
 				SpecialMaterialValues[config_name](GENERATED_BOX, config_instance)
 			end
-		
+
 			UITemplates.SyncColors(toSync)
 		end
 	end, function(err)
@@ -1858,7 +1871,7 @@ local function CreateResourceConfigElement(
 	})
 
 	UITemplates.ConnectBoxToAutocomplete(TextBox.Box, script.Parts:GetChildren())
-	
+
 	-- On Resource config changed
 	ExtractedUtil.BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()
 		ExtractedUtil.ApplyTemplates(ConfigValues[instance_key], TextBox.Box.Text)
@@ -1949,7 +1962,7 @@ local function AddConfigItem(Item: BasePart)
 			CreateConfigElementsForInstance(configContainer, component, "Components")
 			configContainer.Parent = primaryConfigContainer
 		end
-		
+
 		UITemplates.SyncColors({Labels = configLabels, Frames = configContainers})
 		primaryConfigContainer.Parent = ConfigList
 		table.insert(Configs, primaryConfigContainer)
@@ -1959,122 +1972,259 @@ local function AddConfigItem(Item: BasePart)
 	table.insert(ConfigValues[ItemIdentifier], Item)
 end
 
-local SurfacesTypeNames = {}
-for _, SurfaceType in Enum.SurfaceType:GetEnumItems() do
-	SurfacesTypeNames[SurfaceType.Name] = SurfaceType.Name
-end
+--------------------------
+-- Face selection thing --
+--------------------------
+-- Function
+local UpdateFaceSelectionViewport;do
 
-local SelectionFaces = {}
+	local FACES = {"Front", "Back", "Top", "Bottom", "Right", "Left"}
 
-local FaceSelectionHolder = Instance.new("Frame")
-FaceSelectionHolder.Size = UDim2.new(1, 0, 0, 120)
-FaceSelectionHolder.Visible = false
-table.insert(UIElements.Frames, FaceSelectionHolder)
-
-local ShowSurfaceSelector = plugin:GetSetting("ShowSurfaceSelector") or true
-
-local ShowSurfaceSelectorHolder = Instance.new("Frame")
-ShowSurfaceSelectorHolder.BackgroundTransparency = 1
-ShowSurfaceSelectorHolder.Size = UDim2.new(1, 0, 0, 32)
-ShowSurfaceSelectorHolder.Parent = VersionScroll
-table.insert(UIElements.Frames, ShowSurfaceSelectorHolder)
-
-local ShowSurfaceSelectorLabel = Instance.new("TextLabel")
-ShowSurfaceSelectorLabel.BackgroundTransparency = 1
-ShowSurfaceSelectorLabel.BorderSizePixel = 0
-ShowSurfaceSelectorLabel.TextColor3 = Color3.fromRGB(255, 133, 51)
-ShowSurfaceSelectorLabel.Size = UDim2.fromScale(1, 1)
-ShowSurfaceSelectorLabel.Position = UDim2.fromOffset(-24, 0)
-ShowSurfaceSelectorLabel.Text = "Show Surface Selector"
-ShowSurfaceSelectorLabel.Font = Enum.Font.SourceSans
-ShowSurfaceSelectorLabel.TextXAlignment = Enum.TextXAlignment.Center
-ShowSurfaceSelectorLabel.TextSize = 24
-ShowSurfaceSelectorLabel.Parent = ShowSurfaceSelectorHolder
-table.insert(UIElements.ContrastLabels, ShowSurfaceSelectorLabel)
-
-local ShowSurfaceSelectorToggle = PseudoInstance.new("Checkbox")
-ShowSurfaceSelectorToggle.PrimaryColor3 = Color3.fromRGB(255, 133, 51)
-ShowSurfaceSelectorToggle.AnchorPoint = Vector2.new(1, 0.5)
-ShowSurfaceSelectorToggle.Position = UDim2.new(0.5, VisualizeSpecialLabel.TextBounds.X / 2 + 12, 0.5, 0)
-ShowSurfaceSelectorToggle.Checked = ShowSurfaceSelector
-ShowSurfaceSelectorToggle.Parent = ShowSurfaceSelectorHolder
-table.insert(UIElements.Toggles, ShowSurfaceSelectorToggle)
-
-ShowSurfaceSelectorToggle.OnChecked:Connect(function(On)
-	ShowSurfaceSelector = On
-	plugin:SetSetting("ShowSurfaceSelector", On)
-	FaceSelectionHolder.Visible = On and #Selection:Get() > 0
-end)
-
-local FaceSelectionCamera = Instance.new("Camera")
-FaceSelectionCamera.FieldOfView = 15
-FaceSelectionCamera.Parent = FaceSelectionHolder
-
-local FaceSelectionViewport = Instance.new("ViewportFrame")
-FaceSelectionViewport.Size = UDim2.new(0.75, 0, 1, 0)
-FaceSelectionViewport.AnchorPoint = Vector2.new(0, 0.5)
-FaceSelectionViewport.Position = UDim2.new(0, 0, 0.5, 0)
-FaceSelectionViewport.CurrentCamera = FaceSelectionCamera
-FaceSelectionViewport.BackgroundTransparency = 1
-FaceSelectionViewport.Parent = FaceSelectionHolder
-
-local FaceSelectionSizeKeeper = Instance.new("UIAspectRatioConstraint")
-FaceSelectionSizeKeeper.DominantAxis = Enum.DominantAxis.Height
-FaceSelectionSizeKeeper.Parent = FaceSelectionViewport
-
-local FaceSelectionPart = Instance.new("Part")
-FaceSelectionPart.Anchored = true
-FaceSelectionPart.Size = Vector3.new(2, 2, 2)
-FaceSelectionPart.Parent = FaceSelectionViewport
-
-local FaceSelectionPartIndicator = Instance.new("Part")
-FaceSelectionPartIndicator.Anchored = true
-FaceSelectionPartIndicator.Size = Vector3.new(1, 1, 1)
-FaceSelectionPartIndicator.Color = Colors.MainContrast
-FaceSelectionPartIndicator.Parent = FaceSelectionViewport
-table.insert(UIElements.ColoredObjects, FaceSelectionPartIndicator)
-
-local FaceSelectionTab = UITemplates.UITemplatesCreateTextBox(
-	{
-		Name = "FaceSelectionTab",
-		LabelText = "Unknown",
-		LabelTextScaled = true,
-		BoxText = "Undefined",
-		HolderSize = UDim2.new(1, -24, 0, 30),
-		HolderPosition = UDim2.new(1, -12, 0.5, 0),
-		HolderAnchorPoint = Vector2.new(1, 0.5),
-		LabelUIElement = "FloatingLabels",
-		Parent = FaceSelectionHolder,
-
-	})
-
-FaceSelectionTab.Label.TextStrokeTransparency = 0
-UITemplates.CreateTipBoxes(FaceSelectionTab.Box, SurfacesTypeNames)
-
-local function ToCubeSpace(Part, TargetCF)
-	local Scale = math.min(Part.Size.X, Part.Size.Y, Part.Size.Z)
-	local SizeRedux = Vector3.new(Scale, Scale, Scale) / Part.Size
-	return Part.CFrame * CFrame.new(Part.CFrame:ToObjectSpace(TargetCF).Position * SizeRedux)
-end -- ty articlize
-
-FaceSelectionTab.Box:GetPropertyChangedSignal("Text"):Connect(function()
-	if not SurfacesTypeNames[FaceSelectionTab.Box.Text] then return end
-	local function ChangeObjects(Objects)
-		for _, Object in Objects do
-			if Object:IsA("BasePart") then
-				Object[FaceSelectionTab.Label.Text .. "Surface"] = Enum.SurfaceType[FaceSelectionTab.Box.Text]
-			else
-				ChangeObjects(Object:GetChildren())
-			end
+	-- Name of every surface (like Universal or Smooth)
+	local SURFACE_TYPE_NAMES = {}; do
+		local exclude = {
+			Enum.SurfaceType.Weld,
+			Enum.SurfaceType.Glue,
+			Enum.SurfaceType.SteppingMotor,
+		}
+		for _, SurfaceType in Enum.SurfaceType:GetEnumItems() do
+			if table.find(exclude, SurfaceType) then continue end
+			SURFACE_TYPE_NAMES[SurfaceType.Name] = SurfaceType.Name
 		end
 	end
-	ChangeObjects(Selection:Get())
-	SelectionFaces[FaceSelectionTab.Label.Text] = Enum.SurfaceType[FaceSelectionTab.Box.Text]
-	FaceSelectionPart[FaceSelectionTab.Label.Text .. "Surface"] = Enum.SurfaceType[FaceSelectionTab.Box.Text]
-end)
 
-FaceSelectionHolder.Parent = ConfigList
+	local MAP_SURFACE_NAME_TO_ENUM = {}; do
+		for _, surface_type in Enum.SurfaceType:GetEnumItems() do
+			MAP_SURFACE_NAME_TO_ENUM[surface_type.Name] = surface_type
+		end
+	end
 
+	--- Part that is currently being mirrored to the viewport frame
+	local selected_part = scope:Value(nil :: BasePart?)
+	
+	--- CFrame of the local player's camera
+	local camera_cframe = scope:Value(Camera.CFrame)
+	table.insert(scope, Camera:GetPropertyChangedSignal("CFrame"):Connect(function()
+		camera_cframe:set(Camera.CFrame)
+	end))
+	
+	--- Computed cframe for the viewport frame camera
+	local viewport_camera_cframe = scope:Computed(function(use)
+		local block = use(selected_part)
+		if not block then return CFrame.identity end
+		return use(camera_cframe).Rotation * CFrame.new(0, 0, 4 * block.Size.Magnitude)
+	end)
+	local viewport_camera = scope:New "Camera" {
+		FieldOfView = 15,
+		CFrame = viewport_camera_cframe,
+	} :: Fusion.Child
+
+	--- Faces of currently selected part
+	--- Maps Front/Back/etc to Universal/Weld/etc
+	local SelectionFaces = scope:Value({})
+	
+	-- Update currently selected faces list
+	table.insert(scope, Selection.SelectionChanged:Connect(function()
+		if peek(selected_part) == nil then return end
+
+		local faces = {}
+		local selected_parts = Selection:Get()
+
+		for _, face_name in FACES do
+			for _, part in selected_parts do
+				if not part:IsA("BasePart") then continue end
+				local face_type = part[face_name .. "Surface"].Name
+				if faces[face_name] and faces[face_name] ~= face_type then
+					faces[face_name] = "*"
+					break
+				else
+					faces[face_name] = face_type
+				end
+			end
+		end
+
+		SelectionFaces:set(faces)
+	end))
+
+	-- Face (Top/Left/etc) as string that is closest to the viewport frame camera
+	local closest_face = scope:Computed(function(use)
+		local cam_pos = use(viewport_camera_cframe).Position
+		local closest_dist = math.huge
+		local closest_face
+		for _, face in FACES do
+			local axis = Vector3.fromNormalId(face :: any)
+			local distance = (cam_pos - axis).Magnitude
+			if distance < closest_dist then
+				closest_dist = distance
+				closest_face = face
+			end
+		end
+		return closest_face
+	end)
+
+	-- `closest_face` as a Vector3
+	local closest_face_axis = scope:Computed(function(use)
+		return Vector3.fromNormalId(use(closest_face) :: any)
+	end)
+
+	local face_selection_indicator_size = scope:Computed(function(use)
+		local part = use(selected_part)
+		if not part then return Vector3.one end
+
+		local axis = use(closest_face_axis):Abs()
+		local axis_mask = (axis - Vector3.one):Abs()
+		local plate_thickness = 0.05
+		local shrink_amount = 0.1
+		return (part.Size - Vector3.one * shrink_amount) * axis_mask + axis * plate_thickness
+	end)
+
+	local function OnTextChange(surface_type_name: string)
+		local surface_type = MAP_SURFACE_NAME_TO_ENUM[surface_type_name]
+		if not surface_type then return end
+	
+		local current_face_name = peek(closest_face)
+	
+		-- Apply new surface to every selected part's face
+		local function TryApplySurface(part: BasePart)
+			if part:IsA("BasePart") then
+				part[current_face_name .. "Surface"] = surface_type
+			end
+		end
+		for _, instance in Selection:Get() do
+			TryApplySurface(instance)
+			for _, instance in instance:GetDescendants() do
+				TryApplySurface(instance)
+			end
+		end
+	
+		-- Update SelectionFaces value with the new surface type at the given face
+		local _SelectionFaces = peek(SelectionFaces)
+		_SelectionFaces[current_face_name] = surface_type.Name
+		SelectionFaces:set(_SelectionFaces)
+	end
+
+	--- Generate higher order computed that is always equal to the input face's surface type
+	local function SurfaceSyncer(face_name: string)
+		return scope:Computed(function(use)
+			-- Get correct surface type. If type is nil, return Universal as default
+			local surface_type = use(SelectionFaces)[face_name]
+			-- When multiple parts are selected and have
+			-- different types for the same face
+			-- it will be *
+			-- In that case, just show a smooth "blank" surface
+			if surface_type == "*" then
+				return Enum.SurfaceType.Smooth
+
+			-- Rare edge case that can be hit on initialization
+			elseif surface_type == nil then
+				return Enum.SurfaceType.Universal
+			end
+
+			-- By now `surface_type` should be garunteed to be a valid surface
+			-- that all the selected parts share on this face
+			return surface_type :: any
+		end)
+	end
+
+	scope:New "Frame" {
+		Name = "FaceSelectionHolder",
+		Size = UDim2.new(1, 0, 0, 120),
+		Visible = scope:Computed(function(use)
+			return use(PluginSettings.ShowSurfaceSelector) and use(selected_part) ~= nil
+		end),
+		BackgroundColor3 = THEME.COLORS.MainBackground,
+		Parent = ConfigList,
+		[Children] = {
+			viewport_camera,
+			scope:New "ViewportFrame" {
+				Size = UDim2.fromScale(0.75, 1),
+				CurrentCamera = viewport_camera,
+				BackgroundTransparency = 1,
+				[Children] = {
+					scope:New "UIAspectRatioConstraint" {
+						DominantAxis = Enum.DominantAxis.Height,
+					},
+					-- FaceSelectionPart
+					scope:New "Part" {
+						Name = "FaceSelectionPart",
+						Size = scope:Computed(function(use)
+							part = use(selected_part)
+							if not part then return Vector3.one*2 end
+							return part.Size
+						end),
+						CFrame = scope:Computed(function(use)
+							part = use(selected_part)
+							if not part then return CFrame.identity end
+							return part.CFrame.Rotation
+						end),
+
+						-- cursed
+						FrontSurface = SurfaceSyncer("Front"),
+						BackSurface = SurfaceSyncer("Back"),
+						TopSurface = SurfaceSyncer("Top"),
+						BottomSurface = SurfaceSyncer("Bottom"),
+						RightSurface = SurfaceSyncer("Right"),
+						LeftSurface = SurfaceSyncer("Left"),
+					},
+					-- FaceSelectionPartIndicator
+					scope:New "Part" {
+						Color = THEME.COLORS.MainContrast,
+						Size = face_selection_indicator_size,
+						CFrame = scope:Computed(function(use)
+							local size = use(face_selection_indicator_size)
+							local part = use(selected_part)
+							if not part then return CFrame.identity end
+							local selected_rotation = part.CFrame.Rotation
+							local target_cf = selected_rotation + use(closest_face_axis) * part.Size / 2
+							-- To cube space
+							-- No idea what it does
+							-- by articlize
+							local Scale = math.min(size.X, size.Y, size.Z)
+							local SizeRedux = Vector3.new(Scale, Scale, Scale) / size
+							return selected_rotation * CFrame.new(selected_rotation:ToObjectSpace(target_cf).Position * SizeRedux)
+						end),
+						-- cursed
+						FrontSurface = SurfaceSyncer("Front"),
+						BackSurface = SurfaceSyncer("Back"),
+						TopSurface = SurfaceSyncer("Top"),
+						BottomSurface = SurfaceSyncer("Bottom"),
+						RightSurface = SurfaceSyncer("Right"),
+						LeftSurface = SurfaceSyncer("Left"),
+					},
+				}
+			},
+			-- Face change text box
+			scope:TextBox {
+				Text = scope:Computed(function(use)
+					return use(SelectionFaces)[use(closest_face)] or "Undefined"
+				end),
+				onTextChange = OnTextChange,
+
+				Label = scope:Computed(function(use)
+					return use(closest_face)
+				end),
+
+				Options = SURFACE_TYPE_NAMES,
+				Layout = {
+					Size = UDim2.new(1, -24, 0, 30),
+					Position = UDim2.new(1, -12, 0.5, 0),
+					AnchorPoint = Vector2.new(1, 0.5),
+				}
+			},
+		}
+	}
+
+	UpdateFaceSelectionViewport = function()
+		for _, instance in Selection:Get() do
+			if instance:IsA("BasePart") then
+				selected_part:set(instance)
+				return
+			end
+		end
+		selected_part:set(nil)
+	end
+end
+--- end ---
 
 -- Add component button and dropdown
 local ComponentSelectionHolder = Instance.new("Frame")
@@ -2104,29 +2254,27 @@ AddComponentButton.LayoutOrder = 5
 AddComponentButton.Parent = ComponentSelectionHolder
 table.insert(UIElements.Buttons, AddComponentButton)
 
-local ComponentSelectionTab = UITemplates.UITemplatesCreateTextBox(
-	{
-		Name = "ComponentSelectionTab",
-		LabelText = "",
-		LabelTextScaled = true,
-		BoxText = "",
-		BoxPlaceholderText = "Component",
-		BoxSize = UDim2.new(0.5, -4, 1, 0),
-		BoxPosition = UDim2.new(0, 4, 0, 0),
-		HolderSize = UDim2.new(0.5, 0, 1, 0),
-		HolderPosition = UDim2.new(0.5, 0, 0, 0),
-		HolderAnchorPoint = Vector2.new(0, 0),
-		LabelUIElement = "FloatingLabels",
-		Parent = ComponentSelectionHolder,
-
-	})
+local ComponentSelectionTab = UITemplates.UITemplatesCreateTextBox({
+	Name = "ComponentSelectionTab",
+	LabelText = "",
+	LabelTextScaled = true,
+	BoxText = "",
+	BoxPlaceholderText = "Component",
+	BoxSize = UDim2.new(0.5, -4, 1, 0),
+	BoxPosition = UDim2.new(0, 4, 0, 0),
+	HolderSize = UDim2.new(0.5, 0, 1, 0),
+	HolderPosition = UDim2.new(0.5, 0, 0, 0),
+	HolderAnchorPoint = Vector2.new(0, 0),
+	LabelUIElement = "FloatingLabels",
+	Parent = ComponentSelectionHolder,
+})
 ComponentSelectionTab.Label.TextStrokeTransparency = 0
 
 -- If part is left
 function AddComponentToPart(part: BasePart, componentName: string)
 	-- Check if component already exists
 	if part:FindFirstChild(componentName) then return end
-	
+
 	-- Grab component
 	local component
 	for _, c in CompilersModule:GetComponents() do
@@ -2137,76 +2285,31 @@ function AddComponentToPart(part: BasePart, componentName: string)
 	end
 
 	if component == nil then return end
-	
+
 	component:Clone().Parent = part
 end
 
 AddComponentButton.OnPressed:Connect(function()
 	local componentName = ComponentSelectionTab.Box.Text
 	-- Add component to parts
-	ForeachSelectedPart(function(selected: BasePart) 
+	ForeachSelectedPart(function(selected: BasePart)
 		AddComponentToPart(selected, componentName)
 	end)
-	
+
 	-- Update part selection GUI
 	RefreshSelection()
 end)
 
-
-
-local function UpdateFaceSelectionViewport()
-
-	local Part = #Selection:Get() == 1 and Selection:Get()[1]:IsA("BasePart") and Selection:Get()[1]
-
-	local PartSize, PartCFrame
-	if Part then
-		PartSize, PartCFrame = Part.Size, Part.CFrame
-	else
-		PartSize, PartCFrame = Vector3.new(2, 2, 2), CFrame.new()
-	end
-
-	FaceSelectionCamera.CFrame = Camera.CFrame.Rotation * CFrame.new(0, 0, 4 * PartSize.Magnitude)
-	FaceSelectionPart.CFrame = PartCFrame.Rotation
-	FaceSelectionPart.Size = PartSize
-
-	local Distance, CurrentFace, CurrentVector, Size, Offset = math.huge, nil
-	for Vector, Face in 
-		{
-			[PartCFrame.LookVector] = 	{"Front", 	Vector3.new(PartSize.X - 0.1, PartSize.Y - 0.1, 0.05), PartSize.Z},
-			[-PartCFrame.LookVector] = 	{"Back", 	Vector3.new(PartSize.X - 0.1, PartSize.Y - 0.1, 0.05), PartSize.Z},
-			[PartCFrame.UpVector] = 	{"Top", 	Vector3.new(PartSize.X - 0.1, 0.05, PartSize.Z - 0.1), PartSize.Y},
-			[-PartCFrame.UpVector] = 	{"Bottom",	Vector3.new(PartSize.X - 0.1, 0.05, PartSize.Z - 0.1), PartSize.Y},
-			[PartCFrame.RightVector] = 	{"Right", 	Vector3.new(0.05, PartSize.Y - 0.1, PartSize.Z - 0.1), PartSize.X},
-			[-PartCFrame.RightVector] = {"Left", 	Vector3.new(0.05, PartSize.Y - 0.1, PartSize.Z - 0.1), PartSize.X},
-		} do
-
-		local _Distance = (FaceSelectionCamera.CFrame.Position - Vector).Magnitude
-		if _Distance > Distance then continue end
-		Distance, CurrentFace, CurrentVector, Size, Offset = _Distance, Face[1], Vector, Face[2], Face[3]
-
-	end
-
-	FaceSelectionPartIndicator.CFrame = PartCFrame.Rotation
-	FaceSelectionPartIndicator.CFrame = ToCubeSpace(FaceSelectionPartIndicator, FaceSelectionPart.CFrame + CurrentVector * (Offset / 2))
-	FaceSelectionPartIndicator.Size = Size
-
-	FaceSelectionTab.Label.Text = CurrentFace
-	FaceSelectionTab.Box.Text = SelectionFaces[CurrentFace] and SelectionFaces[CurrentFace].Name or SelectionFaces[CurrentFace] or "Undefined"
-
-end
-
-local FaceRender
-
 local function Adjust(Object)
 	if Object:IsA("BasePart") then AddConfigItem(Object) end
-	if VisualizeSpecial and SpecialParts[Object.Name] then SpecialParts[Object.Name](Object) end
+	if peek(PluginSettings.VisualizeSpecial) and SpecialParts[Object.Name] then SpecialParts[Object.Name](Object) end
 	if Object:FindFirstChild("ColorCopy") then
 		ApplyColorCopy(Object)
 		table.insert(TemporaryConnections, Object:GetPropertyChangedSignal("Color"):Connect(function()
 			ApplyColorCopy(Object)
 		end))
 	end
-end	
+end
 
 function RefreshSelection()
 
@@ -2221,16 +2324,16 @@ function RefreshSelection()
 	end
 
 	ConfigValues = {}
-	
+
 	local SelectedParts = ExtractedUtil.SearchTableWithRecursion(Selection:Get(), function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end)
-	
+
 	CheckTableMalleability(SelectedParts)
 	CheckTableOverlap(SelectedParts)
-	
+
 	for _, Selected in SelectedParts do
 		Adjust(Selected)
 	end
-	
+
 	-- Create the button and dropdown for adding components
 	if #Selection:Get() > 0 then
 		UITemplates.CreateTipBoxes(ComponentSelectionTab.Box, CompilersModule:GetComponents())
@@ -2238,54 +2341,10 @@ function RefreshSelection()
 	else
 		ComponentSelectionHolder.Visible = false
 	end
-	
-	if not ShowSurfaceSelector then return end
 
-	if #Selection:Get() > 0 then
-		SelectionFaces = {}
-		local function GetFaces(Objects)
-			for _, Object in Objects do
-				for _, Face in Enum.NormalId:GetEnumItems() do
-					if SelectionFaces[Face.Name] and SelectionFaces[Face.Name] ~= Object[Face.Name .. "Surface"] then
-						SelectionFaces[Face.Name] = "*"
-						FaceSelectionPart[Face.Name .. "Surface"] = Enum.SurfaceType.Smooth
-						FaceSelectionPartIndicator[Face.Name .. "Surface"] = Enum.SurfaceType.Smooth
-					else
-						SelectionFaces[Face.Name] = Object[Face.Name .. "Surface"]
-						FaceSelectionPart[Face.Name .. "Surface"] = Object[Face.Name .. "Surface"]
-						FaceSelectionPartIndicator[Face.Name .. "Surface"] = Object[Face.Name .. "Surface"]
-					end
-				end
-			end
-		end
-
-		GetFaces(ExtractedUtil.SearchTableWithRecursion(Selection:Get(), function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end))
-		UpdateFaceSelectionViewport()
-		FaceSelectionHolder.Visible = true
-
-		TemporaryConnections["FaceRenderCamera"] = Camera:GetPropertyChangedSignal("CFrame"):Connect(function()
-			GetFaces(ExtractedUtil.SearchTableWithRecursion(Selection:Get(), function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end))
-			UpdateFaceSelectionViewport()
-		end)
-
-		if #Selection:Get() ~= 1 then return end
-		if not Selection:Get()[1]:IsA("BasePart") then return end
-
-		TemporaryConnections["FaceRenderPartCFrame"] = Selection:Get()[1]:GetPropertyChangedSignal("CFrame"):Connect(function()
-			GetFaces(Selection:Get())
-			UpdateFaceSelectionViewport()
-		end)
-	else
-		FaceSelectionHolder.Visible = false
-	end
-
+	if not peek(PluginSettings.ShowSurfaceSelector) then return end
+	UpdateFaceSelectionViewport()
 end
-
-VisualizeSpecialToggle.OnChecked:Connect(function(On)
-	VisualizeSpecial = On
-	plugin:SetSetting("VisualizeSpecial", On)
-	RefreshSelection()
-end)
 
 Selection.SelectionChanged:Connect(RefreshSelection)
 
@@ -2325,12 +2384,12 @@ CompileButton.OnPressed:Connect(function()
 	local recordingId = ChangeHistoryService:TryBeginRecording("MBEECompile", "Compile Model")
 
 	local success, err = pcall(function()
-		if ReplaceCompiles then
+		if peek(PluginSettings.ReplaceCompiles) then
 			ClearScriptsOfName("MBEOutput")
 			ClearScriptsOfName("MBEEOutput")
 		end
 
-		if ReplaceUploads then
+		if peek(PluginSettings.ReplaceUploads) then
 			ClearScriptsOfName("MBEOutput_Upload")
 			ClearScriptsOfName("MBEEOutput_Upload")
 		end
@@ -2338,7 +2397,7 @@ CompileButton.OnPressed:Connect(function()
 		Logger.print("COLLECTING PARTS...")
 		local SelectionParts, SelectionVectors, SelectionCFrames = GetSelection()
 		Logger.print(`{#SelectionParts} PARTS COLLECTED`)
-		
+
 		-- Fill in random configs (gets reverted after compilation)
 		local function generateRandId()
 			-- Max is 64 https://discord.com/channels/616089055532417036/685118583713562647/1296564993679953931
@@ -2359,7 +2418,7 @@ CompileButton.OnPressed:Connect(function()
 			-- format: `%<number>` eg: %2
 			if not value:IsA("StringValue") then return end	-- Only run on string values
 			if not (value.Value:sub(1, 1) == "%") then return end -- Only run on ones that match format
-			
+
 			valuesToRevert[value] = value.Value
 			local id = value.Value:sub(2, -1)
 
@@ -2388,20 +2447,20 @@ CompileButton.OnPressed:Connect(function()
 		end
 		for _, part in SelectionParts do
 			for _, child: Configuration|ValueBase in part:GetChildren() do
-				
+
 				if child:IsA("Configuration") then
 					for _, configValue in child:GetChildren() do
 						if not configValue:IsA("ValueBase") then continue end
 						HandleValue(configValue)
 					end
 				end
-				
+
 				if child:IsA("ValueBase") then
 					HandleValue(child)
 				end
 			end
 		end
-		
+
 
 		--calculate offset
 		local BoundingCF, BoundingSize = ExtractedUtil.GetBoundingBox(SelectionParts)
@@ -2417,9 +2476,9 @@ CompileButton.OnPressed:Connect(function()
 		local startCompile = tick()
 		local encoded = CompilersModule:GetSelectedCompiler():Compile(SelectionParts, compilerSettings)
 		local Compilation = HttpService:JSONEncode(encoded)
-		
+
 		Logger.print("FIXING PARTSHIFT")
-		
+
 		-- Hacky solution to fix part shift & unanchored parts
 		local fixedCount = 0
 		for i, part in SelectionParts do
@@ -2436,12 +2495,12 @@ CompileButton.OnPressed:Connect(function()
 			part.Anchored = true
 			part.CFrame = SelectionCFrames[i]
 		end
-		
+
 		-- Undo randomized ids
 		for value: ValueBase, oldValue: any in valuesToRevert do
 			value.Value = oldValue
 		end
-		
+
 		if fixedCount > 0 then
 			Logger.warn(`Reverted compiler induced part shift on {fixedCount} parts`)
 		end
@@ -2453,14 +2512,14 @@ CompileButton.OnPressed:Connect(function()
 
 
 		local createdScripts = {}
-		
+
 		-- Gist uploads
 		if CompileHost:lower() == 'gist' then
 			local url = CompileUploader.GistUpload(Compilation, APIKey, UploadName.Box.Text)
 			CreateOutputScript(url, "MBEEOutput_Upload", true)
 			return
 		end
-		
+
 		-- Hastebin.org uploads
 		if CompileHost:lower() == 'hastebin' then
 			local expires = UploadExpireTypes[table.find(UploadExpireAliasTypes, UploadExpireTime:lower()) or 1]
@@ -2468,7 +2527,7 @@ CompileButton.OnPressed:Connect(function()
 			CreateOutputScript(url, "MBEEOutput_Upload", true)
 			return
 		end
-		
+
 		if #Compilation <= 200000 then
 			-- Warning removed because roblox fixed 16K text box bug!
 			--if #Compilation > 16384 then
@@ -2491,7 +2550,7 @@ CompileButton.OnPressed:Connect(function()
 		end
 
 		for _, scr in createdScripts do
-			if OpenCompilerScripts then
+			if peek(PluginSettings.OpenCompilerScripts) then
 				local success, err = ScriptEditorService:OpenScriptDocumentAsync(scr)
 				if not success then
 					Logger.warn(`Failed to open script document: {err}`)
@@ -2499,14 +2558,14 @@ CompileButton.OnPressed:Connect(function()
 			end
 		end
 	end)
-	
+
 	ChangeHistoryService:FinishRecording(recordingId, Enum.FinishRecordingOperation.Commit)
-	
+
 	if not success then
 		Logger.warn(err)
 		Logger.warn(debug.traceback())
 		ChangeHistoryService:Undo()
 	end
-	
+
 end)
 UITemplates.SyncColors()
