@@ -947,8 +947,15 @@ ScriptEditorService.TextDocumentDidChange:Connect(function(document: ScriptDocum
 	if document_script.Parent == nil then return end
 	local value = document_script.Parent :: StringValue
 	if value.Name ~= "Code" then return end
+	print("Updating Value from script")
 	value.Value = document:GetText()
 end)
+
+local function UpdateScript(script: LuaSourceContainer, new_value: string)
+	ScriptEditorService:UpdateSourceAsync(script, function(_)
+		return new_value
+	end)
+end
 
 local SpecialMaterialValues =
 	{
@@ -965,27 +972,21 @@ local SpecialMaterialValues =
 			if MicrocontrollerScript == nil then
 				local new_script = Instance.new("Script")
 				new_script.Name = MICROCONTROLLER_SCRIPT_NAME
-				ScriptEditorService:UpdateSourceAsync(new_script, function(_)
-					return ConfigValue.Value
-				end)
+				UpdateScript(new_script, ConfigValue.Value)
 				new_script.Parent = ConfigValue
 				MicrocontrollerScript = new_script
 			end
 			assert(MicrocontrollerScript)
 
 			local focused = TextBox.Box.Focused:Connect(function()
-				ScriptEditorService:UpdateSourceAsync(MicrocontrollerScript, function(_)
-					return TextBox.Box.Text
-				end)
+				UpdateScript(MicrocontrollerScript, TextBox.Box.Text)
 				ScriptEditorService:OpenScriptDocumentAsync(MicrocontrollerScript)
 			end)
 
 			local am_i_updating_box = false
 			local box_changed = TextBox.Box:GetPropertyChangedSignal("Text"):Connect(function()
 				if am_i_updating_box then return end
-				ScriptEditorService:UpdateSourceAsync(MicrocontrollerScript, function(_)
-					return TextBox.Box.Text
-				end)
+				UpdateScript(MicrocontrollerScript, TextBox.Box.Text)
 			end)
 			
 			local changed = ConfigValue.Changed:Connect(function(new: string)
@@ -995,7 +996,6 @@ local SpecialMaterialValues =
 			end)
 
 			TextBox.Box.Destroying:Once(function()
-				ConfigValue.Value = ScriptEditorService:GetEditorSource(MicrocontrollerScript)
 				focused:Disconnect()
 				box_changed:Disconnect()
 				changed:Disconnect()
