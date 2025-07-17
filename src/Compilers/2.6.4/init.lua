@@ -1,6 +1,6 @@
 local HttpService = game:GetService("HttpService")
 
-local Sift = require(script.Parent.Parent.--[[PB]]MBEPackages--[[PE]]--[[RM;Packages;RM]].Sift)
+local Sift = require(script.Parent.Parent.Packages.Sift)
 
 -- Copy parts into PartMetadata
 local OBJECT_ASSETS_FOLDER = script.Parent.Parent.Parts:Clone()
@@ -56,8 +56,8 @@ local CLASS_TO_COMPONENT_NAMES = {
 local ModelBuilder = {}
 
 ModelBuilder.Title = "Model Save"
-ModelBuilder.DateAdded = "2024-12-11"
-ModelBuilder.Default = false -- selected by default
+ModelBuilder.DateAdded = "2025-7-14"
+ModelBuilder.Default = true -- selected by default
 ModelBuilder.Selected = false
 
 type ValueClassName = "StringValue" | "BoolValue" | "NumberValue" | "IntValue" | "DoubleConstrainedValue" | "IntConstrainedValue" | "CFrameValue" | "Vector3Value" | "Color3Value" | "InstanceValue"
@@ -448,22 +448,6 @@ function ModelBuilder:Compile(instances: {Instance}, saveConfig: SaveConfig): bu
 					end
 
 					if joint:IsA("DynamicRotate") or joint:IsA("Rotate") then
-						if joint.Parent ~= primaryPart then
-							continue
-						end
-
-						local c0, c1 = joint.C0, joint.C1
-
-						local face = GetClosestFace(-c0.LookVector)
-
-						local hingeData = hinges[face.Value] or {}
-						hinges[face.Value] = hingeData
-
-						local otherFace = GetClosestFace(-c1.LookVector)
-						local look = CFrame.lookAt(Vector3.zero, Vector3.FromNormalId(otherFace))
-						local rotation = math.acos(look.UpVector:Dot(c1.RightVector)) * math.sign(look.RightVector:Dot(c1.RightVector))
-
-						table.insert(hingeData, {otherPartIndex, c1.Position.X, c1.Position.Y, c1.Position.Z, otherFace.Value, rotation})
 						continue
 					end
 
@@ -613,14 +597,15 @@ function ModelBuilder:Decompile(data: string, saveConfig: SaveConfig)
 			local properties = partInfo.Properties
 			local shape = properties.Shape
 			local components = properties.Components
+			local className = tostring(partInfo.ClassName)
 
 			local shapeAsset = shape and SHAPE_ASSETS_FOLDER:FindFirstChild(tostring(shape))
-			local partAsset = OBJECT_ASSETS_FOLDER:FindFirstChild(tostring(partInfo.ClassName))
+			local partAsset = OBJECT_ASSETS_FOLDER:FindFirstChild(className)
 
 			if not partAsset then
-				warn("Unknown part class", partInfo.ClassName)
+				warn("Unknown part class", className)
 				partAsset = Instance.new("Part")
-				partAsset.Name = partInfo.ClassName
+				partAsset.Name = className
 			end
 
 			local partTemplate = if shapeAsset then shapeAsset else partAsset
@@ -631,6 +616,11 @@ function ModelBuilder:Decompile(data: string, saveConfig: SaveConfig)
 			end
 
 			local part = partTemplate:Clone()
+
+			-- Update the part name
+			if part.Name ~= className then
+				part.Name = className
+			end
 
 			-- If the part is shaped
 			if shapeAsset then
@@ -664,7 +654,7 @@ function ModelBuilder:Decompile(data: string, saveConfig: SaveConfig)
 				part.Color = partInfo.Color
 			end
 
-			populateConfigurables(part, ConfigData.Parts[partInfo.ClassName] or {}, partInfo.Configuration or {})
+			populateConfigurables(part, ConfigData.Parts[className] or {}, partInfo.Configuration or {})
 
 			for componentName, componentData in components or {} do
 				-- Look for the base component in the model builder
@@ -678,8 +668,9 @@ function ModelBuilder:Decompile(data: string, saveConfig: SaveConfig)
 				end
 
 				local component = componentBase:Clone()
+				local configurables = componentData[1]
 
-				populateConfigurables(component, ConfigData.Components[componentName] or {}, componentData)
+				populateConfigurables(component, ConfigData.Components[componentName] or {}, configurables or {})
 
 				component.Parent = part
 			end
