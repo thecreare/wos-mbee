@@ -230,14 +230,34 @@ function ExtractedUtil.SpawnPart(Part): Model?
 	return SelectedPart
 end
 
-function ExtractedUtil.StringToColor3(str)
+function ExtractedUtil.StringToColor3(str): Color3?
 	if not str then return end
-	local newStr = string.gsub(str, "%s", "")
-	local Vals = string.split(newStr, ",")
-	return #Vals >= 3 and Color3.fromRGB(unpack(Vals)) or Color3.new(1,1,1)
+	local channels = str:gsub("[^0-9,]", ""):split(",")
+	return if #channels == 3 then Color3.fromRGB(
+		tonumber(channels[1]),
+		tonumber(channels[2]),
+		tonumber(channels[3])
+	) else nil
 end
 
+function ExtractedUtil.Color3ToString(color: Color3): string
+	local R = math.round(color.R * 255)
+	local G = math.round(color.G * 255)
+	local B = math.round(color.B * 255)
+	return table.concat({R,G,B}, ", ")
+end
 
+-- Ported from https://stackoverflow.com/questions/1855884/determine-font-color-based-on-background-color
+function ExtractedUtil.ContrastColor(color: Color3): Color3 
+    -- Counting the perceptive luminance - human eye favors green color...
+    local luminance = 0.299 * color.R + 0.587 * color.G + 0.114 * color.B;
+
+    if luminance > 0.5 then
+       return Color3.new(0, 0, 0) -- bright colors - black font
+    else
+		return Color3.new(1, 1, 1) -- dark colors - white font
+	end
+end
 
 -- Gets the volume of the given BasePart
 function ExtractedUtil.GetVolume(part: BasePart): number
