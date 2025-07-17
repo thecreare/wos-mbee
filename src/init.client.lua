@@ -665,13 +665,6 @@ local BG = scope:ScrollingFrame {
 	}
 } :: ScrollingFrame
 
-PrimaryWidget:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-	plugin:SetSetting("PluginSize", {
-		{PrimaryWidget.AbsoluteSize.X, PrimaryWidget.AbsoluteSize.Y},
-		{ConfigWidget.AbsoluteSize.X, ConfigWidget.AbsoluteSize.Y}
-	})
-end)
-
 -- MARK: Setting UI
 -- Create the UI buttons and stuff to control internal setting states
 do

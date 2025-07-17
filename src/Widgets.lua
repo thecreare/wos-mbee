@@ -37,6 +37,14 @@ local SettingsWidget = plugin:CreateDockWidgetPluginGui("VersionSelect", DockWid
 SettingsWidget.Title = "Advanced Settings"
 SettingsWidget.Name = Branding.NAME_ABBREVIATION .. "SettingsWidget"
 
+-- Very widget related thing I figured should go here
+PrimaryWidget:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+	plugin:SetSetting("PluginSize", {
+		{PrimaryWidget.AbsoluteSize.X, PrimaryWidget.AbsoluteSize.Y},
+		{ConfigWidget.AbsoluteSize.X, ConfigWidget.AbsoluteSize.Y}
+	})
+end)
+
 return {
     PrimaryWidget = PrimaryWidget,
     ConfigWidget = ConfigWidget,
