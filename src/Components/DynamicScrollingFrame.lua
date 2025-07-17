@@ -15,9 +15,6 @@ local function ScrollingFrame(
         Parent: UsedAs<Instance>?,
         Active: UsedAs<boolean>?,
 
-        --- Sum of left and right padding
-        HorizontalWidthConsumedByPaddingOut: Fusion.Value<number>?,
-
         Padding: {
             All: UsedAs<UDim>?,
             Bottom: UsedAs<UDim>?,
@@ -43,17 +40,10 @@ local function ScrollingFrame(
     props.Padding = props.Padding or {}; assert(props.Padding, "Can't happen")
     props.Layout = props.Layout or {}; assert(props.Layout)
 
-    local padding_left = props.Padding.Left or props.Padding.All
-    local padding_right = scope:Computed(function(use)
-        local pad = use(props.Padding.Right) or use(props.Padding.All) or UDim.new(0, 0)
-        local padding_right = if use(is_scrollbar_visible) then UDim.new(pad.Scale, pad.Offset+bar_thickness) else pad
-        if props.HorizontalWidthConsumedByPaddingOut then
-            local l = if padding_left then use(padding_left).Offset else 0
-            props.HorizontalWidthConsumedByPaddingOut:set(padding_right.Offset + l)
-        end
-        return padding_right
+    local scroll_bar_padding = scope:Computed(function(use)
+        local scroll_bar_padding = if use(is_scrollbar_visible) then UDim.new(0, bar_thickness) else UDim.new(0, 0)
+        return scroll_bar_padding
     end)
-
 
     local scrolling_frame = scope:New "ScrollingFrame" {
         Name = props.Name,
@@ -96,17 +86,27 @@ local function ScrollingFrame(
 
         Parent = props.Parent,
         [Children] = {
-            if props.RemoveListLayout == true then nil else scope:New "UIListLayout" {
-                Padding = props.ListPadding or UDim.new(0, 2),
-                SortOrder = Enum.SortOrder.LayoutOrder,
-            } :: Fusion.Child,
             scope:New "UIPadding" {
-                PaddingBottom = props.Padding.Bottom or props.Padding.All,
-                PaddingLeft = padding_left,
-                PaddingRight = padding_right,
-                PaddingTop = props.Padding.Top or props.Padding.All,
+                PaddingRight = scroll_bar_padding,
             },
-            props[Children],
+            scope:New "Frame" {
+                Size = UDim2.fromScale(1, 0),
+                AutomaticSize = Enum.AutomaticSize.Y,
+                BackgroundColor3 = THEME.COLORS.MainBackground,
+                [Children] = {
+                    if props.RemoveListLayout == true then nil else scope:New "UIListLayout" {
+                        Padding = props.ListPadding or UDim.new(0, 2),
+                        SortOrder = Enum.SortOrder.LayoutOrder,
+                    } :: Fusion.Child,
+                    scope:New "UIPadding" {
+                        PaddingBottom = props.Padding.Bottom or props.Padding.All,
+                        PaddingLeft = props.Padding.Left or props.Padding.All,
+                        PaddingRight = props.Padding.Right or props.Padding.All,
+                        PaddingTop = props.Padding.Top or props.Padding.All,
+                    },
+                    props[Children],
+                }
+            }
         },
     } :: ScrollingFrame
 

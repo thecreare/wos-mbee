@@ -485,6 +485,7 @@ local decompilation_text = ""
 local BG = scope:ScrollingFrame {
 	ListPadding = UDim.new(0, 10),
 	ScrollBarThickness = 0,
+	Parent = PrimaryWidget,
 	[Children] = {
 		require(script.PartList),
 		AutomaticIndividualLabeledSetting("TemplateMaterial", 5),
@@ -883,8 +884,6 @@ scope:Container {
 		}
 	}
 }
-
-BG.Parent = PrimaryWidget
 
 local CompilerSettings = {}
 CompilerSettings.CombinerName = "WoS Tools"
