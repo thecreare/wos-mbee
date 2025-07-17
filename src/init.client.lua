@@ -739,15 +739,12 @@ UITemplates.ConnectBoxToAutocomplete(SearchBox, script.Parts:GetChildren()).Even
 			SearchButton.Visible = true
 		end
 
-		ResultsFrame.CanvasSize = UDim2.fromOffset(0, ExtractedUtil.GetTableLength(CategoryItems) * 20)
-
 		return
 	end
 
 	--task.wait()
 
 	if SearchBox.Text == "" then
-		ResultsFrame.CanvasSize = UDim2.fromOffset(0, #script.Parts:GetChildren() * 20)
 		ListLayout.SortOrder = Enum.SortOrder.Name
 		for _, SearchButton in ResultsFrame:GetChildren() do
 			if not SearchButton:IsA("TextButton") then continue end
@@ -756,7 +753,6 @@ UITemplates.ConnectBoxToAutocomplete(SearchBox, script.Parts:GetChildren()).Even
 		return
 	end
 
-	ResultsFrame.CanvasSize = UDim2.fromOffset(0, #MatchedParts * 20)
 	ListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 	for _, SearchButton in ResultsFrame:GetChildren() do
 		if not SearchButton:IsA("TextButton") then continue end
@@ -792,7 +788,6 @@ SearchBox.FocusLost:Connect(function(EnterPressed)
 		if not SearchButton:IsA("TextButton") then continue end
 		SearchButton.Visible = true
 	end
-	ResultsFrame.CanvasSize = UDim2.fromOffset(0, #script.Parts:GetChildren() * 20)
 
 	SearchBox.Text, SearchMatches.Text, SearchMatches.Visible = "", "", false
 
