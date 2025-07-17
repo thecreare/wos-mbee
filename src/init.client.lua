@@ -2,7 +2,6 @@ local Selection = game:GetService("Selection")
 local TweenService = game:GetService("TweenService")
 local HttpService = game:GetService("HttpService")
 local UserInputService = game:GetService("UserInputService")
-local ChangeHistoryService = game:GetService("ChangeHistoryService")
 local ScriptEditorService = game:GetService("ScriptEditorService")
 
 local Parts = script:WaitForChild("Parts")
