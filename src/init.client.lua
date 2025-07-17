@@ -41,9 +41,6 @@ local APIKey = plugin:GetSetting("APIKey") or ''
 local createSharedToolbar = require(script.createSharedToolbar)
 local PartData = require(script.PartData)
 
--- Used to print Required Materials for users who have Log Mode enabled in their Output
-local repr = require(3148021300)
-
 --rostrap preloading
 require(script.MBEPackages.Checkbox)
 require(script.MBEPackages.RippleButton)
@@ -51,6 +48,7 @@ require(script.MBEPackages.ReplicatedPseudoInstance)
 local PseudoInstance = require(script.MBEPackages.PseudoInstance)
 
 local LuaEncode = require(script.MBEPackages.LuaEncode)
+local repr = require(script.MBEPackages.repr)
 
 local CustomModules = script.Modules
 local Components = script.Components
