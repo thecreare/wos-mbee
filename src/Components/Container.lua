@@ -1,4 +1,3 @@
---!strict
 local THEME = require(script.Parent.Parent.Theme)
 local Fusion = require(script.Parent.Parent.Packages.fusion)
 
@@ -11,14 +10,19 @@ local function PaddedContainer(
         Name: UsedAs<string>?,
         BackgroundColor3: UsedAs<Color3>?,
         BackgroundTransparency: UsedAs<number>?,
+        ClipsDescendants: UsedAs<boolean>?,
+        Visible: UsedAs<boolean>?,
+        Parent: UsedAs<Instance>?,
+
+        AbsoluteSizeOut: Fusion.Value<Vector2, Vector2>?,
 
         Padding: {
             All: UsedAs<UDim>?,
-            Bottom: UsedAs<number>?,
-            Left: UsedAs<number>?,
-            Right: UsedAs<number>?,
-            Top: UsedAs<number>?,
-        },
+            Bottom: UsedAs<UDim>?,
+            Left: UsedAs<UDim>?,
+            Right: UsedAs<UDim>?,
+            Top: UsedAs<UDim>?,
+        }?,
         Layout: {
             LayoutOrder: UsedAs<number>?,
             Position: UsedAs<UDim2>?,
@@ -26,18 +30,23 @@ local function PaddedContainer(
             ZIndex: UsedAs<number>?,
             Size: UsedAs<UDim2>?,
             AutomaticSize: UsedAs<Enum.AutomaticSize>?,
-        },
-        [typeof(Children)]: Fusion.Child,
+            Rotation: UsedAs<number>?,
+        }?,
+        [typeof(Children)]: Fusion.Child?,
     }
 ): Fusion.Child
-    local scope = scope:deriveScope({
+    local scope = scope:innerScope({
         Padding = require(script.Parent.Padding)
     })
     props.Layout = props.Layout or {}
+    assert(props.Layout, "Can't happen")
     return scope:New "Frame" {
-        Name = props.Name,
+        Name = props.Name or "Container",
         BackgroundColor3 = props.BackgroundColor3 or THEME.COLORS.MainBackground,
         BackgroundTransparency = props.BackgroundTransparency,
+        Visible = props.Visible,
+        ClipsDescendants = props.ClipsDescendants,
+        Parent = props.Parent,
 
         -- Layout
         LayoutOrder = props.Layout.LayoutOrder,
@@ -46,13 +55,16 @@ local function PaddedContainer(
         ZIndex = props.Layout.ZIndex,
         Size = props.Layout.Size or UDim2.fromScale(1, 1),
         AutomaticSize = props.Layout.AutomaticSize,
+        Rotation = props.Layout.Rotation,
+
+        [Fusion.Out "AbsoluteSize"] = props.AbsoluteSizeOut,
 
         [Children] = {
             -- Padding
-            props.Padding and scope:Padding {
+            scope:Padding {
                 Padding = props.Padding,
             },
-            props[Children],
+            props[Children] :: Fusion.Child,
         }
     }
 end

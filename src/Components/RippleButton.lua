@@ -4,7 +4,7 @@ local THEME = require(script.Parent.Parent.Theme)
 local Fusion = require(script.Parent.Parent.Packages.fusion)
 type UsedAs<T> = Fusion.UsedAs<T>
 
-local function Checkbox(
+local function RippleButton(
     scope: Fusion.Scope<typeof(Fusion)>,
     props: {
         Label: UsedAs<string>?,
@@ -24,7 +24,7 @@ local function Checkbox(
     props.Layout = props.Layout or {}; assert(props.Layout)
 
     local holder = scope:New "Frame" {
-        Name = "Holder",
+        Name = props.Label,
         BackgroundTransparency = 1,
 
         Parent = props.Parent,
@@ -56,4 +56,4 @@ local function Checkbox(
     return holder
 end
 
-return Checkbox
+return RippleButton

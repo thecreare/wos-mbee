@@ -24,7 +24,7 @@ local function Checkbox(
     props.Layout = props.Layout or {}; assert(props.Layout)
 
     local holder = scope:New "Frame" {
-        Name = "Holder",
+        Name = props.Label,
         BackgroundTransparency = 1,
         Parent = props.Parent,
         

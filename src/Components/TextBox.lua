@@ -2,7 +2,7 @@ local UITemplates = require(script.Parent.Parent.Modules.UITemplates)[1]
 
 local THEME = require(script.Parent.Parent.Theme)
 local Fusion = require(script.Parent.Parent.Packages.fusion)
-local Children = Fusion.Children
+local Children, peek = Fusion.Children, Fusion.peek
 local Out = Fusion.Out
 type UsedAs<T> = Fusion.UsedAs<T>
 
@@ -11,7 +11,8 @@ local function TextBox(
     props: {
         Label: UsedAs<string>?,
         Text: UsedAs<string>,
-        Options: UsedAs<{string}>?,
+        onTextChange: (text: string)->()?,
+        Options: UsedAs<{[any]: string}>?,
         PlaceholderText: UsedAs<string>?,
         Parent: UsedAs<Instance>?,
         Layout: {
@@ -33,12 +34,13 @@ local function TextBox(
     local tips_open = scope:Value(false)
     local holder_size = scope:Value(UDim2.fromOffset(30, 30))
 
+    local proxy_text_value = scope:Value(peek(props.Text))
+
     -- TODO: Implement real tips thing instead of extracting this and manually running the cursed mbe function on it
     local Box = scope:New "TextBox" {
-        Name = "Box",
+        Name = props.Label,
         Size = UDim2.fromScale(1, 1),
-        Text = props.Text,
-        [Fusion.Out "Text"] = props.Text,
+        Text = proxy_text_value,
         PlaceholderText = props.PlaceholderText or "Input...",
         TextColor3 = props.Box.TextColor3 or THEME.COLORS.MainText,
         PlaceholderColor3 = THEME.COLORS.DimmedText,
@@ -90,7 +92,22 @@ local function TextBox(
             --     if use(tips_open) == false then return end
             -- end) else nil,
         },
-    }
+    } :: TextBox
+
+
+    local changing = false
+    scope:Observer(props.Text):onChange(function()
+        changing = true
+        proxy_text_value:set(peek(props.Text))
+        changing = false
+    end)
+    if props.onTextChange then       
+        table.insert(scope, Box:GetPropertyChangedSignal("Text"):Connect(function()
+            if changing then return end
+            props.onTextChange(Box.Text)
+        end))
+    end
+
     if props.Options then
         print(UITemplates)
         UITemplates.CreateTipBoxes(Box :: any, props.Options)
@@ -121,8 +138,11 @@ local function TextBox(
                 Text = props.Label,
                 FontFace = THEME.font_regular,
                 TextColor3 = THEME.COLORS.MainText,
+                -- TextColor3 = THEME.COLORS.MainContrast,
                 TextXAlignment = Enum.TextXAlignment.Left,
-                TextSize = 24,
+                TextScaled = true,
+                TextStrokeTransparency = 0,
+                TextStrokeColor3 = THEME.COLORS.MainBackground,
                 ClipsDescendants = true,
                 LayoutOrder = 1,
                 [Children] = {
