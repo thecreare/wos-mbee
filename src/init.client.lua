@@ -1369,6 +1369,30 @@ local UpdateFaceSelectionViewport;do
 	--- Part that is currently being mirrored to the viewport frame
 	local selected_part = scope:Value(nil :: BasePart?)
 
+	local selected_part_cframe = scope:Value(CFrame.identity)
+	local selected_part_size = scope:Value(Vector3.one)
+	
+	local cframe_signal
+	local size_signal
+	scope:Observer(selected_part):onBind(function()
+		local part = peek(selected_part)
+		if not part then return end
+		if cframe_signal then
+			cframe_signal:Disconnect()
+		end
+		if size_signal then
+			size_signal:Disconnect()
+		end
+		cframe_signal = part:GetPropertyChangedSignal("CFrame"):Connect(function()
+			selected_part_cframe:set(part.CFrame)
+		end)
+		size_signal = part:GetPropertyChangedSignal("Size"):Connect(function()
+			selected_part_size:set(part.Size)
+		end)
+		selected_part_cframe:set(part.CFrame)
+		selected_part_size:set(part.Size)
+	end)
+
 	--- CFrame of the local player's camera
 	local camera_cframe = scope:Value(Camera.CFrame)
 	table.insert(scope, Camera:GetPropertyChangedSignal("CFrame"):Connect(function()
@@ -1377,9 +1401,7 @@ local UpdateFaceSelectionViewport;do
 
 	--- Computed cframe for the viewport frame camera
 	local viewport_camera_cframe = scope:Computed(function(use)
-		local block = use(selected_part)
-		if not block then return CFrame.identity end
-		return use(camera_cframe).Rotation * CFrame.new(0, 0, 4 * block.Size.Magnitude)
+		return use(camera_cframe).Rotation * CFrame.new(0, 0, 4 * use(selected_part_size).Magnitude)
 	end)
 	local viewport_camera = scope:New "Camera" {
 		FieldOfView = 15,
@@ -1415,13 +1437,12 @@ local UpdateFaceSelectionViewport;do
 
 	-- Face (Top/Left/etc) as string that is closest to the viewport frame camera
 	local closest_face = scope:Computed(function(use)
-		local part = use(selected_part)
-		if part == nil then return "Top" end
+		local part_cframe = use(selected_part_cframe)
 		local cam_pos = use(viewport_camera_cframe).Position
 		local closest_dist = math.huge
 		local closest_face
 		for _, face in FACES do
-			local axis = part.CFrame.Rotation:VectorToWorldSpace(Vector3.fromNormalId(face :: any))
+			local axis = part_cframe.Rotation:VectorToWorldSpace(Vector3.fromNormalId(face :: any))
 			local distance = (cam_pos - axis).Magnitude
 			if distance < closest_dist then
 				closest_dist = distance
@@ -1521,17 +1542,10 @@ local UpdateFaceSelectionViewport;do
 					-- FaceSelectionPart
 					scope:New "Part" {
 						Name = "FaceSelectionPart",
-						Size = scope:Computed(function(use)
-							part = use(selected_part)
-							if not part then return Vector3.one*2 end
-							return part.Size
-						end),
+						Size = selected_part_size,
 						CFrame = scope:Computed(function(use)
-							part = use(selected_part)
-							if not part then return CFrame.identity end
-							return part.CFrame.Rotation
+							return use(selected_part_cframe).Rotation
 						end),
-
 						-- cursed
 						FrontSurface = SurfaceSyncer("Front"),
 						BackSurface = SurfaceSyncer("Back"),
@@ -1544,20 +1558,15 @@ local UpdateFaceSelectionViewport;do
 					scope:New "Part" {
 						Color = THEME.COLORS.MainContrast,
 						Size = scope:Computed(function(use)
-							local part = use(selected_part)
-							if not part then return Vector3.one end
-
 							local axis = use(closest_face_axis):Abs()
 							local axis_mask = (axis - Vector3.one):Abs()
 							local plate_thickness = 0.05
 							local shrink_amount = 0.1
-							return (part.Size - Vector3.one * shrink_amount) * axis_mask + axis * plate_thickness
+							return (use(selected_part_size) - Vector3.one * shrink_amount) * axis_mask + axis * plate_thickness
 						end),
 						CFrame = scope:Computed(function(use)
-							local part = use(selected_part)
-							if not part then return CFrame.identity end
-							local selected_rotation = part.CFrame.Rotation
-							local surface_pos = selected_rotation:VectorToWorldSpace(use(closest_face_axis) * part.Size / 2)
+							local selected_rotation = use(selected_part_cframe).Rotation
+							local surface_pos = selected_rotation:VectorToWorldSpace(use(closest_face_axis) * use(selected_part_size) / 2)
 							return CFrame.new(surface_pos) * selected_rotation
 						end),
 						-- cursed
