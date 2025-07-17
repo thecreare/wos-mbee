@@ -33,12 +33,13 @@ local function ScrollingFrame(
             Size: UsedAs<UDim2>?,
             AutomaticSize: UsedAs<Enum.AutomaticSize>?,
         }?,
+        ScrollBarThickness: number?,
         RemoveListLayout: boolean?,
         [typeof(Children)]: Fusion.Child,
     }
 ): Fusion.Child
     local is_scrollbar_visible = scope:Value(true)
-    local bar_thickness = 8
+    local bar_thickness = props.ScrollBarThickness or 8
     props.Padding = props.Padding or {}; assert(props.Padding, "Can't happen")
     props.Layout = props.Layout or {}; assert(props.Layout)
 
