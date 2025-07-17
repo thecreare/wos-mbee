@@ -940,7 +940,9 @@ end
 local MICROCONTROLLER_SCRIPT_NAME = "MicrocontrollerCode"
 
 ScriptEditorService.TextDocumentDidChange:Connect(function(document: ScriptDocument)
-	local document_script = document:GetScript()
+	local document_script = document:GetScript() :: LuaSourceContainer?
+	-- Script can be nil if the edited document is the command bar
+	if document_script == nil then return end
 	if document_script.Name ~= MICROCONTROLLER_SCRIPT_NAME then return end
 	if document_script.Parent == nil then return end
 	local value = document_script.Parent :: StringValue
