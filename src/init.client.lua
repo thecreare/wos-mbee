@@ -1774,7 +1774,6 @@ function RefreshSelection()
 		ComponentSelectionHolder.Visible = false
 	end
 
-	if not peek(PluginSettings.ShowSurfaceSelector) then return end
 	UpdateFaceSelectionViewport()
 end
 
