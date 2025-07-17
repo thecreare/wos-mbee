@@ -73,13 +73,19 @@ local Logger = require(CustomModules.Logger)
 local CompileUploader = require(CustomModules.Uploader)
 local CompatibilityReplacements = require(CustomModules.Compatibility)
 local InfoConstants = require(CustomModules.Settings)
-local Branding = require(CustomModules.Branding)
 local ExtractedUtil = require(CustomModules.ExtractedUtil)
 local UITemplates, UIElements, Colors; do
 	local m = require(CustomModules.UITemplates)
 	UITemplates = m.UITemplates
 	UIElements = m.UIElements
 	Colors = m.Colors
+end
+local PrimaryWidget, ConfigWidget, SettingsWidget
+do
+	local Widgets = require(script.Widgets)
+	PrimaryWidget = Widgets.PrimaryWidget
+	ConfigWidget = Widgets.ConfigWidget
+	SettingsWidget = Widgets.SettingsWidget
 end
 local CustomMaterialsModule = require(CustomModules.CustomMaterials)
 local CompilersModule = require(CustomModules.Compilers)
@@ -97,42 +103,6 @@ do
 		end
 	end
 end
-
-local PrimaryWidget = plugin:CreateDockWidgetPluginGui("MBTools", DockWidgetPluginGuiInfo.new(
-	Enum.InitialDockState.Left,  -- Widget will be initialized in floating panel
-	true,   -- Widget will be initially enabled
-	false,  -- Don't override the previous enabled state
-	plugin:GetSetting("PluginSize") and plugin:GetSetting("PluginSize")[1][1] or 350,    -- Default width of the floating window
-	plugin:GetSetting("PluginSize") and plugin:GetSetting("PluginSize")[1][2] or 476,    -- Default height of the floating window
-	100,    -- Minimum width of the floating window
-	300     -- Minimum height of the floating window
-	))
-PrimaryWidget.Title = Branding.NAME
-PrimaryWidget.Name = Branding.NAME_ABBREVIATION .. "PrimaryWidget"
-
-local ConfigWidget = plugin:CreateDockWidgetPluginGui("Config", DockWidgetPluginGuiInfo.new(
-	Enum.InitialDockState.Right,  -- Widget will be initialized in floating panel
-	true,   -- Widget will be initially enabled
-	false,  -- Don't override the previous enabled state
-	plugin:GetSetting("PluginSize") and plugin:GetSetting("PluginSize")[2][1] or 350,    -- Default width of the floating window
-	plugin:GetSetting("PluginSize") and plugin:GetSetting("PluginSize")[2][2] or 500,    -- Default height of the floating window
-	100,    -- Minimum width of the floating window
-	130     -- Minimum height of the floating window
-	))
-ConfigWidget.Title = "Part Configurer"
-ConfigWidget.Name = Branding.NAME_ABBREVIATION .. "ConfigWidget"
-
-local SettingsWidget = plugin:CreateDockWidgetPluginGui("VersionSelect", DockWidgetPluginGuiInfo.new(
-	Enum.InitialDockState.Float,
-	false,   -- Widget will be initially enabled
-	true,  -- Don't override the previous enabled state
-	350,    -- Default width of the floating window
-	600,    -- Default height of the floating window
-	300,    -- Minimum width of the floating window
-	250     -- Minimum height of the floating window
-	))
-SettingsWidget.Title = "Advanced Settings"
-SettingsWidget.Name = Branding.NAME_ABBREVIATION .. "SettingsWidget"
 
 type ConfigValue = (ValueBase & {Value: any})
 
