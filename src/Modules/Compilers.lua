@@ -28,16 +28,21 @@ function CompilersModule:GetConfigData()
     return self._SelectedCompiler.ConfigData
 end
 
+function CompilersModule:GetAllMalleability()
+    return self._SelectedCompiler.Malleability
+end
+
 function CompilersModule.new(compilers_path: Folder)
     local Compilers = {}
     local SelectedCompiler = nil
     for i, comp in pairs(compilers_path:GetChildren()) do
-        local c = require(comp)
+        local c = (require)(comp)
         Compilers[i] = c
     
         c.Components = comp.Components:GetChildren()
-        c.PartMetadata = require(comp.PartMetadata)
-        c.ConfigData = require(comp.PartMetadata.ConfigData)
+        c.PartMetadata = (require)(comp.PartMetadata)
+        c.Malleability = (require)(comp.PartMetadata.Malleability)
+        c.ConfigData = (require)(comp.PartMetadata.ConfigData)
         c.Version = comp.Name
     
         if Compilers[i].Default == true and not SelectedCompiler then
