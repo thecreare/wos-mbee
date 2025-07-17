@@ -1241,17 +1241,18 @@ scope:Container {
 						-- TODO: fix formatting
 						scope:ForPairs(THEME.COLORS, function(use, scope: typeof(scope), key, value: Fusion.Value<Color3>)
 							local box_value = scope:Value(ExtractedUtil.Color3ToString(peek(value)))
-							scope:Observer(box_value):onChange(function()
-								local new_color = ExtractedUtil.StringToColor3(peek(box_value))
-								if new_color then
-									value:set(new_color)
-								end
-							end)
+
 							return key, scope:TextBox {
 								Text = box_value,
 								BoxPlaceholderText = scope:Computed(function(use)
 									return `RGB Color ({ExtractedUtil.Color3ToString(use(value))})`
 								end),
+								onTextChange = function(text: string)
+									local new_color = ExtractedUtil.StringToColor3(text)
+									if new_color then
+										value:set(new_color)
+									end
+								end,
 								Box = {
 									TextColor3 = scope:Computed(function(use)
 										return ExtractedUtil.ContrastColor(use(value))
