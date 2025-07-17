@@ -44,7 +44,7 @@ local function TextBox(
 
     -- TODO: Implement real tips thing instead of extracting this and manually running the cursed mbe function on it
     local Box = scope:New "TextBox" {
-        Name = props.Label,
+        Name = props.Label.Text,
         Size = UDim2.fromScale(1, 1),
         Text = proxy_text_value,
         PlaceholderText = props.PlaceholderText or "Input...",
