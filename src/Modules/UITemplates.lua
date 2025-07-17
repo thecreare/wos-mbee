@@ -47,9 +47,9 @@ local UIElements = {
     FloatingLabels = {},
     MalleabilityIndicators = {},
     OverlapIndicators = {},
-}
+} :: {[string]: {any}}
 
-function UITemplates.SyncColors(UIs)
+function UITemplates.SyncColors(UIs: typeof(UIElements)?)
 	if not UIs then
 		Logger.print("UPDATING UI COLORS...")
 		UIs = UIElements
@@ -212,8 +212,9 @@ function UITemplates.SyncColors(UIs)
 end
 
 -- MARK: Templates
-function UITemplates.UITemplatesCreateTextBox(Settings)
-	if not Settings then warn("[MB:E:E] TEXTBOX MISSING SETTINGS.") return end
+-- Should not be used for new work, instead use scope:TextBox {}
+function UITemplates.UITemplatesCreateTextBox(Settings: {[string]: any})
+	if not Settings then warn("[MB:E:E] TEXTBOX MISSING SETTINGS.") return nil :: any end
 	--if not Settings.Parent then warn("[MB:E:E] TEXTBOX MISSING PARENT PROPERTY") return end
 
 	local Holder = Instance.new("Frame")
@@ -266,9 +267,11 @@ function UITemplates.UITemplatesCreateTextBox(Settings)
 	return {Holder = Holder, Label = Label, Box = Box}
 end
 
-function UITemplates.CreateCheckBox(Settings)
-	if not Settings then warn("[MB:E:E] CHECKBOX MISSING SETTINGS.") return end
-	--if not Settings.Parent then warn("[MB:E:E] CHECKBOX MISSING PARENT PROPERTY") return end
+-- Should not be used for new work, instead use scope:CheckBox {}
+function UITemplates.CreateCheckBox(Settings: {[string]: any})
+	if not Settings then
+		Logger.error("CHECKBOX MISSING SETTINGS.")
+	end
 
 	local Holder = Instance.new("Frame")
 	Holder.BackgroundTransparency = 1
@@ -307,9 +310,9 @@ function UITemplates.CreateCheckBox(Settings)
 	return {Holder = Holder, Label = Label, Toggle = Toggle}
 end
 
-function UITemplates.CreateObjectButton(Settings)
-	if not Settings then warn("[MB:E:E] OBJECTBUTTON SETTINGS MISSING") return end
-	if not Settings.Part then warn("[MB:E:E] OBJECTBUTTON PART MISSING") return end
+function UITemplates.CreateObjectButton(Settings: {[string]: any})
+	if not Settings then Logger.error(`OBJECTBUTTON SETTINGS MISSING`) end
+	if not Settings.Part then Logger.error(`OBJECTBUTTON PART MISSING`) end
 
 	local ResultHolder = Instance.new("TextButton")
 	ResultHolder.BorderSizePixel = 0
@@ -557,4 +560,8 @@ function UITemplates.CreateTipBoxes(Gui, Table)
 	end)
 end
 
-return {UITemplates, UIElements, Colors}
+return {
+	UITemplates = UITemplates, 
+	UIElements = UIElements, 
+	Colors = Colors
+}

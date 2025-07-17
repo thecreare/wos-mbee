@@ -1,5 +1,6 @@
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 
+local Branding = require(script.Parent.Branding)
 local Logger = require(script.Parent.Logger)
 local CompilersModule = require(script.Parent.Compilers)
 
@@ -17,7 +18,9 @@ List of things that get put in:
 	to use when spawning a template
 
 ]]
-ExtractedUtil.StupidGlobals = {}
+ExtractedUtil.StupidGlobals = {
+	TemplateMaterial = nil :: any,
+}
 
 --https://devforum.roblox.com/t/how-does-roblox-calculate-the-bounding-boxes-on-models-getextentssize/216581/8
 function ExtractedUtil.GetBoundingBox(model, orientation)
@@ -77,15 +80,19 @@ end
 
 -- History and stuff
 function ExtractedUtil.HistoricEvent(name: string, display_name: string?, callback: ()->(), ...:any): (boolean, string?)
-	name = "MBEE" .. name
-	display_name = "MBEE " .. (display_name or name)
+	name = Branding.NAME_ABBREVIATION .. name
+	display_name = Branding.NAME_ABBREVIATION .. " " .. (display_name or name)
 
 	local recordingId = ChangeHistoryService:TryBeginRecording(name, display_name)
 
 	local success, err = pcall(callback, ...)
 
-	local operation = if success then Enum.FinishRecordingOperation.Commit else Enum.FinishRecordingOperation.Cancel
-	ChangeHistoryService:FinishRecording(recordingId, operation)
+	if recordingId then
+		local operation = if success then Enum.FinishRecordingOperation.Commit else Enum.FinishRecordingOperation.Cancel
+		ChangeHistoryService:FinishRecording(recordingId, operation)
+	else
+		Logger.warn(`Failed to generate recordingId for {name}`)
+	end
 
 	if not success then
 		Logger.error(`{name} failed with error: {err}`)
@@ -181,7 +188,7 @@ function ExtractedUtil.MatchQueryToList(Query, List)
 	return Matched
 end
 
-function ExtractedUtil.ApplyTemplates(List, Material)
+function ExtractedUtil.ApplyTemplates(List: {BasePart}, Material: Enum.Material?)
 	for _, Part in ExtractedUtil.SearchTableWithRecursion(List, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
 		if Material == nil then
 			Part.Material = Enum.Material.Concrete
@@ -202,15 +209,21 @@ function ExtractedUtil.ApplyTemplates(List, Material)
 	end
 end
 
-function ExtractedUtil.SpawnPart(Part): Model?
+function ExtractedUtil.GetInsertPoint(distance: number, shift_up: number?)
+	local cam_cf = workspace.CurrentCamera.CFrame
+	local direction = cam_cf.LookVector * distance
+	local hit = workspace:Raycast(cam_cf.Position, direction)
+	local hit_point = if hit then hit.Position else cam_cf.Position + direction
+	return (hit_point + Vector3.yAxis * (shift_up or 0)):Floor()
+end
+
+function ExtractedUtil.SpawnPart(Part: BasePart): BasePart?
 	local SelectedPart
 
 	ExtractedUtil.HistoricEvent("InsertPart", "Insert Part", function()
-		SelectedPart = Part:IsA("BasePart") and Part:Clone() or ExtractedUtil.MatchQueryToList(tostring(Part), PARTS:GetChildren())
-		if not SelectedPart then return end
-		local cam_cf = workspace.CurrentCamera.CFrame
-		local RayResult = workspace:Raycast(cam_cf.Position, cam_cf.LookVector * ((SelectedPart.Size.X + SelectedPart.Size.Y + SelectedPart.Size.Z) / 3 * 1.5 + 10))
-		SelectedPart.Position = RayResult and RayResult.Position and Vector3.new(RayResult.Position.X, RayResult.Position.Y + SelectedPart.Size.Y / 2, RayResult.Position.Z) or cam_cf.Position + cam_cf.LookVector * 12
+		SelectedPart = Part:Clone()
+		local distance = (SelectedPart.Size.X + SelectedPart.Size.Y + SelectedPart.Size.Z) / 3 * 1.5 + 10
+		SelectedPart.Position = ExtractedUtil.GetInsertPoint(distance, SelectedPart.Size.Y / 2)
 		ExtractedUtil.RoundPos(SelectedPart)
 
 		SelectedPart.Parent = workspace
@@ -230,14 +243,34 @@ function ExtractedUtil.SpawnPart(Part): Model?
 	return SelectedPart
 end
 
-function ExtractedUtil.StringToColor3(str)
+function ExtractedUtil.StringToColor3(str): Color3?
 	if not str then return end
-	local newStr = string.gsub(str, "%s", "")
-	local Vals = string.split(newStr, ",")
-	return #Vals >= 3 and Color3.fromRGB(unpack(Vals)) or Color3.new(1,1,1)
+	local channels = str:gsub("[^0-9,]", ""):split(",")
+	return if #channels == 3 then Color3.fromRGB(
+		tonumber(channels[1]),
+		tonumber(channels[2]),
+		tonumber(channels[3])
+	) else nil
 end
 
+function ExtractedUtil.Color3ToString(color: Color3): string
+	local R = math.round(color.R * 255)
+	local G = math.round(color.G * 255)
+	local B = math.round(color.B * 255)
+	return table.concat({R,G,B}, ", ")
+end
 
+-- Ported from https://stackoverflow.com/questions/1855884/determine-font-color-based-on-background-color
+function ExtractedUtil.ContrastColor(color: Color3): Color3 
+    -- Counting the perceptive luminance - human eye favors green color...
+    local luminance = 0.299 * color.R + 0.587 * color.G + 0.114 * color.B;
+
+    if luminance > 0.5 then
+       return Color3.new(0, 0, 0) -- bright colors - black font
+    else
+		return Color3.new(1, 1, 1) -- dark colors - white font
+	end
+end
 
 -- Gets the volume of the given BasePart
 function ExtractedUtil.GetVolume(part: BasePart): number

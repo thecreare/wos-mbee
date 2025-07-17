@@ -55,8 +55,8 @@ local CLASS_TO_COMPONENT_NAMES = {
 
 local ModelBuilder = {}
 
-ModelBuilder.Title = "Model Save"
-ModelBuilder.DateAdded = "2024-12-11"
+ModelBuilder.Title = "Region Save"
+ModelBuilder.DateAdded = "2025-7-14"
 ModelBuilder.Default = false -- selected by default
 ModelBuilder.Selected = false
 
@@ -122,7 +122,6 @@ local function populateValue(parent: Instance, name: string, value: unknown)
 	-- Create the value instance if necessary
 	if not valueInstance then
 		valueInstance = Instance.new(valueClass)
-		valueInstance.Name = name
 		valueInstance.Parent = parent
 	end
 
@@ -376,7 +375,7 @@ function ModelBuilder:Compile(instances: {Instance}, saveConfig: SaveConfig): bu
 				CFrame = partOffsets[part];
 
 				Properties = properties;
-				Configuration = compressedConfigurables;
+				Configuration = configurables;
 
 				Constraints = {};
 				Hinges = {};
@@ -448,22 +447,6 @@ function ModelBuilder:Compile(instances: {Instance}, saveConfig: SaveConfig): bu
 					end
 
 					if joint:IsA("DynamicRotate") or joint:IsA("Rotate") then
-						if joint.Parent ~= primaryPart then
-							continue
-						end
-
-						local c0, c1 = joint.C0, joint.C1
-
-						local face = GetClosestFace(-c0.LookVector)
-
-						local hingeData = hinges[face.Value] or {}
-						hinges[face.Value] = hingeData
-
-						local otherFace = GetClosestFace(-c1.LookVector)
-						local look = CFrame.lookAt(Vector3.zero, Vector3.FromNormalId(otherFace))
-						local rotation = math.acos(look.UpVector:Dot(c1.RightVector)) * math.sign(look.RightVector:Dot(c1.RightVector))
-
-						table.insert(hingeData, {otherPartIndex, c1.Position.X, c1.Position.Y, c1.Position.Z, otherFace.Value, rotation})
 						continue
 					end
 
@@ -519,8 +502,10 @@ function ModelBuilder:Compile(instances: {Instance}, saveConfig: SaveConfig): bu
 
 	-- Encode the assembly data
 	return Compiler:Encode({
-		Assemblies = assemblies
-	}, {})
+		Assemblies = assemblies;
+	}, {
+		UseStateData = true;
+	})
 end
 
 function ModelBuilder:Decompile(data: string, saveConfig: SaveConfig)
@@ -589,7 +574,9 @@ function ModelBuilder:Decompile(data: string, saveConfig: SaveConfig)
 
 	-- Beginning of decoding
 	local encoded = if type(data) == "buffer" then data else buffer.fromstring(PartMetadata:LoadString(data))
-	local decoded = Compiler:Decode(encoded, saveConfig)
+	local decoded = Compiler:Decode(encoded, {
+		UseStateData = true;
+	})
 
 	local containerList = {}
 
@@ -603,6 +590,9 @@ function ModelBuilder:Decompile(data: string, saveConfig: SaveConfig)
 			local assemblyContainer = Instance.new("Folder")
 			assemblyContainer.Name = `Assembly #{assemblyIndex}`
 
+			assemblyContainer:SetAttribute("AssemblyId", assemblyIndex)
+			assemblyContainer:SetAttribute("Origin", assemblyInfo.CFrame)
+
 			assemblyInfoToContainer[assemblyInfo] = assemblyContainer
 
 			table.insert(instances, assemblyContainer)
@@ -613,14 +603,15 @@ function ModelBuilder:Decompile(data: string, saveConfig: SaveConfig)
 			local properties = partInfo.Properties
 			local shape = properties.Shape
 			local components = properties.Components
+			local className = tostring(partInfo.ClassName)
 
 			local shapeAsset = shape and SHAPE_ASSETS_FOLDER:FindFirstChild(tostring(shape))
-			local partAsset = OBJECT_ASSETS_FOLDER:FindFirstChild(tostring(partInfo.ClassName))
+			local partAsset = OBJECT_ASSETS_FOLDER:FindFirstChild(className)
 
 			if not partAsset then
-				warn("Unknown part class", partInfo.ClassName)
+				warn("Unknown part class", className)
 				partAsset = Instance.new("Part")
-				partAsset.Name = partInfo.ClassName
+				partAsset.Name = className
 			end
 
 			local partTemplate = if shapeAsset then shapeAsset else partAsset
@@ -631,6 +622,11 @@ function ModelBuilder:Decompile(data: string, saveConfig: SaveConfig)
 			end
 
 			local part = partTemplate:Clone()
+
+			-- Update the part name
+			if part.Name ~= className then
+				part.Name = className
+			end
 
 			-- If the part is shaped
 			if shapeAsset then
@@ -643,6 +639,22 @@ function ModelBuilder:Decompile(data: string, saveConfig: SaveConfig)
 
 			-- Move the part to the part cframe
 			part:PivotTo(partInfo.Assembly.CFrame:ToWorldSpace(partInfo.CFrame))
+			part:SetAttribute("PartId", partIndex)
+			part:SetAttribute("Offset", partInfo.CFrame)
+
+			for propertyName, property in properties do
+				pcall(function()
+					part:SetAttribute(`P_{propertyName}`, `{property}`) -- Set stringified version first
+					part:SetAttribute(`P_{propertyName}`, property) -- Then try to set the raw property instead
+				end)
+			end
+
+			for propertyName, property in partInfo.Configuration or {} do
+				pcall(function()
+					part:SetAttribute(`C_{propertyName}`, `{property}`) -- Set stringified version first
+					part:SetAttribute(`C_{propertyName}`, property) -- Then try to set the raw property instead
+				end)
+			end
 
 			if part:IsA("BasePart") then
 				local size = partInfo.Size
@@ -664,7 +676,7 @@ function ModelBuilder:Decompile(data: string, saveConfig: SaveConfig)
 				part.Color = partInfo.Color
 			end
 
-			populateConfigurables(part, ConfigData.Parts[partInfo.ClassName] or {}, partInfo.Configuration or {})
+			populateConfigurables(part, ConfigData.Parts[className] or {}, partInfo.Configuration or {})
 
 			for componentName, componentData in components or {} do
 				-- Look for the base component in the model builder
@@ -678,8 +690,9 @@ function ModelBuilder:Decompile(data: string, saveConfig: SaveConfig)
 				end
 
 				local component = componentBase:Clone()
+				local configurables = componentData[1]
 
-				populateConfigurables(component, ConfigData.Components[componentName] or {}, componentData)
+				populateConfigurables(component, ConfigData.Components[componentName] or {}, configurables or {})
 
 				component.Parent = part
 			end
@@ -907,7 +920,7 @@ function ModelBuilder:TryMigrateShape(instance: BasePart)
 		return
 	end
 
-	local templateTypeValue = instance:FindFirstChild("TempType")
+	local templateTypeValue = instance:FindFirstChild("TemplateType")
 
 	if not templateTypeValue then
 		return
@@ -933,7 +946,7 @@ function ModelBuilder:TryMigrateShape(instance: BasePart)
 	shape.CanCollide = instance.CanCollide
 	shape.CanQuery = instance.CanQuery
 	shape.CanTouch = instance.CanTouch
-	shape.CustomPhysicalProperties = instance.CurrentPhysicalProperties
+	shape.CurrentPhysicalProperties = instance.CurrentPhysicalProperties
 	shape.Locked = instance.Locked
 	shape.Massless = instance.Massless
 
@@ -967,11 +980,6 @@ function ModelBuilder:TryMigrateComponents(instance: Instance)
 	end
 
 	for _, componentName in components do
-		-- If the component already exists, skip it
-		if instance:FindFirstChild(componentName) then
-			continue
-		end
-
 		local componentTemplate = script.Components:FindFirstChild(componentName)
 		local component = if componentTemplate then componentTemplate:Clone() else Instance.new("Configuration")
 
@@ -989,7 +997,7 @@ function ModelBuilder:TryMigrateTemplates(instance: BasePart)
 	ModelBuilder:TryMigrateComponents(instance)
 
 	-- Grab the template type
-	local templateTypeValue = instance:FindFirstChild("TemplateType") or instance:FindFirstChild("TempType")
+	local templateTypeValue = instance:FindFirstChild("TempType")
 
 	if not templateTypeValue then
 		return

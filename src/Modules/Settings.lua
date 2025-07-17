@@ -288,5 +288,5 @@ module.SearchCategories = {
         'zapwire',
         'explosive'
     }
-}
+} :: {[string]: {string}}
 return module
