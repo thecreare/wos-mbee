@@ -1,14 +1,13 @@
 local plugin = _G.plugin
 local Selection = game:GetService("Selection")
 local TweenService = game:GetService("TweenService")
-local Workspace = game:GetService("Workspace")
 
 -- Dependencies
 local CustomModules = script.Parent.Modules
 local PseudoInstance = require(script.Parent.MBEPackages.PseudoInstance)
+local Branding = require(script.Parent.Modules.Branding)
 local Widgets = require(script.Parent.Widgets)
 local ExtractedUtil = require(CustomModules.ExtractedUtil)
-local Branding = require(Workspace.MBEE.MBEE.Modules.Branding)
 local Constants = require(CustomModules.Constants)
 local CustomMaterialsModule = require(CustomModules.CustomMaterials)
 local CompilersModule = require(CustomModules.Compilers)
