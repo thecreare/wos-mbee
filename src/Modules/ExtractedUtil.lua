@@ -1,5 +1,6 @@
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 
+local Branding = require(script.Parent.Branding)
 local Logger = require(script.Parent.Logger)
 local CompilersModule = require(script.Parent.Compilers)
 
@@ -77,8 +78,8 @@ end
 
 -- History and stuff
 function ExtractedUtil.HistoricEvent(name: string, display_name: string?, callback: ()->(), ...:any): (boolean, string?)
-	name = "MBEE" .. name
-	display_name = "MBEE " .. (display_name or name)
+	name = Branding.NAME_ABBREVIATION .. name
+	display_name = Branding.NAME_ABBREVIATION .. " " .. (display_name or name)
 
 	local recordingId = ChangeHistoryService:TryBeginRecording(name, display_name)
 
