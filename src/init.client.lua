@@ -75,7 +75,12 @@ local CompatibilityReplacements = require(CustomModules.Compatibility)
 local InfoConstants = require(CustomModules.Settings)
 local Branding = require(CustomModules.Branding)
 local ExtractedUtil = require(CustomModules.ExtractedUtil)
-local UITemplates, UIElements, Colors = table.unpack(require(CustomModules.UITemplates))
+local UITemplates, UIElements, Colors; do
+	local m = require(CustomModules.UITemplates)
+	UITemplates = m.UITemplates
+	UIElements = m.UIElements
+	Colors = m.Colors
+end
 local CustomMaterialsModule = require(CustomModules.CustomMaterials)
 local CompilersModule = require(CustomModules.Compilers)
 
@@ -131,16 +136,18 @@ SettingsWidget.Name = Branding.NAME_ABBREVIATION .. "SettingsWidget"
 
 local ConfigValues = {}
 
-local OverlapConnections = {}
-local TemporaryConnections = {}
+local TemporaryConnections = {} :: {any}
 
-local function CheckCompat(Name)
-	for i,v in CompatibilityReplacements.COMPAT_NAME_REPLACEMENTS do
-		if v:lower() == Name:lower() then return i end
+local function CheckCompat(name: string): string?
+	for i, v in CompatibilityReplacements.COMPAT_NAME_REPLACEMENTS do
+		if v:lower() == name:lower() then
+			return i
+		end
 	end
+	return nil
 end
 
-local function CreateAdornee(subject, color, issue)
+local function CreateAdornee(subject, color, issue: string): SelectionBox?
 	if Adornees[subject] and Adornees[subject][issue] then return end
 	if not Adornees[subject] then Adornees[subject] = {} end
 	local box = Instance.new("SelectionBox")
@@ -168,8 +175,9 @@ local function CheckMalleability(Value)
 
 	local PartMalleability
 	local Compiler = CompilersModule:GetSelectedCompiler()
-	if Value:FindFirstChild("TempType") then
-		PartMalleability = Compiler:GetMalleability(tostring(Value.TempType.Value or Value))
+	local temp_type_value_instance = Value:FindFirstChild("TempType") :: StringValue?
+	if temp_type_value_instance then
+		PartMalleability = Compiler:GetMalleability(tostring(temp_type_value_instance.Value or Value))
 	else
 		PartMalleability = Compiler:GetMalleability(tostring(Value))
 	end
@@ -183,7 +191,9 @@ local function CheckMalleability(Value)
 		end
 	else
 		local MalleabilityBox = CreateAdornee(Value, Colors.MalleabilityCheck, "M")
-		if MalleabilityBox then table.insert(UIElements.MalleabilityIndicators, MalleabilityBox) end
+		if MalleabilityBox then
+			table.insert(UIElements.MalleabilityIndicators, MalleabilityBox)
+		end
 	end
 end
 
@@ -248,6 +258,7 @@ local function CheckTableMalleability(List)
 
 end
 
+local OverlapConnections = {} :: {RBXScriptConnection}
 local function CheckTableOverlap(List)
 
 	for i,v in Adornees do
@@ -256,10 +267,10 @@ local function CheckTableOverlap(List)
 		Adornees[i].O = nil
 	end
 
-	for _,v in OverlapConnections do
-		v:Disconnect()
+	for _, connection in OverlapConnections do
+		connection:Disconnect()
 	end
-	OverlapConnections = {}
+	table.clear(OverlapConnections)
 
 	if not peek(PluginSettings.OverlapToggle) then return end
 
@@ -286,9 +297,7 @@ local function CheckTableOverlap(List)
 				break
 			end
 		end
-
 	end
-
 end
 
 settings().Studio.ThemeChanged:Connect(function()
@@ -309,50 +318,51 @@ local function GetEnumNames(enum: Enum): {string}
 	return names
 end
 
-local function GetAndUpdateCapacityLabel(Object, text_creator: (object_volume: number)->())
-	local ObjectVolume = ExtractedUtil.GetVolume(Object)
-	local AverageSize = (Object.Size.X + Object.Size.Y + Object.Size.Z) / 3
-
-	local Capacity = Object:FindFirstChild("Capacity")
-	local CapacityLabel = Capacity and Capacity:FindFirstChild("CapacityLabel")
+local function GetAndUpdateCapacityLabel(Object: BasePart, text_creator: (object_volume: number)->())
+	local Capacity = Object:FindFirstChild("Capacity") :: BillboardGui?
+	local CapacityLabel = Capacity and Capacity:FindFirstChild("CapacityLabel") :: TextLabel?
 
 	-- Create label and bilboard if not exists
 	if not Capacity then
-		Capacity = Instance.new("BillboardGui")
-		Capacity.AlwaysOnTop = true
-		Capacity.Size = UDim2.fromScale(AverageSize, AverageSize)
-		Capacity.Name = "Capacity"
-		Capacity.Archivable = false
-
-		CapacityLabel = CapacityLabel or Instance.new("TextLabel")
-		CapacityLabel.AnchorPoint = Vector2.new(0.5, 0.5)
-		CapacityLabel.Position = UDim2.fromScale(0.5, 0.5)
-		CapacityLabel.Size = UDim2.fromScale(1, 1)
-		CapacityLabel.TextStrokeTransparency = 0
-		CapacityLabel.TextColor3 = Color3.new(1, 1, 1)
-		CapacityLabel.BackgroundTransparency = 1
-		CapacityLabel.Font = "SciFi"
-		CapacityLabel.TextScaled = true
-		CapacityLabel.Text = table.concat({math.round(ObjectVolume) * 50, CompilersModule:GetSelectedCompiler():GetMalleability("PowerCell") * 50}, "/")
-		CapacityLabel.Name = "CapacityLabel"
-		CapacityLabel.Archivable = false
-
-		CapacityLabel.Parent = Capacity
-		Capacity.Parent = Object
+		local new_capacity = Instance.new("BillboardGui")
+		new_capacity.AlwaysOnTop = true
+		new_capacity.Name = "Capacity"
+		new_capacity.Archivable = false
+		new_capacity.Parent = Object
+		Capacity = new_capacity
 	end
 
-	-- Update Visuals
-	Capacity.Size = UDim2.fromScale(AverageSize, AverageSize)
-	CapacityLabel.Text = text_creator(ObjectVolume)
+	if not CapacityLabel then
+		local new_capacity_label = Instance.new("TextLabel")
+		new_capacity_label.AnchorPoint = Vector2.new(0.5, 0.5)
+		new_capacity_label.Position = UDim2.fromScale(0.5, 0.5)
+		new_capacity_label.Size = UDim2.fromScale(1, 1)
+		new_capacity_label.TextStrokeTransparency = 0
+		new_capacity_label.TextColor3 = Color3.new(1, 1, 1)
+		new_capacity_label.BackgroundTransparency = 1
+		new_capacity_label.Font = Enum.Font.SciFi
+		new_capacity_label.TextScaled = true
+		new_capacity_label.Name = "CapacityLabel"
+		new_capacity_label.Archivable = false
+		new_capacity_label.Parent = Capacity
+		CapacityLabel = new_capacity_label
+	end
+
+	assert(Capacity)
+	assert(CapacityLabel)
+
+	local function Update()
+		local ObjectVolume = ExtractedUtil.GetVolume(Object)
+		local AverageSize = (Object.Size.X + Object.Size.Y + Object.Size.Z) / 3
+		Capacity.Size = UDim2.fromScale(AverageSize, AverageSize)
+		CapacityLabel.Text = text_creator(ObjectVolume)
+	end
+
+	Update()
 
 	-- Detect future updates
 	table.insert(TemporaryConnections, Capacity)
-	table.insert(TemporaryConnections, Object:GetPropertyChangedSignal("Size"):Connect(function()
-		ObjectVolume = ExtractedUtil.GetVolume(Object)
-		AverageSize = (Object.Size.X + Object.Size.Y + Object.Size.Z) / 3
-		Capacity.Size = UDim2.fromScale(AverageSize, AverageSize)
-		CapacityLabel.Text = text_creator(ObjectVolume)
-	end))
+	table.insert(TemporaryConnections, Object:GetPropertyChangedSignal("Size"):Connect(Update))
 
 	return CapacityLabel
 end
@@ -365,8 +375,8 @@ local function BasicCapacityIndicator(storagePerStudCubed: number)
 	end
 end
 
-local function BasicRadiusVisualizer(Object: BasePart, radius: number|()->(number), color: Color3?): SphereHandleAdornment
-	local Sphere = Object:FindFirstChild("__MBEERadiusVisualizer") or Instance.new("SphereHandleAdornment")
+local function BasicRadiusVisualizer(Object: BasePart, radius: number|(volume: number)->(number), color: Color3?): SphereHandleAdornment
+	local Sphere = Object:FindFirstChild("__MBEERadiusVisualizer") :: SphereHandleAdornment? or Instance.new("SphereHandleAdornment")
 	Sphere.Adornee = Object
 	Sphere.Color3 = color or Color3.new(1, 1, 1)
 	Sphere.ZIndex = -1
@@ -389,8 +399,8 @@ local function BasicRadiusVisualizer(Object: BasePart, radius: number|()->(numbe
 	return Sphere
 end
 
-local function BasicGridVisualizer(Object: BasePart, size: Vector3|()->(Vector3), color: Color3?): BoxHandleAdornment
-	local Box = Object:FindFirstChild("__MBEEGridVisualizer") or Instance.new("BoxHandleAdornment")
+local function BasicGridVisualizer(Object: BasePart, size: Vector3|(volume: number)->(Vector3), color: Color3?): BoxHandleAdornment
+	local Box = Object:FindFirstChild("__MBEEGridVisualizer") :: BoxHandleAdornment? or Instance.new("BoxHandleAdornment")
 	Box.Adornee = Object
 	Box.Color3 = color or Color3.new(1, 1, 1)
 	Box.ZIndex = -1
@@ -433,8 +443,7 @@ local SpecialParts = {
 
 	AirSupply = function(Object)
 		-- Air radius
-		BasicRadiusVisualizer(Object, function()
-			local volume = ExtractedUtil.GetVolume(Object)
+		BasicRadiusVisualizer(Object, function(volume)
 			return (18 * volume + 0.5 * volume)
 		end, Color3.new(0, 0.5, 1))
 
@@ -443,10 +452,10 @@ local SpecialParts = {
 		-- The chance it changes is like... nearly zero
 		-- probably...
 		local BASE_AIR_SUPPLY_VOLUME = 16
-		BasicGridVisualizer(Object, function()
+		BasicGridVisualizer(Object, function(volume)
 			-- https://discord.com/channels/616089055532417036/1047587493693886547/1326707636405801052
 			-- https://discord.com/channels/616089055532417036/616089055532417040/1314957945536249988
-			return Vector3.one * (300 * ExtractedUtil.GetVolume(Object) / BASE_AIR_SUPPLY_VOLUME)
+			return Vector3.one * (300 * volume / BASE_AIR_SUPPLY_VOLUME)
 		end, Color3.new(1, 0.3, 0))
 	end,
 
@@ -454,7 +463,7 @@ local SpecialParts = {
 		BasicRadiusVisualizer(Object, 300, Color3.new(0.5, 0, 1))
 	end,
 
-	EnergyShield = function(Object)
+	EnergyShield = function(Object: BasePart & {ShieldRadius: NumberValue})
 		local radius = Object:FindFirstChild("ShieldRadius") and Object.ShieldRadius.Value or 10
 		local Sphere = BasicRadiusVisualizer(Object, radius, Object.Color)
 		table.insert(TemporaryConnections, Object:FindFirstChild("ShieldRadius") and Object.ShieldRadius:GetPropertyChangedSignal("Value"):Connect(function()
@@ -581,8 +590,14 @@ local AdjustmentFunctions = {
 			return
 		elseif Index == "TextColor" then
 			local Color = ExtractedUtil.StringToColor3(Value)
-			Object:FindFirstChild("TextColor").Value = table.concat({Color.R, Color.G, Color.B}, ", ")
-			SignGui.SignLabel.TextColor3 = Color
+			if Color then
+				-- TODO: This is a weird bug thing
+				-- because it needs to write the value in 0-1 range
+				-- but the GUI wants to have a nice fancy 0-255 range
+				-- figure out how to properly fix this
+				Object:FindFirstChild("TextColor").Value = table.concat({Color.R, Color.G, Color.B}, ", ")
+				SignGui.SignLabel.TextColor3 = Color
+			end
 			return
 		elseif Index == "TextFont" then
 			for _, v in GetEnumNames(Enum.Font) do
@@ -594,12 +609,13 @@ local AdjustmentFunctions = {
 	end,
 }
 
-local function GetSameConfigOfOtherObject(otherObject: BasePart, referenceConfig: ValueBase): ValueBase
-	if referenceConfig.Parent:IsA("Configuration") then
+local function GetSameConfigOfOtherObject(otherObject: BasePart, referenceConfig: ValueBase): ValueBase?
+	local IS_COMPONENT_CONFIG = assert(referenceConfig.Parent, "Reference config has been destroyed"):IsA("Configuration")
+	if IS_COMPONENT_CONFIG then
 		local component = otherObject:FindFirstChild(referenceConfig.Parent.Name)
-		return if component then component:FindFirstChild(referenceConfig.Name) else nil
+		return if component then component:FindFirstChild(referenceConfig.Name) :: ValueBase? else nil
 	else
-		return otherObject:FindFirstChild(referenceConfig.Name)
+		return otherObject:FindFirstChild(referenceConfig.Name) :: ValueBase?
 	end
 end
 
@@ -614,11 +630,11 @@ local function ApplyConfigurationValues(ItemIdentifier: string, RootObject: Base
 	end
 
 	-- Get the AdjustmentFunction for this config
-	local AdjustmentFunction = ComponentAdjustmentFunctions[Value.Parent.Name] or AdjustmentFunctions[RootObject.Name]
+	local AdjustmentFunction = ComponentAdjustmentFunctions[assert(Value.Parent).Name] or AdjustmentFunctions[RootObject.Name]
 
 	-- Configure each object
 	for _, object in objects do
-		local otherValue = GetSameConfigOfOtherObject(object, Value)
+		local otherValue = GetSameConfigOfOtherObject(object, Value) :: (ValueBase & {Value: any})?
 		if not otherValue then continue end
 		otherValue.Value = ValueStatus
 
@@ -678,7 +694,7 @@ PrimaryWidget.Changed:Connect(function(Property)
 	plugin:SetSetting("PluginSize", {{PrimaryWidget.AbsoluteSize.X, PrimaryWidget.AbsoluteSize.Y}, {ConfigWidget.AbsoluteSize.X, ConfigWidget.AbsoluteSize.Y}})
 end)
 
-SearchBox = Instance.new("TextBox")
+local SearchBox = Instance.new("TextBox")
 SearchBox.BorderSizePixel = 1
 SearchBox.Size = UDim2.new(1, 0, 0, 16)
 SearchBox.Text = ''
@@ -689,7 +705,7 @@ SearchBox.TextScaled = true
 SearchBox.Parent = SearchBoxHolder
 table.insert(UIElements.Boxes, SearchBox)
 
-SearchMatches = Instance.new("TextLabel")
+local SearchMatches = Instance.new("TextLabel")
 SearchMatches.BorderSizePixel = 1
 SearchMatches.TextTransparency = 0.25
 SearchMatches.BackgroundTransparency = 1

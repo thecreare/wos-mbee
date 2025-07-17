@@ -1,4 +1,4 @@
-local UITemplates = require(script.Parent.Parent.Modules.UITemplates)[1]
+local UITemplates = require(script.Parent.Parent.Modules.UITemplates).UITemplates
 
 local THEME = require(script.Parent.Parent.Theme)
 local Fusion = require(script.Parent.Parent.Packages.fusion)

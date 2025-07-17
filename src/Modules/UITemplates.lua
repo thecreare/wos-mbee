@@ -47,9 +47,9 @@ local UIElements = {
     FloatingLabels = {},
     MalleabilityIndicators = {},
     OverlapIndicators = {},
-}
+} :: {[string]: {any}}
 
-function UITemplates.SyncColors(UIs)
+function UITemplates.SyncColors(UIs: typeof(UIElements)?)
 	if not UIs then
 		Logger.print("UPDATING UI COLORS...")
 		UIs = UIElements
@@ -559,4 +559,8 @@ function UITemplates.CreateTipBoxes(Gui, Table)
 	end)
 end
 
-return {UITemplates, UIElements, Colors}
+return {
+	UITemplates = UITemplates, 
+	UIElements = UIElements, 
+	Colors = Colors
+}

@@ -1,41 +1,54 @@
 local CompilersModule = {}
 CompilersModule.__index = CompilersModule
 
-function CompilersModule:GetSelectedCompiler()
+type CompilersModule = typeof(setmetatable({} :: {
+    _SelectedCompiler: any,
+    _Compilers: {any},
+}, CompilersModule))
+
+function CompilersModule.GetSelectedCompiler(self: CompilersModule)
     return self._SelectedCompiler
 end
 
-function CompilersModule:GetCompilers()
+function CompilersModule.GetCompilers(self: CompilersModule)
     return self._Compilers
 end
 
-function CompilersModule:SelectCompiler(compiler_id: number)
+function CompilersModule.SelectCompiler(self: CompilersModule, compiler_id: number)
     for i, compiler in self._Compilers do
         compiler.Selected = i == compiler_id
     end
     self._SelectedCompiler = self._Compilers[compiler_id]
 end
 
-function CompilersModule:GetComponents(): {Configuration}
+function CompilersModule.GetComponents(self: CompilersModule): {Configuration}
     return self._SelectedCompiler.Components
 end
 
-function CompilersModule:GetPartMetadata()
+function CompilersModule.GetPartMetadata(self: CompilersModule)
     return self._SelectedCompiler.PartMetadata
 end
 
-function CompilersModule:GetConfigData()
+function CompilersModule.GetConfigData(self: CompilersModule)
     return self._SelectedCompiler.ConfigData
 end
 
-function CompilersModule:GetAllMalleability()
+function CompilersModule.GetAllMalleability(self: CompilersModule)
     return self._SelectedCompiler.Malleability
 end
+
+type CompilerModuleScript = ModuleScript & {
+    Components: Instance,
+    PartMetadata: ModuleScript & {
+        Malleability: ModuleScript,
+        ConfigData: ModuleScript
+    }
+}
 
 function CompilersModule.new(compilers_path: Folder)
     local Compilers = {}
     local SelectedCompiler = nil
-    for i, comp in pairs(compilers_path:GetChildren()) do
+    for i, comp in compilers_path:GetChildren() :: {CompilerModuleScript} do
         local c = (require)(comp)
         Compilers[i] = c
     
