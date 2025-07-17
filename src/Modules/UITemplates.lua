@@ -310,9 +310,9 @@ function UITemplates.CreateCheckBox(Settings: {[string]: any})
 	return {Holder = Holder, Label = Label, Toggle = Toggle}
 end
 
-function UITemplates.CreateObjectButton(Settings)
-	if not Settings then warn("[MB:E:E] OBJECTBUTTON SETTINGS MISSING") return end
-	if not Settings.Part then warn("[MB:E:E] OBJECTBUTTON PART MISSING") return end
+function UITemplates.CreateObjectButton(Settings: {[string]: any})
+	if not Settings then Logger.error(`OBJECTBUTTON SETTINGS MISSING`) end
+	if not Settings.Part then Logger.error(`OBJECTBUTTON PART MISSING`) end
 
 	local ResultHolder = Instance.new("TextButton")
 	ResultHolder.BorderSizePixel = 0

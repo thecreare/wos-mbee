@@ -18,7 +18,9 @@ List of things that get put in:
 	to use when spawning a template
 
 ]]
-ExtractedUtil.StupidGlobals = {}
+ExtractedUtil.StupidGlobals = {
+	TemplateMaterial = nil :: any,
+}
 
 --https://devforum.roblox.com/t/how-does-roblox-calculate-the-bounding-boxes-on-models-getextentssize/216581/8
 function ExtractedUtil.GetBoundingBox(model, orientation)
@@ -207,7 +209,7 @@ function ExtractedUtil.ApplyTemplates(List: {BasePart}, Material: Enum.Material?
 	end
 end
 
-function ExtractedUtil.SpawnPart(Part): Model?
+function ExtractedUtil.SpawnPart(Part: BasePart): Model?
 	local SelectedPart
 
 	ExtractedUtil.HistoricEvent("InsertPart", "Insert Part", function()
