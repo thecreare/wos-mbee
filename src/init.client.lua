@@ -850,10 +850,10 @@ scope:Container {
 						-- Color Settings
 						-- TODO: fix formatting
 						scope:ForPairs(THEME.COLORS, function(use, scope: typeof(scope), key, value: Fusion.Value<Color3>)
-							local box_value = scope:Value(ExtractedUtil.Color3ToString(peek(value)))
-
 							return key, scope:TextBox {
-								Text = box_value,
+								Text = scope:Computed(function(use)
+									return ExtractedUtil.Color3ToString(use(value))
+								end),
 								BoxPlaceholderText = scope:Computed(function(use)
 									return `RGB Color ({ExtractedUtil.Color3ToString(use(value))})`
 								end),
