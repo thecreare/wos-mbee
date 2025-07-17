@@ -20,6 +20,13 @@ local UploadExpireAliasTypes = {
 	"1 month",
 }
 
+local GENERIC_TYPE_DEFAULT = {
+    boolean = true,
+    string = "",
+    Resource = "",
+    Vector3 = "",
+}
+
 -- Ordered array of settings
 local SettingInfo: {Setting} = {
 	{
@@ -48,7 +55,6 @@ local SettingInfo: {Setting} = {
         Name = "Upload To",
 		Categories = {"main"},
 		Type = "string",
-		Default = "",
         Options = {"gist", "hastebin"}
 	},
     {
@@ -56,7 +62,6 @@ local SettingInfo: {Setting} = {
         Name = "PAT Token",
 		Categories = {"main"},
 		Type = "string",
-		Default = "",
     },
     {
         Key = "UploadName",
@@ -129,7 +134,11 @@ local function InitPluginSettings(scope: Fusion.Scope<typeof(Fusion)>)
     local PluginSettingsTable = {}
     for _, setting in SettingInfo do
         local saved = plugin:GetSetting(setting.Key)
-        local value = if saved == nil then setting.Default else saved
+        local value = if saved == nil then
+            if setting.Default
+                then setting.Default
+                else GENERIC_TYPE_DEFAULT[setting.Type]
+            else saved
         local value_object = scope:Value(value)
         scope:Observer(value_object):onChange(function()
             plugin:SetSetting(setting.Key, peek(value_object))
