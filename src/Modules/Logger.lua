@@ -10,7 +10,7 @@ end
 local module = {}
 
 function module.print(...)
-	warn(PREFIX, ...)
+	print(PREFIX, ...)
 end
 
 function module.warn(...)
