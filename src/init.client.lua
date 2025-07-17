@@ -134,7 +134,9 @@ local SettingsWidget = plugin:CreateDockWidgetPluginGui("VersionSelect", DockWid
 SettingsWidget.Title = "Advanced Settings"
 SettingsWidget.Name = Branding.NAME_ABBREVIATION .. "SettingsWidget"
 
-local ConfigValues = {}
+type ConfigValue = (ValueBase & {Value: any})
+
+local ConfigValues = {} :: {[string]: {BasePart}}
 
 local TemporaryConnections = {} :: {any}
 
@@ -197,12 +199,12 @@ local function CheckMalleability(Value)
 	end
 end
 
-local function ApplyColorCopy(Object)
-	if not Object then warn("[MB:E:E] COLORCOPY FAIL, NO OBJECT") return end
+local function ApplyColorCopy(Object: BasePart)
+	if not Object then Logger.warn("COLOR COPY FAIL, NO OBJECT") return end
 	for _, v in pairs(Object:GetChildren()) do
 		if v.Name ~= "ColorCopy" then continue end
 		if v:IsA("SpecialMesh") then v.VertexColor = Vector3.new(Object.Color.R, Object.Color.G, Object.Color.B) end
-		if v:IsA("Texture") or v:IsA("Decal") then v.Color3 = Object.Color end
+		if v:IsA("Texture") or v:IsA("Decal") then (v :: any).Color3 = Object.Color end
 	end
 end
 
@@ -620,7 +622,7 @@ local function GetSameConfigOfOtherObject(otherObject: BasePart, referenceConfig
 end
 
 -- Class name of part, Part instance, Value Instance, New Value
-local function ApplyConfigurationValues(ItemIdentifier: string, RootObject: BasePart, Value: ValueBase, ValueStatus: any)
+local function ApplyConfigurationValues(ItemIdentifier: string?, RootObject: BasePart, Value: ValueBase, ValueStatus: any)
 	-- Get a list of objects that need to be configured
 	local objects: {BasePart}
 	if ItemIdentifier then
@@ -634,7 +636,7 @@ local function ApplyConfigurationValues(ItemIdentifier: string, RootObject: Base
 
 	-- Configure each object
 	for _, object in objects do
-		local otherValue = GetSameConfigOfOtherObject(object, Value) :: (ValueBase & {Value: any})?
+		local otherValue = GetSameConfigOfOtherObject(object, Value) :: ConfigValue?
 		if not otherValue then continue end
 		otherValue.Value = ValueStatus
 
@@ -927,7 +929,7 @@ scope:Observer(PluginSettings.OverlapToggle):onChange(function()
 	CheckTableOverlap(Selection:Get())
 end)
 
-ModelOffset = UITemplates.UITemplatesCreateTextBox(
+local ModelOffset = UITemplates.UITemplatesCreateTextBox(
 	{
 		Name = "ModelOffset",
 		LabelText = "Model Offset",
@@ -1056,7 +1058,7 @@ scope:Divider {
 	Parent = BG,
 }
 
-Decompilation = UITemplates.UITemplatesCreateTextBox(
+local Decompilation = UITemplates.UITemplatesCreateTextBox(
 	{
 		Name = "Decompilation",
 		LabelText = "Compilation",
@@ -1172,20 +1174,20 @@ end
 DecompileButton.OnPressed:Connect(function()
 	Logger.print("DECOMPILE STARTED")
 
-	local saveString = Decompilation.Box.Text
-	local model = ModernDecompile(saveString)
+	local save_string = Decompilation.Box.Text
+	local model = ModernDecompile(save_string)
 
 	if model then
 		Logger.print("DECOMPILE SUCCESS")
 	else
 		Logger.print("MODERN DECOMPILE FAILED, TRYING CLASSIC DECOMPILER")
 
-		local success, err = pcall(ClassicDecompile, saveString)
+		local ok, result = pcall(ClassicDecompile, save_string)
 
-		if success then
+		if ok then
 			Logger.print("CLASSIC DECOMPILE SUCCESS")
 		else
-			Logger.print("CLASSIC DECOMPILE FAILED WITH ERROR", err)
+			Logger.print("CLASSIC DECOMPILE FAILED WITH ERROR", result)
 		end
 	end
 end)
@@ -1308,15 +1310,16 @@ local function GetRequiredMaterialsButton()
 	}
 	local PartAmount = 0
 
-	local function AddAmount(Part, Amount, Category)
-		if not Part or (typeof(Part) ~= 'string') and not Part:IsA("BasePart") then return end
+	local function AddAmount(Part: string|BasePart, Amount, Category)
+		if not Part then return end
+		if not(typeof(Part) == 'string' or Part:IsA("BasePart")) then return end
 		if not Required[Category] then return end
-		local PartIdentifier = typeof(Part) == 'string' and Part or Part.Name
+		local PartIdentifier = if typeof(Part) == 'string' then Part else Part.Name
 		if not Required[Category][PartIdentifier] then Required[Category][PartIdentifier] = 0 end
 		Required[Category][PartIdentifier] += Amount
 	end
 
-	local function Loop(Table, Offset, Multiplier)
+	local function Loop(Table, Offset: string, Multiplier: number)
 		if not Table or not Table.Recipe then return end
 		for Ingredient, Amount in Table.Recipe do
 			if PartData[Ingredient] and PartData[Ingredient].Recipe then
@@ -1349,12 +1352,13 @@ local function GetRequiredMaterialsButton()
 		for _, v in v:GetDescendants() do
 			if v:IsA('BasePart') and Parts:FindFirstChild(v.Name) then
 				local Compat = CheckCompat(v.Name)
-				if not v:FindFirstChild("TempType") and PartData[v.Name] and PartData[v.Name].Recipe or Compat then
+				local temp_type_instance = v:FindFirstChild("TempType") :: StringValue?
+				if not temp_type_instance and PartData[v.Name] and PartData[v.Name].Recipe or Compat then
 					AddAmount(v, 1, 'All Parts')
 					Loop(Compat and PartData[Compat] or PartData[v.Name], ' ', 1)
-				elseif v:FindFirstChild("TempType") then
-					AddAmount(v.TempType.Value, 1, 'All Parts')
-					AddAmount(v.TempType.Value, 1, 'Raw Materials')
+				elseif temp_type_instance then
+					AddAmount(temp_type_instance.Value, 1, 'All Parts')
+					AddAmount(temp_type_instance.Value, 1, 'Raw Materials')
 				elseif not PartData[v.Name] or PartData[v.Name] and not PartData[v.Name].Recipe then
 					AddAmount(v, 1, 'All Parts')
 					AddAmount(v, 1, 'Raw Materials')
@@ -1365,7 +1369,7 @@ local function GetRequiredMaterialsButton()
 	end
 
 	Logger.print("Part Amount:", PartAmount)
-	Logger.print("Calculated Creation Requirements:\n", repr(Required, {pretty=true}))
+	Logger.print("Calculated Creation Requirements:\n", repr(Required :: any, {pretty=true} :: any))
 end
 
 -- Eventually `ConfigList` will be removed when fusion is more prevasive
@@ -1374,7 +1378,7 @@ local ConfigList = scope:ScrollingFrame {
 	ScrollingDirection = "Y",
 	BackgroundTransparency = 0,
 	ListPadding = UDim.new(0, 1),
-}
+} :: ScrollingFrame
 scope:New "Frame" {
 	Size = UDim2.fromScale(1, 1),
 	Parent = ConfigWidget,
@@ -1634,11 +1638,12 @@ local SpecialMaterialValues =
 		["Fluid"] = ConvertTextBoxInputToResource,
 		["Assemble"] = ConvertTextBoxInputToResource,
 
-		["Code"] = function(TextBox, ConfigValue)
+		["Code"] = function(TextBox, ConfigValue: StringValue)
 			local MicrocontrollerScript = ConfigValue:FindFirstChildWhichIsA("Script")
 
 			if not MicrocontrollerScript then
 				MicrocontrollerScript = ConfigValue:FindFirstChildWhichIsA("Script") or Instance.new("Script")
+				assert(MicrocontrollerScript)
 				MicrocontrollerScript.Name = "MicrocontrollerCode"
 				ScriptEditorService:UpdateSourceAsync(MicrocontrollerScript, function(_)
 					return ConfigValue.Value
@@ -1648,6 +1653,7 @@ local SpecialMaterialValues =
 
 			if not OpenedMicrocontrollerScript then
 				OpenedMicrocontrollerScript = MicrocontrollerScript
+				assert(OpenedMicrocontrollerScript)
 
 				TextBox.Box.Focused:Connect(function()
 					ScriptEditorService:OpenScriptDocumentAsync(OpenedMicrocontrollerScript)
@@ -1662,6 +1668,7 @@ local SpecialMaterialValues =
 				end)
 
 			end
+			assert(OpenedMicrocontrollerScript)
 
 			local ScriptUpdated = OpenedMicrocontrollerScript:GetPropertyChangedSignal("Source"):Connect(function()
 				ConfigValue.Value = ScriptEditorService:GetEditorSource(OpenedMicrocontrollerScript)
@@ -1733,7 +1740,7 @@ local function CreateConfigElementsForInstance(
 	local instance_key = CompatibilityReplacements.COMPAT_NAME_REPLACEMENTS[instance_to_configure.Name] or instance_to_configure.Name
 
 	local function GetDefaultConfigValue(config_data)
-		local default_value = config_data.Default
+		local default_value = config_data.Default :: any
 		local config_type = config_data.Type
 		local config_name = config_data.Name
 
@@ -1786,7 +1793,10 @@ local function CreateConfigElementsForInstance(
 		end
 
 		-- Actuall part that should be effected when this config changes
-		local associated_base_part = if instance_to_configure:IsA("BasePart") then instance_to_configure else instance_to_configure:FindFirstAncestorWhichIsA("BasePart")
+		local associated_base_part = if instance_to_configure:IsA("BasePart")
+			then instance_to_configure
+			else instance_to_configure:FindFirstAncestorWhichIsA("BasePart")
+		assert(associated_base_part, "Instance|Configuration missing BasePart ancestor")
 		local associated_base_part_key = associated_base_part.Name
 
 		for i, config_data in configurations do
@@ -1794,7 +1804,7 @@ local function CreateConfigElementsForInstance(
 			local config_name = config_data.Name
 
 			-- Insert value instance into part if it doesn't already exist
-			local config_instance: ValueBase? = instance_to_configure:FindFirstChild(config_name)
+			local config_instance = instance_to_configure:FindFirstChild(config_name) :: ConfigValue?
 			local expected_config_class = CONFIG_TYPE_TO_VALUE_TYPE[config_type] or "StringValue"
 
 			local old_value
@@ -1807,13 +1817,15 @@ local function CreateConfigElementsForInstance(
 			end
 
 			if config_instance == nil then
-				config_instance = Instance.new(expected_config_class)
-				config_instance.Name = config_name
-				config_instance.Value = old_value or GetDefaultConfigValue(config_data)
-				config_instance.Parent = instance_to_configure
+				local new_config_instance = Instance.new(expected_config_class) :: ConfigValue
+				new_config_instance.Name = config_name
+				new_config_instance.Value = old_value or GetDefaultConfigValue(config_data)
+				new_config_instance.Parent = instance_to_configure
+				config_instance = new_config_instance
 			end
+			assert(config_instance)
 
-			local toSync
+			local toSync: {[string]: {any}}
 			local GENERATED_BOX
 			local function GenericTextBox(placeholder: string)
 				local TextBox = UITemplates.UITemplatesCreateTextBox({
@@ -1931,7 +1943,7 @@ local function AddConfigItem(Item: BasePart)
 	-- Force port templates to the new version
 	-- I am tired of being compatible with TempTypes so its over. No more TempTypes.
 	do
-		local temp_type: StringValue? = Item:FindFirstChild("TempType")
+		local temp_type = Item:FindFirstChild("TempType") :: StringValue?
 		if temp_type then
 			Item.Name = temp_type.Value
 			temp_type:Destroy()
@@ -2114,6 +2126,22 @@ local UpdateFaceSelectionViewport;do
 		return (part.Size - Vector3.one * shrink_amount) * axis_mask + axis * plate_thickness
 	end)
 
+	local function SetSurface(part: BasePart, face: string, surface_type: Enum.SurfaceType)
+		if face == "Front" then
+			part.FrontSurface = surface_type
+		elseif face == "Back" then
+			part.BackSurface = surface_type
+		elseif face == "Top" then
+			part.TopSurface = surface_type
+		elseif face == "Bottom" then
+			part.BottomSurface = surface_type
+		elseif face == "Right" then
+			part.RightSurface = surface_type
+		elseif face == "Left" then
+			part.LeftSurface = surface_type
+		end
+	end
+
 	local function OnTextChange(surface_type_name: string)
 		local surface_type = MAP_SURFACE_NAME_TO_ENUM[surface_type_name]
 		if not surface_type then return end
@@ -2123,7 +2151,7 @@ local UpdateFaceSelectionViewport;do
 		-- Apply new surface to every selected part's face
 		local function TryApplySurface(part: BasePart)
 			if part:IsA("BasePart") then
-				part[current_face_name .. "Surface"] = surface_type
+				SetSurface(part, current_face_name, surface_type)
 			end
 		end
 		for _, instance in Selection:Get() do
@@ -2316,7 +2344,7 @@ function AddComponentToPart(part: BasePart, componentName: string)
 	if part:FindFirstChild(componentName) then return end
 
 	-- Grab component
-	local component
+	local component: Configuration?
 	for _, c in CompilersModule:GetComponents() do
 		if c.Name == componentName then
 			component = c

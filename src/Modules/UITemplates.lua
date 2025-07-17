@@ -268,9 +268,10 @@ function UITemplates.UITemplatesCreateTextBox(Settings: {[string]: any})
 end
 
 -- Should not be used for new work, instead use scope:CheckBox {}
-function UITemplates.CreateCheckBox(Settings)
-	if not Settings then warn("[MB:E:E] CHECKBOX MISSING SETTINGS.") return end
-	--if not Settings.Parent then warn("[MB:E:E] CHECKBOX MISSING PARENT PROPERTY") return end
+function UITemplates.CreateCheckBox(Settings: {[string]: any})
+	if not Settings then
+		Logger.error("CHECKBOX MISSING SETTINGS.")
+	end
 
 	local Holder = Instance.new("Frame")
 	Holder.BackgroundTransparency = 1

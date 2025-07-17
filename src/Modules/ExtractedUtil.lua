@@ -186,7 +186,7 @@ function ExtractedUtil.MatchQueryToList(Query, List)
 	return Matched
 end
 
-function ExtractedUtil.ApplyTemplates(List, Material)
+function ExtractedUtil.ApplyTemplates(List: {BasePart}, Material: Enum.Material?)
 	for _, Part in ExtractedUtil.SearchTableWithRecursion(List, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
 		if Material == nil then
 			Part.Material = Enum.Material.Concrete
