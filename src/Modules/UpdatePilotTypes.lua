@@ -11,7 +11,7 @@ local HEAD = "-- PilotLua Globals: "
 local function DetermineRequire(script: ModuleScript)
     local contents = script.Source
     local match = contents:match(HEAD .. ".-\n"):gsub(HEAD, "")
-    return `local {match} = require(game.{script:GetFullName()})()\n\n`
+    return `local PilotLua = require(game.{script:GetFullName()})\nlocal {match} = PilotLua()\n\n`
 end
 
 local response_cache
@@ -27,6 +27,7 @@ local function UpdatePilotTypes(): string
         local ok, response = pcall(HttpService.GetAsync, HttpService, URL)
         if ok then
             Logger.print(`Successfully got type checking file, ~{math.round(#response/1024)}KB`)
+            Logger.print(`The type checking code will automatically be inserted into blank microcontroller scripts when opened from the configure widget`)
         else
             Logger.warn("Failed to update PilotLua type file with error", code)
             if output_script then
