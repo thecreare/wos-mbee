@@ -896,10 +896,12 @@ do
 				}
 			else
 				scope:TextBox {
-					Label = setting.Key,
 					Parent = container,
 					Text = PluginSettings[setting.Key],
 					Layout = layout,
+					Label = {
+						Text = setting.Key,
+					}
 				}
 			end
 
@@ -1445,8 +1447,10 @@ scope:Container {
 							}
 						else
 							return key, scope:TextBox {
-								Label = setting.Key,
 								Text = value,
+								Label = {
+									Text = setting.Key,
+								}
 							}
 						end
 					end),
@@ -1475,7 +1479,6 @@ scope:Container {
 								end
 							end)
 							return key, scope:TextBox {
-								Label = key,
 								Text = box_value,
 								BoxPlaceholderText = scope:Computed(function(use)
 									return `RGB Color ({ExtractedUtil.Color3ToString(use(value))})`
@@ -1485,6 +1488,9 @@ scope:Container {
 										return ExtractedUtil.ContrastColor(use(value))
 									end),
 									BackgroundColor3 = value
+								},
+								Label = {
+									Text = key,
 								},
 								Layout = {
 									LayoutOrder = 100 + key:byte(1, 1) :: number + key:byte(2, 2) :: number * 26
@@ -2200,9 +2206,13 @@ local UpdateFaceSelectionViewport;do
 				end),
 				onTextChange = OnTextChange,
 
-				Label = scope:Computed(function(use)
-					return use(closest_face)
-				end),
+				Label = {
+					Text = scope:Computed(function(use)
+						return use(closest_face)
+					end),
+					TextScaled = true,
+					TextColor3 = THEME.COLORS.MainContrast,
+				},
 
 				Options = SURFACE_TYPE_NAMES,
 				Layout = {

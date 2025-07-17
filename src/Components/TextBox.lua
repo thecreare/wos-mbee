@@ -9,11 +9,11 @@ type UsedAs<T> = Fusion.UsedAs<T>
 local function TextBox(
     scope: Fusion.Scope<typeof(Fusion)>,
     props: {
-        Label: UsedAs<string>?,
         Text: UsedAs<string>,
         onTextChange: (text: string)->()?,
         Options: UsedAs<{[any]: string}>?,
         PlaceholderText: UsedAs<string>?,
+
         Parent: UsedAs<Instance>?,
         Layout: {
             LayoutOrder: UsedAs<number>?,
@@ -27,10 +27,16 @@ local function TextBox(
             BackgroundColor3: UsedAs<Color3>?,
             TextColor3: UsedAs<Color3>?,
         }?,
+        Label: {
+            Text: UsedAs<string>?,
+            TextScaled: UsedAs<boolean>?,
+            TextColor3: UsedAs<Color3>?,
+        }?
     }
 ): Fusion.Child
     props.Layout = props.Layout or {}; assert(props.Layout)
     props.Box = props.Box or {}; assert(props.Box)
+    props.Label = props.Label or {}; assert(props.Label)
     local tips_open = scope:Value(false)
     local holder_size = scope:Value(UDim2.fromOffset(30, 30))
 
@@ -135,12 +141,12 @@ local function TextBox(
                 Name = "Label",
                 BackgroundTransparency = 1,
                 Size = UDim2.fromScale(1, 1),
-                Text = props.Label,
+                Text = props.Label.Text,
                 FontFace = THEME.font_regular,
-                TextColor3 = THEME.COLORS.MainText,
-                -- TextColor3 = THEME.COLORS.MainContrast,
+                TextColor3 = props.Label.TextColor3 or THEME.COLORS.MainText,
                 TextXAlignment = Enum.TextXAlignment.Left,
-                TextScaled = true,
+                TextScaled = props.Label.TextScaled,
+                TextSize = 24,
                 TextStrokeTransparency = 0,
                 TextStrokeColor3 = THEME.COLORS.MainBackground,
                 ClipsDescendants = true,
