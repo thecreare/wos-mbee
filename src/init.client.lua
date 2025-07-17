@@ -1415,11 +1415,13 @@ local UpdateFaceSelectionViewport;do
 
 	-- Face (Top/Left/etc) as string that is closest to the viewport frame camera
 	local closest_face = scope:Computed(function(use)
+		local part = use(selected_part)
+		if part == nil then return "Top" end
 		local cam_pos = use(viewport_camera_cframe).Position
 		local closest_dist = math.huge
 		local closest_face
 		for _, face in FACES do
-			local axis = Vector3.fromNormalId(face :: any)
+			local axis = part.CFrame.Rotation:VectorToWorldSpace(Vector3.fromNormalId(face :: any))
 			local distance = (cam_pos - axis).Magnitude
 			if distance < closest_dist then
 				closest_dist = distance
@@ -1432,17 +1434,6 @@ local UpdateFaceSelectionViewport;do
 	-- `closest_face` as a Vector3
 	local closest_face_axis = scope:Computed(function(use)
 		return Vector3.fromNormalId(use(closest_face) :: any)
-	end)
-
-	local face_selection_indicator_size = scope:Computed(function(use)
-		local part = use(selected_part)
-		if not part then return Vector3.one end
-
-		local axis = use(closest_face_axis):Abs()
-		local axis_mask = (axis - Vector3.one):Abs()
-		local plate_thickness = 0.05
-		local shrink_amount = 0.1
-		return (part.Size - Vector3.one * shrink_amount) * axis_mask + axis * plate_thickness
 	end)
 
 	local function SetSurface(part: BasePart, face: string, surface_type: Enum.SurfaceType)
@@ -1552,19 +1543,22 @@ local UpdateFaceSelectionViewport;do
 					-- FaceSelectionPartIndicator
 					scope:New "Part" {
 						Color = THEME.COLORS.MainContrast,
-						Size = face_selection_indicator_size,
+						Size = scope:Computed(function(use)
+							local part = use(selected_part)
+							if not part then return Vector3.one end
+
+							local axis = use(closest_face_axis):Abs()
+							local axis_mask = (axis - Vector3.one):Abs()
+							local plate_thickness = 0.05
+							local shrink_amount = 0.1
+							return (part.Size - Vector3.one * shrink_amount) * axis_mask + axis * plate_thickness
+						end),
 						CFrame = scope:Computed(function(use)
-							local size = use(face_selection_indicator_size)
 							local part = use(selected_part)
 							if not part then return CFrame.identity end
 							local selected_rotation = part.CFrame.Rotation
-							local target_cf = selected_rotation + use(closest_face_axis) * part.Size / 2
-							-- To cube space
-							-- No idea what it does
-							-- by articlize
-							local Scale = math.min(size.X, size.Y, size.Z)
-							local SizeRedux = Vector3.new(Scale, Scale, Scale) / size
-							return selected_rotation * CFrame.new(selected_rotation:ToObjectSpace(target_cf).Position * SizeRedux)
+							local surface_pos = selected_rotation:VectorToWorldSpace(use(closest_face_axis) * part.Size / 2)
+							return CFrame.new(surface_pos) * selected_rotation
 						end),
 						-- cursed
 						FrontSurface = SurfaceSyncer("Front"),
