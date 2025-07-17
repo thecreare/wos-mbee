@@ -1078,6 +1078,13 @@ local function MigrateSelectionButton()
 		-- Try to migrate templates for the instance
 		Compiler:TryMigrateTemplates(part)
 	end)
+
+	PerformGenericMigration("CompatibilityMigration", function(part: BasePart)
+		local replacement = CompatibilityReplacements.COMPAT_NAME_REPLACEMENTS[part.Name]
+		if replacement then
+			part.Name = replacement
+		end
+	end)
 end
 
 local function MigrateConfigurablesButton()
