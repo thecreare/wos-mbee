@@ -1008,7 +1008,16 @@ local function ConvertTextBoxInputToResource(TextBox, ConfigValue)
 	UITemplates.ConnectBoxToAutocomplete(TextBox.Box, script.Parts:GetChildren())
 end
 
-local OpenedMicrocontrollerScript
+local MICROCONTROLLER_SCRIPT_NAME = "MicrocontrollerCode"
+
+ScriptEditorService.TextDocumentDidChange:Connect(function(document: ScriptDocument)
+	local document_script = document:GetScript()
+	if document_script.Name ~= MICROCONTROLLER_SCRIPT_NAME then return end
+	if document_script.Parent == nil then return end
+	local value = document_script.Parent :: StringValue
+	if value.Name ~= "Code" then return end
+	value.Value = document:GetText()
+end)
 
 local SpecialMaterialValues =
 	{
@@ -1022,44 +1031,44 @@ local SpecialMaterialValues =
 		["Code"] = function(TextBox, ConfigValue: StringValue)
 			local MicrocontrollerScript = ConfigValue:FindFirstChildWhichIsA("Script")
 
-			if not MicrocontrollerScript then
-				MicrocontrollerScript = ConfigValue:FindFirstChildWhichIsA("Script") or Instance.new("Script")
-				assert(MicrocontrollerScript)
-				MicrocontrollerScript.Name = "MicrocontrollerCode"
-				ScriptEditorService:UpdateSourceAsync(MicrocontrollerScript, function(_)
+			if MicrocontrollerScript == nil then
+				local new_script = Instance.new("Script")
+				new_script.Name = MICROCONTROLLER_SCRIPT_NAME
+				ScriptEditorService:UpdateSourceAsync(new_script, function(_)
 					return ConfigValue.Value
 				end)
-				MicrocontrollerScript.Parent = ConfigValue
+				new_script.Parent = ConfigValue
+				MicrocontrollerScript = new_script
 			end
+			assert(MicrocontrollerScript)
 
-			if not OpenedMicrocontrollerScript then
-				OpenedMicrocontrollerScript = MicrocontrollerScript
-				assert(OpenedMicrocontrollerScript)
-
-				TextBox.Box.Focused:Connect(function()
-					ScriptEditorService:OpenScriptDocumentAsync(OpenedMicrocontrollerScript)
+			local focused = TextBox.Box.Focused:Connect(function()
+				ScriptEditorService:UpdateSourceAsync(MicrocontrollerScript, function(_)
+					return TextBox.Box.Text
 				end)
-
-				TextBox.Box.Destroying:Connect(function()
-					OpenedMicrocontrollerScript = nil
-				end)
-
-				OpenedMicrocontrollerScript:GetPropertyChangedSignal("Source"):Connect(function()
-					TextBox.Box.Text = ScriptEditorService:GetEditorSource(OpenedMicrocontrollerScript)
-				end)
-
-			end
-			assert(OpenedMicrocontrollerScript)
-
-			local ScriptUpdated = OpenedMicrocontrollerScript:GetPropertyChangedSignal("Source"):Connect(function()
-				ConfigValue.Value = ScriptEditorService:GetEditorSource(OpenedMicrocontrollerScript)
+				ScriptEditorService:OpenScriptDocumentAsync(MicrocontrollerScript)
 			end)
 
-			TextBox.Box.Destroying:Connect(function()
-				ConfigValue.Value = ScriptEditorService:GetEditorSource(OpenedMicrocontrollerScript)
-				ScriptUpdated:Disconnect()
+			local am_i_updating_box = false
+			local box_changed = TextBox.Box:GetPropertyChangedSignal("Text"):Connect(function()
+				if am_i_updating_box then return end
+				ScriptEditorService:UpdateSourceAsync(MicrocontrollerScript, function(_)
+					return TextBox.Box.Text
+				end)
+			end)
+			
+			local changed = ConfigValue.Changed:Connect(function(new: string)
+				am_i_updating_box = true
+				TextBox.Box.Text = new
+				am_i_updating_box = false
 			end)
 
+			TextBox.Box.Destroying:Once(function()
+				ConfigValue.Value = ScriptEditorService:GetEditorSource(MicrocontrollerScript)
+				focused:Disconnect()
+				box_changed:Disconnect()
+				changed:Disconnect()
+			end)
 		end,
 	}
 
