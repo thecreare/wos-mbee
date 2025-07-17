@@ -557,6 +557,46 @@ local BG = scope:ScrollingFrame {
 			}
 		},
 
+		-- Bottom stuff
+		scope:New "Frame" {
+			BackgroundTransparency = 1,
+			Size = UDim2.new(1, -10, 0, 16),
+			Position = UDim2.new(0, 0, 1, 0),
+			LayoutOrder = 1000,
+			[Children] = {
+				-- Advanced Settings
+				scope:New "TextButton" {
+					Text = "Advanced Settings",
+					TextColor3 = THEME.COLORS.MainContrast,
+					BackgroundTransparency = 1,
+					Size = UDim2.fromScale(0.5, 1),
+					AnchorPoint = Vector2.new(1, 1),
+					Position = UDim2.fromScale(1, 1),
+					Font = THEME.font,
+					TextXAlignment = Enum.TextXAlignment.Right,
+					TextScaled = true,
+					[Fusion.OnEvent "Activated"] =  function()
+						SettingsWidget.Enabled = not SettingsWidget.Enabled
+					end
+				},
+				-- Reset Custom Materials
+				scope:New "TextButton" {
+					Text = "Reset Material Data",
+					TextColor3 = THEME.COLORS.MainContrast,
+					BackgroundTransparency = 1,
+					Size = UDim2.fromScale(0.5, 1),
+					AnchorPoint = Vector2.new(0, 1),
+					Position = UDim2.fromScale(0, 1),
+					Font = THEME.font,
+					TextXAlignment = Enum.TextXAlignment.Left,
+					TextScaled = true,
+					[Fusion.OnEvent "Activated"] =  function()
+						CustomMaterialsModule.Clear()
+						Logger.print('SUCCESSFULLY RESET MATERIAL DATA')
+					end
+				}
+			}
+		}
 	}
 } :: ScrollingFrame
 
@@ -567,87 +607,6 @@ end)
 
 scope:Observer(PluginSettings.OverlapToggle):onChange(function()
 	CheckTableOverlap(Selection:Get())
-end)
-
---[[
-Things to re-add
-
-ReplaceUploads only visible if CompileHost is valid
-ReplaceCompiles only visible if CompileHost not valid
-]]
---[[
-
-
-UploadTo.Box:GetPropertyChangedSignal("Text"):Connect(function()
-	if UploadTo.Box.Text:lower() == "gist" then
-		UploadTo.Box.Font = "SourceSans"
-		UploadToken.Box.PlaceholderText = 'PAT Token'
-		UploadToken.Holder.Visible = true
-		UploadName.Holder.Visible = true
-		UploadReplace.Holder.Visible = true
-		ReplaceScripts.Holder.Visible = false
-
-		UpladExpiry.Holder.Visible = false
-	elseif UploadTo.Box.Text:lower() == "hastebin" then
-		UploadTo.Box.Font = "SourceSans"
-		UploadToken.Holder.Visible = false
-		UploadName.Holder.Visible = false
-		UploadReplace.Holder.Visible = true
-		ReplaceScripts.Holder.Visible = false
-
-		UpladExpiry.Holder.Visible = true
-	else
-		UploadTo.Box.Font = "SourceSansLight"
-		UploadToken.Box.PlaceholderText = '...'
-		UploadToken.Holder.Visible = false
-		UploadName.Holder.Visible = false
-		UploadReplace.Holder.Visible = false
-		ReplaceScripts.Holder.Visible = true
-
-		UpladExpiry.Holder.Visible = false
-	end
-end)
-]]
-
---other info
-local OthersHolder = Instance.new("Frame")
-OthersHolder.BackgroundTransparency = 1
-OthersHolder.Size = UDim2.new(1, -10, 0, 16)
-OthersHolder.Position = UDim2.new(0, 0, 1, 0)
-OthersHolder.LayoutOrder = 999
-OthersHolder.Parent = BG
-
---version label
-local VersionLabel = Instance.new("TextButton")
-VersionLabel.BackgroundTransparency = 1
-VersionLabel.BorderSizePixel = 0
-VersionLabel.Size = UDim2.fromScale(0.5, 1)
-VersionLabel.AnchorPoint = Vector2.new(1, 1)
-VersionLabel.Position = UDim2.fromScale(1, 1)
-VersionLabel.Text = "Advanced Settings"
-VersionLabel.Font = Enum.Font.SourceSans
-VersionLabel.TextXAlignment = Enum.TextXAlignment.Right
-VersionLabel.TextScaled = true
-VersionLabel.Parent = OthersHolder
-table.insert(UIElements.FloatingLabels, VersionLabel)
-
---reset data
-local ResetLabel = Instance.new("TextButton")
-ResetLabel.BackgroundTransparency = 1
-ResetLabel.BorderSizePixel = 0
-ResetLabel.Size = UDim2.fromScale(0.5, 1)
-ResetLabel.AnchorPoint = Vector2.new(0, 1)
-ResetLabel.Position = UDim2.fromScale(0, 1)
-ResetLabel.Text = "Reset Material Data"
-ResetLabel.Font = Enum.Font.SourceSans
-ResetLabel.TextXAlignment = Enum.TextXAlignment.Left
-ResetLabel.TextScaled = true
-ResetLabel.Parent = OthersHolder
-table.insert(UIElements.FloatingLabels, ResetLabel)
-
-ResetLabel.MouseButton1Click:Connect(function()
-	CustomMaterialsModule.Clear()
-	warn('[MB:E:E] SUCCESSFULLY RESET MATERIAL DATA')
 end)
 
 ----==== These functions are connected to buttons in the settings menu ====----
@@ -961,10 +920,6 @@ ConfigureSettings.ClickedFn = function()
 	ConfigWidget.Enabled = not ConfigWidget.Enabled
 end
 createSharedToolbar(plugin, ConfigureSettings)
-
-VersionLabel.MouseButton1Click:Connect(function()
-	SettingsWidget.Enabled = not SettingsWidget.Enabled
-end)
 
 --[[local MaterialValues =
 	{
