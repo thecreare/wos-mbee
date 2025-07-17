@@ -212,8 +212,9 @@ function UITemplates.SyncColors(UIs)
 end
 
 -- MARK: Templates
-function UITemplates.UITemplatesCreateTextBox(Settings)
-	if not Settings then warn("[MB:E:E] TEXTBOX MISSING SETTINGS.") return end
+-- Should not be used for new work, instead use scope:TextBox {}
+function UITemplates.UITemplatesCreateTextBox(Settings: {[string]: any})
+	if not Settings then warn("[MB:E:E] TEXTBOX MISSING SETTINGS.") return nil :: any end
 	--if not Settings.Parent then warn("[MB:E:E] TEXTBOX MISSING PARENT PROPERTY") return end
 
 	local Holder = Instance.new("Frame")
@@ -266,6 +267,7 @@ function UITemplates.UITemplatesCreateTextBox(Settings)
 	return {Holder = Holder, Label = Label, Box = Box}
 end
 
+-- Should not be used for new work, instead use scope:CheckBox {}
 function UITemplates.CreateCheckBox(Settings)
 	if not Settings then warn("[MB:E:E] CHECKBOX MISSING SETTINGS.") return end
 	--if not Settings.Parent then warn("[MB:E:E] CHECKBOX MISSING PARENT PROPERTY") return end
