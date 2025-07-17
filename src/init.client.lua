@@ -1542,7 +1542,6 @@ local MaterialsLoaded = pcall(function()
 		table.insert(InfoConstants.SearchCategories.resources, Name:lower())
 		table.insert(InfoConstants.SearchCategories.templateables, Name:lower())
 		UITemplates.CreateObjectButton({Part = NewMaterial, Deletable = true, Parent = ResultsFrame})
-		ResultsFrame.CanvasSize = UDim2.new(0, 0, 0, #script.Parts:GetChildren() * 20)
 	end
 end)
 
@@ -1550,7 +1549,8 @@ if not MaterialsLoaded then
 	CustomMaterialsModule.Clear()
 end
 
-ResultsFrame.CanvasSize = UDim2.new(0, 0, 0, #script.Parts:GetChildren() * 20)
+ResultsFrame.CanvasSize = UDim2.fromScale(0, 0)
+ResultsFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
 
 BG.Parent = PrimaryWidget
 
