@@ -2326,7 +2326,8 @@ CompileButton.OnPressed:Connect(function()
 
 		-- Gist uploads
 		if compile_host:lower() == 'gist' then
-			local url = CompileUploader.GistUpload(Compilation, APIKey, UploadName.Box.Text)
+			local upload_name = UploadName.Box.Text or (Branding.NAME_ABBREVIATION .. "_Upload")
+			local url = CompileUploader.GistUpload(Compilation, APIKey, upload_name)
 			CreateOutputScript(url, "MBEEOutput_Upload", true)
 			return
 		end
