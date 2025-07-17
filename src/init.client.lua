@@ -48,6 +48,7 @@ local PseudoInstance = require(script.MBEPackages.PseudoInstance)
 
 local LuaEncode = require(script.MBEPackages.LuaEncode)
 local repr = require(script.MBEPackages.repr)
+local Constants = require(script.Modules.Constants)
 
 local CustomModules = script.Modules
 local Components = script.Components
@@ -1502,11 +1503,31 @@ scope:Container {
 }
 
 
+do -- Create object buttons for normal wos parts
+	local found_map = {}
+	for _, Part in pairs(script.Parts:GetChildren()) do
+		UITemplates.CreateObjectButton({Part = Part, Parent = ResultsFrame})
+		found_map[Part.Name] = true
+	end
 
-for _, Part in pairs(script.Parts:GetChildren()) do
-	UITemplates.CreateObjectButton({Part = Part, Parent = ResultsFrame})
+	if Constants.IS_LOCAL then
+		for part_name, _ in CompilersModule:GetAllMalleability() do
+			if found_map[part_name] == nil then
+				Logger.warn(`Missing model for part {part_name}. Inserting placeholder.`)
+				local Part = Instance.new("Part")
+				Part.Color = BrickColor.Random().Color
+				Part.Size = Vector3.one*2
+				Part.Name = part_name
+				Part.Anchored = true
+				Part:AddTag("Placeholder")
+				Part.Parent = script.Parts
+				UITemplates.CreateObjectButton({Part = Part, Parent = ResultsFrame})
+			end
+		end
+	end
 end
 
+-- Create part button for each custom material
 local MaterialsLoaded = pcall(function()
 	for Name, Properties in CustomMaterialsModule.CustomMaterials do
 		local NewMaterial = Instance.new("Part")
