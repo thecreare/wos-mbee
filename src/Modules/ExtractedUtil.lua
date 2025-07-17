@@ -85,8 +85,12 @@ function ExtractedUtil.HistoricEvent(name: string, display_name: string?, callba
 
 	local success, err = pcall(callback, ...)
 
-	local operation = if success then Enum.FinishRecordingOperation.Commit else Enum.FinishRecordingOperation.Cancel
-	ChangeHistoryService:FinishRecording(recordingId, operation)
+	if recordingId then
+		local operation = if success then Enum.FinishRecordingOperation.Commit else Enum.FinishRecordingOperation.Cancel
+		ChangeHistoryService:FinishRecording(recordingId, operation)
+	else
+		Logger.warn(`Failed to generate recordingId for {name}`)
+	end
 
 	if not success then
 		Logger.error(`{name} failed with error: {err}`)
