@@ -2519,15 +2519,17 @@ CompileButton.OnPressed:Connect(function()
 
 		local createdScripts = {}
 
+		local compile_host = peek(PluginSettings.CompileHost)
+
 		-- Gist uploads
-		if CompileHost:lower() == 'gist' then
+		if compile_host:lower() == 'gist' then
 			local url = CompileUploader.GistUpload(Compilation, APIKey, UploadName.Box.Text)
 			CreateOutputScript(url, "MBEEOutput_Upload", true)
 			return
 		end
 
 		-- Hastebin.org uploads
-		if CompileHost:lower() == 'hastebin' then
+		if compile_host:lower() == 'hastebin' then
 			local expires = UploadExpireTypes[table.find(UploadExpireAliasTypes, UploadExpireTime:lower()) or 1]
 			local url = CompileUploader.HastebinUpload(Compilation, expires)
 			CreateOutputScript(url, "MBEEOutput_Upload", true)
