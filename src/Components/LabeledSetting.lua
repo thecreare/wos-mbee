@@ -6,8 +6,7 @@ type UsedAs<T> = Fusion.UsedAs<T>
 local function Divider(
     scope: Fusion.Scope<typeof(Fusion)>,
     props: {
-        Setting: PluginSettings.Setting,
-        PluginSettingValues: {[string]: Fusion.Value<any>},
+        Setting: string,
         Parent: UsedAs<Instance>?,
         Layout: {
             LayoutOrder: UsedAs<number>?,
@@ -23,23 +22,28 @@ local function Divider(
         CheckBox = require(script.Parent.Checkbox),
         TextBox = require(script.Parent.TextBox),
     })
-    local setting = props.Setting
+    local setting = PluginSettings.Info[props.Setting]
+    local value = PluginSettings.Values[props.Setting]
     if setting.Type == "boolean" then
         return scope:CheckBox {
             Label = setting.Name,
             Parent = props.Parent,
-            Checked = props.PluginSettingValues[setting.Key],
+            Checked = value,
             Layout = props.Layout,
         }
     else
         return scope:TextBox {
             Parent = props.Parent,
-            Text = props.PluginSettingValues[setting.Key],
+            Text = value,
             PlaceholderText = scope:Computed(function()
                 return if setting.Options
                     then table.concat(setting.Options, "/")
-                    else "Input..."
+                    elseif setting.Default and setting.Default ~= "" then `{setting.Default} [{setting.Type}]`
+                    else setting.Type
             end),
+            onTextChange = function(text: string)
+                value:set(text)
+            end,
             Layout = props.Layout,
             Options = setting.Options,
             Label = {

@@ -90,7 +90,7 @@ local TemplateMaterial = UITemplates.UITemplatesCreateTextBox({
     Name = "TemplateMaterial",
     LabelText = "Template Material",
     BoxPlaceholderText = "Resource [string]",
-    LayoutOrder = 1,
+    LayoutOrder = 0,
 })
 table.insert(children, TemplateMaterial.Holder)
 ExtractedUtil.StupidGlobals.TemplateMaterial = TemplateMaterial

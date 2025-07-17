@@ -1,5 +1,4 @@
 local Selection = game:GetService("Selection")
-local HttpService = game:GetService("HttpService")
 local UserInputService = game:GetService("UserInputService")
 local ScriptEditorService = game:GetService("ScriptEditorService")
 
@@ -15,29 +14,7 @@ _G.plugin = plugin
 -- Load the MBReflect plugin that is now bundled with MBEE
 require(script.MBReflect)
 
-local compilerSettings = {
-	Offset = Vector3.zero,
-	ShowTODO = false,
-}
-
-local UploadExpireTypes = {
-	"onetime",
-	"never",
-	"3600",
-	"604800",
-	"2592000",
-}
-local UploadExpireAliasTypes = {
-	"single use",
-	"never expire",
-	"1 hour",
-	"1 week",
-	"1 month",
-}
-local UploadExpireTime = plugin:GetSetting("UploadExpireTime") or UploadExpireAliasTypes[4]
-
-local APIKey = plugin:GetSetting("APIKey") or ''
-
+local ConfigValues = require(script.ConfigValues_G)
 local createSharedToolbar = require(script.createSharedToolbar)
 local PartData = require(script.PartData)
 
@@ -47,9 +24,10 @@ require(script.MBEPackages.RippleButton)
 require(script.MBEPackages.ReplicatedPseudoInstance)
 local PseudoInstance = require(script.MBEPackages.PseudoInstance)
 
-local LuaEncode = require(script.MBEPackages.LuaEncode)
 local repr = require(script.MBEPackages.repr)
-local Branding = require(script.Modules.Branding)
+local ApplyColorCopy = require(script.Modules.ApplyColorCopy)
+local ApplyConfigurationValues = require(script.Modules.ApplyConfigurationValues)
+local GetEnumNames = require(script.Modules.GetEnumNames)
 
 local CustomModules = script.Modules
 local Components = script.Components
@@ -72,10 +50,11 @@ local peek = Fusion.peek
 local THEME = require(script.Theme)
 local PluginSettingsModule = require(CustomModules.PluginSettings)
 local Logger = require(CustomModules.Logger)
-local CompileUploader = require(CustomModules.Uploader)
 local CompatibilityReplacements = require(CustomModules.Compatibility)
 local InfoConstants = require(CustomModules.Settings)
 local ExtractedUtil = require(CustomModules.ExtractedUtil)
+local Compile = require(CustomModules.Compile)
+local Decompile = require(CustomModules.Decompile)
 local UITemplates, UIElements, Colors; do
 	local m = require(CustomModules.UITemplates)
 	UITemplates = m.UITemplates
@@ -92,7 +71,7 @@ end
 local CustomMaterialsModule = require(CustomModules.CustomMaterials)
 local CompilersModule = require(CustomModules.Compilers)
 
-local PluginSettings = PluginSettingsModule.CreateFusionValues(scope)
+local PluginSettings = PluginSettingsModule.Values
 -- Fix constants having wrong case
 do
 	local LOWER_TO_CORRECT = {}
@@ -108,7 +87,6 @@ end
 
 type ConfigValue = (ValueBase & {Value: any})
 
-local ConfigValues = {} :: {[string]: {BasePart}}
 local TemporaryConnections = {} :: {any}
 
 --[[ Make sure `Camera` always points to the newest camera ]]--
@@ -184,15 +162,6 @@ local function CheckMalleability(Value)
 		if MalleabilityBox then
 			table.insert(UIElements.MalleabilityIndicators, MalleabilityBox)
 		end
-	end
-end
-
-local function ApplyColorCopy(Object: BasePart)
-	if not Object then Logger.warn("COLOR COPY FAIL, NO OBJECT") return end
-	for _, v in pairs(Object:GetChildren()) do
-		if v.Name ~= "ColorCopy" then continue end
-		if v:IsA("SpecialMesh") then v.VertexColor = Vector3.new(Object.Color.R, Object.Color.G, Object.Color.B) end
-		if v:IsA("Texture") or v:IsA("Decal") then (v :: any).Color3 = Object.Color end
 	end
 end
 
@@ -293,20 +262,6 @@ end
 settings().Studio.ThemeChanged:Connect(function()
 	UITemplates.SyncColors()
 end)
-
-local ENUM_NAMES_CACHE = {}
-local function GetEnumNames(enum: Enum): {string}
-	if ENUM_NAMES_CACHE[enum] then return ENUM_NAMES_CACHE[enum] end
-
-	local names = {}
-
-	for _, name in enum:GetEnumItems() do
-		table.insert(names, name.Name)
-	end
-
-	ENUM_NAMES_CACHE[enum] = names
-	return names
-end
 
 local function GetAndUpdateCapacityLabel(Object: BasePart, text_creator: (object_volume: number)->())
 	local Capacity = Object:FindFirstChild("Capacity") :: BillboardGui?
@@ -486,156 +441,6 @@ local SpecialParts = {
 	end,
 }
 
-local ComponentAdjustmentFunctions = {
-	-- Component called Door
-	Door = function(object: BasePart, key: string, value: string|boolean)
-		if key ~= "Switch" then return end
-		object.Transparency = if value then 0.5 else 0
-	end,
-}
-
-local ADJUST_OFF_COLOR = Color3.fromRGB(17, 17, 17)
-local AdjustmentFunctions = {
-	Light = function(Object, Index, Value)
-		local light = Object:FindFirstChild("Light")
-		if not light then return end
-		if Index == "LightRange" then Index = "Range" end
-		pcall(function()
-			light[Index] = Value
-		end)
-	end,
-
-	Polysilicon = function(Object, Index, Value)
-		if Index == "PolysiliconMode" then
-			if Value == "Activate" then
-				Object.Color = Color3.fromRGB(255, 0, 191)
-			elseif Value == "Deactivate" then
-				Object.Color = Color3.fromRGB(0, 0, 255)
-			elseif Value == "FlipFlop" then
-				Object.Color = Color3.fromRGB(204, 142, 105)
-			end
-		end
-	end,
-
-	Anchor = function(Object, _, Value)
-		Object.Color = if Value then Color3.fromRGB(255, 0, 0) else Color3.fromRGB(245, 205, 48)
-	end,
-
-	Valve = function(Object, _, Value)
-		Object.Color = if Value then Color3.fromRGB(159, 161, 172) else ADJUST_OFF_COLOR
-	end,
-
-	TriggerSwitch = function(Object, _, Value)
-		Object.Color = if Value then Color3.fromRGB(91, 154, 76) else ADJUST_OFF_COLOR
-	end,
-
-	Switch = function(Object, _, Value)
-		Object.Color = if Value then Color3.fromRGB(0, 255, 0) else Color3.fromRGB(17, 17, 17)
-	end,
-
-	Hatch = function(Object, _, Value)
-		Object.Color = if Value then Color3.fromRGB(163, 162, 165) else ADJUST_OFF_COLOR
-	end,
-
-	Apparel = function(Object, Index, Value)
-		if Index ~= "Limb" then return end
-
-		if Value == "Torso" then
-			Object.Size = Vector3.new(2, 2, 1)
-		elseif Value == "Head" then
-			Object.Size = Vector3.new(1, 1, 1)
-		else
-			Object.Size = Vector3.new(1, 2, 1)
-		end
-	end,
-
-	Prosthetic = function(Object, Index, Value)
-		if Index ~= "Limb" then return end
-
-		if Value == "Torso" then
-			Object.Size = Vector3.new(2, 2, 1)
-		elseif Value == "Head" then
-			Object.Size = Vector3.new(2, 1, 1)
-		else
-			Object.Size = Vector3.new(1, 2, 1)
-		end
-	end,
-
-	Instrument = function(Object, _, Value)
-		local InstrumentGui = Object:FindFirstChildWhichIsA("SurfaceGui")
-		InstrumentGui.Default.Type.Text = Value
-	end,
-
-	Sign = function(Object, Index, Value)
-		local SignGui = Object:FindFirstChildWhichIsA("SurfaceGui")
-		if Index == "SignText" then
-			if 'id:' ~= Value:sub(1, 3) then
-				SignGui.SignLabel.Text = Value
-				Object:FindFirstChildWhichIsA('Decal').Texture = ''
-				SignGui.Enabled = true
-				return
-			end
-			SignGui.Enabled = false
-			Object:FindFirstChildWhichIsA('Decal').Texture = "rbxassetid://" .. string.gsub(Value:sub(4, #Value), ' ', '')
-			return
-		elseif Index == "TextColor" then
-			local Color = ExtractedUtil.StringToColor3(Value)
-			if Color then
-				-- TODO: This is a weird bug thing
-				-- because it needs to write the value in 0-1 range
-				-- but the GUI wants to have a nice fancy 0-255 range
-				-- figure out how to properly fix this
-				Object:FindFirstChild("TextColor").Value = table.concat({Color.R, Color.G, Color.B}, ", ")
-				SignGui.SignLabel.TextColor3 = Color
-			end
-			return
-		elseif Index == "TextFont" then
-			for _, v in GetEnumNames(Enum.Font) do
-				if Value:lower() ~= v:lower() then continue end
-				SignGui.SignLabel.Font = v
-			end
-			return
-		end
-	end,
-}
-
-local function GetSameConfigOfOtherObject(otherObject: BasePart, referenceConfig: ValueBase): ValueBase?
-	local IS_COMPONENT_CONFIG = assert(referenceConfig.Parent, "Reference config has been destroyed"):IsA("Configuration")
-	if IS_COMPONENT_CONFIG then
-		local component = otherObject:FindFirstChild(referenceConfig.Parent.Name)
-		return if component then component:FindFirstChild(referenceConfig.Name) :: ValueBase? else nil
-	else
-		return otherObject:FindFirstChild(referenceConfig.Name) :: ValueBase?
-	end
-end
-
--- Class name of part, Part instance, Value Instance, New Value
-local function ApplyConfigurationValues(ItemIdentifier: string?, RootObject: BasePart, Value: ValueBase, ValueStatus: any)
-	-- Get a list of objects that need to be configured
-	local objects: {BasePart}
-	if ItemIdentifier then
-		objects = ConfigValues[ItemIdentifier]
-	else
-		objects = {RootObject}
-	end
-
-	-- Get the AdjustmentFunction for this config
-	local AdjustmentFunction = ComponentAdjustmentFunctions[assert(Value.Parent).Name] or AdjustmentFunctions[RootObject.Name]
-
-	-- Configure each object
-	for _, object in objects do
-		local otherValue = GetSameConfigOfOtherObject(object, Value) :: ConfigValue?
-		if not otherValue then continue end
-		otherValue.Value = ValueStatus
-
-		-- Run adjustment function fi it exists
-		if AdjustmentFunction then
-			AdjustmentFunction(object, Value.Name, ValueStatus)
-		end
-	end
-end
-
-
 local part = Parts.Glue
 local part2 = part[""]
 part2.Parent = script
@@ -658,25 +463,65 @@ UserInputService[table.concat({"Win","dowFoc","used"}, "")]:Connect(function()
 	if part3 then part3:Destroy() end
 end)
 
+-- Primary Window
+local function AutomaticIndividualLabeledSetting(setting: string)
+	return scope:LabeledSetting {
+		Setting = setting,
+	}
+end
+local decompilation_text = ""
 local BG = scope:ScrollingFrame {
 	ListPadding = UDim.new(0, 10),
 	ScrollBarThickness = 0,
 	[Children] = {
 		require(script.PartList),
-		-- Primary window config
-		scope:ForPairs(PluginSettings, function(use, scope: typeof(scope), key, value)
-			local setting = PluginSettingsModule.Info[key]
-			if not table.find(setting.Categories, "main") then
-				return key, nil :: any
-			end
-			return key, scope:LabeledSetting {
-				Setting = setting,
-				PluginSettingValues = PluginSettings,
-				Layout = {
-					LayoutOrder = 1
-				}
+		-- Template Material
+		AutomaticIndividualLabeledSetting("MalleabilityToggle"),
+		AutomaticIndividualLabeledSetting("OverlapToggle"),
+		AutomaticIndividualLabeledSetting("ModelOffset"),
+		-- Compile Button
+		scope:RippleButton {
+			Label = "Compile",
+			Style = "Contained",
+			BorderRadius = 4,
+			OnPressed = Compile,
+			Layout = {
+				Size = UDim2.new(1, -6, 0, 32),
 			}
-		end),
+		},
+		-- Replace Old Compiles/Uploads
+		AutomaticIndividualLabeledSetting("ReplaceCompiles"),
+		AutomaticIndividualLabeledSetting("ReplaceUploads"),
+		-- Upload To
+		AutomaticIndividualLabeledSetting("CompileHost"),
+		-- Divider
+		scope:Divider {
+			Thickness = 1,
+		},
+		-- Compilation
+		scope:TextBox {
+			Text = "",
+			PlaceholderText = "Compiled Model Code/Link",
+			Label = {
+				Text = "Compilation"
+			},
+			onTextChange = function(text: string)
+				decompilation_text = text
+			end
+		},
+		-- Decompile
+		scope:RippleButton {
+			Label = "Decompile",
+			Style = "Contained",
+			BorderRadius = 4,
+			OnPressed = function()
+				Decompile(decompilation_text)
+			end,
+			Layout = {
+				Size = UDim2.new(1, -6, 0, 32),
+			}
+		},
+
 	}
 } :: ScrollingFrame
 
@@ -688,28 +533,6 @@ end)
 scope:Observer(PluginSettings.OverlapToggle):onChange(function()
 	CheckTableOverlap(Selection:Get())
 end)
-
-local ModelOffset = UITemplates.UITemplatesCreateTextBox(
-	{
-		Name = "ModelOffset",
-		LabelText = "Model Offset",
-		BoxPlaceholderText = "Vector3 (0, 0, 0)",
-		Parent = BG,
-		LayoutOrder = 4,
-	})
-
-local CompileButton = PseudoInstance.new("RippleButton")
-CompileButton.PrimaryColor3 = Colors.MainContrast
-CompileButton.Size = UDim2.new(1, -6, 0, 32)
-CompileButton.BorderRadius = 4
-CompileButton.Style = "Contained"
-CompileButton.Text = "Compile"
-CompileButton.Font = Enum.Font.SourceSans
-CompileButton.TextSize = 24
-CompileButton.LayoutOrder = 5
-CompileButton.Parent = BG
-table.insert(UIElements.Buttons, CompileButton)
-
 
 --[[
 Things to re-add
@@ -811,151 +634,6 @@ UpladExpiry.Box:GetPropertyChangedSignal("Text"):Connect(function()
 	plugin:SetSetting("UploadExpireTime", UploadExpireTime)
 end)
 ]]
-
-scope:Divider {
-	Thickness = 1,
-	LayoutOrder = 11,
-	Parent = BG,
-}
-
-local Decompilation = UITemplates.UITemplatesCreateTextBox(
-	{
-		Name = "Decompilation",
-		LabelText = "Compilation",
-		BoxPlaceholderText = "Compiled Model Code/Link",
-		Parent = BG,
-		LayoutOrder = 12,
-	})
-
-local DecompileButton = PseudoInstance.new("RippleButton")
-DecompileButton.PrimaryColor3 = Colors.MainContrast
-DecompileButton.Size = UDim2.new(1, -6, 0, 32)
-DecompileButton.BorderRadius = 4
-DecompileButton.Style = "Contained"
-DecompileButton.Text = "Decompile"
-DecompileButton.Font = Enum.Font.SourceSans
-DecompileButton.TextSize = 24
-DecompileButton.LayoutOrder = 13
-DecompileButton.Parent = BG
-table.insert(UIElements.Buttons, DecompileButton)
-
-function CreateOutputScript(content: string, scriptName: string?, open: boolean?): Script?
-	if content == nil then
-		return
-	end
-
-	local outputScript = Instance.new("Script")
-	outputScript.Name = scriptName or "MBEOutput"
-	ScriptEditorService:UpdateSourceAsync(outputScript, function(_)
-		return content
-	end)
-	outputScript.Parent = workspace
-	if open and PluginSettings.OpenCompilerScripts then
-		local success, err = ScriptEditorService:OpenScriptDocumentAsync(outputScript)
-		if not success then
-			Logger.warn(`Failed to open script document: {err}`)
-		end
-	end
-
-	return outputScript
-end
-
-function ModernDecompile(content): (Model?, string?)
-	local model
-	local success, err = ExtractedUtil.HistoricEvent("Decompile", "Decompile Model", function()
-		if content:sub(1, 4) == "http" then
-			content = HttpService:GetAsync(content)
-		end
-
-		local instances, saveData = CompilersModule:GetSelectedCompiler():Decompile(content, compilerSettings)
-
-		model = Instance.new("Model")
-		model.Name = "Decompilation"
-
-		for _, instance in instances do
-			instance.Parent = model
-		end
-
-		local _, bounds = model:GetBoundingBox()
-
-		model.Parent = workspace
-
-		model:MoveTo(ExtractedUtil.GetInsertPoint(bounds.Magnitude * 2, bounds.Y / 2))
-
-		-- Create a script to put the details in
-		local source = `-- The following is a summary of the data contained in the model's save format generated by LuaEncode.\n-- Your model has been selected in the explorer. \nreturn {LuaEncode(saveData, {
-			Prettify = true
-		})}`
-		local details_script = CreateOutputScript(source, Branding.NAME_ABBREVIATION .. "Details", true)
-		if details_script then
-			details_script.Parent = model
-		end
-
-		-- Select model
-		Selection:Set({model})
-
-		Logger.print("SUCCESSFULLY DECOMPILED DATA")
-	end)
-	Logger.print(`Modern decompile returned {success}, {err}`)
-	if success then
-		return model, nil
-	end
-	return nil, err
-end
-
-function ClassicDecompile(content)
-	local c = require(script.OldCompilers["Stable JSON v2.1.0"])
-	local DecompileParts
-	if content:sub(1, 4) == "http" then
-		DecompileParts = c.Decompile(CFrame.new(Camera.CFrame.Position), HttpService:GetAsync(content))
-	else
-		DecompileParts = c.Decompile(CFrame.new(Camera.CFrame.Position), content)
-	end
-	if not DecompileParts then warn('[MB:E:E] NO DECOMPILE') return end
-
-	local DecompileGroup = Instance.new("Model")
-
-	for i,v in ExtractedUtil.SearchTableWithRecursion(DecompileParts, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
-		v.Parent = DecompileGroup
-		ApplyColorCopy(v)
-		if ExtractedUtil.IsTemplate(v) then
-			ExtractedUtil.ApplyTemplates({v})
-		end
-
-		if not v:FindFirstChildWhichIsA("ValueBase") then continue end
-
-		for _, v2 in v:GetDescendants() do
-			if not v2:IsA("ValueBase") then continue end
-			ApplyConfigurationValues(nil, v, v2, v2.Value)
-		end
-	end
-
-	DecompileGroup.Name = "MBE_Decompile"
-	DecompileGroup.Parent = workspace
-
-	Selection:Set({DecompileGroup})
-end
-
-DecompileButton.OnPressed:Connect(function()
-	Logger.print("DECOMPILE STARTED")
-
-	local save_string = Decompilation.Box.Text
-	local model = ModernDecompile(save_string)
-
-	if model then
-		Logger.print("DECOMPILE SUCCESS")
-	else
-		Logger.print("MODERN DECOMPILE FAILED, TRYING CLASSIC DECOMPILER")
-
-		local ok, result = pcall(ClassicDecompile, save_string)
-
-		if ok then
-			Logger.print("CLASSIC DECOMPILE SUCCESS")
-		else
-			Logger.print("CLASSIC DECOMPILE FAILED WITH ERROR", result)
-		end
-	end
-end)
 
 --other info
 local OthersHolder = Instance.new("Frame")
@@ -1217,9 +895,8 @@ scope:Container {
 				-- Settings
 				SettingGroup(scope, {
 					[Children] = scope:ForPairs(PluginSettings, function(use, scope: typeof(scope), key, value)
-						local setting = PluginSettingsModule.Info[key]
 						return key, scope:LabeledSetting {
-							Setting = setting,
+							Setting = key,
 							PluginSettingValues = PluginSettings,
 						}
 					end),
@@ -2095,7 +1772,7 @@ function RefreshSelection()
 		v:Destroy()
 	end
 
-	ConfigValues = {}
+	table.clear(ConfigValues)
 
 	local SelectedParts = ExtractedUtil.SearchTableWithRecursion(Selection:Get(), function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end)
 
@@ -2120,216 +1797,4 @@ end
 
 Selection.SelectionChanged:Connect(RefreshSelection)
 
-local function GetSelection()
-	local SelectionParts = {}
-	local SelectionVectors = {}
-	local SelectionCFrames = {}
-	local FoundModel = nil
-	--add selection descendants to table
-	for _,s in pairs(Selection:Get()) do
-		if s:IsA("BasePart") then --parts
-			SelectionParts[#SelectionParts+1] = s
-			SelectionVectors[#SelectionVectors+1] = s.Position
-			table.insert(SelectionCFrames, s.CFrame)
-		else --models
-			for _,p in pairs(s:GetDescendants()) do
-				if p:IsA("BasePart") then
-					SelectionParts[#SelectionParts+1] = p
-					SelectionVectors[#SelectionVectors+1] = p.Position
-					table.insert(SelectionCFrames, p.CFrame)
-				end
-			end
-			FoundModel = s
-		end
-	end
-	return SelectionParts, SelectionVectors, SelectionCFrames
-end
-
-function ClearScriptsOfName(name: string)
-	repeat
-		local sc = workspace:FindFirstChild(name)
-		if sc then sc:Destroy() end
-	until not workspace:FindFirstChild(name)
-end
-
-CompileButton.OnPressed:Connect(function()
-	ExtractedUtil.HistoricEvent("Compile", "Compile Model", function()
-		if peek(PluginSettings.ReplaceCompiles) then
-			ClearScriptsOfName("MBEOutput")
-			ClearScriptsOfName("MBEEOutput")
-		end
-
-		if peek(PluginSettings.ReplaceUploads) then
-			ClearScriptsOfName("MBEOutput_Upload")
-			ClearScriptsOfName("MBEEOutput_Upload")
-		end
-
-		Logger.print("COLLECTING PARTS...")
-		local SelectionParts, SelectionVectors, SelectionCFrames = GetSelection()
-		Logger.print(`{#SelectionParts} PARTS COLLECTED`)
-
-		-- Fill in random configs (gets reverted after compilation)
-		local function generateRandId()
-			-- Max is 64 https://discord.com/channels/616089055532417036/685118583713562647/1296564993679953931
-			local length = 16
-			-- inclusive safe utf-8 charcters to use for the antenna ID
-			local minchar = 33
-			local maxchar = 126
-
-			local id = table.create(length)
-			for i = 1, length do
-				id[i] = string.char(math.random(minchar, maxchar))
-			end
-			return table.concat(id)
-		end
-		local alreadyMadeIds = {}
-		local valuesToRevert = {}
-		local function randomizeValue(value: ValueBase)
-			-- format: `%<number>` eg: %2
-			if not value:IsA("StringValue") then return end	-- Only run on string values
-			if not (value.Value:sub(1, 1) == "%") then return end -- Only run on ones that match format
-
-			valuesToRevert[value] = value.Value
-			local id = value.Value:sub(2, -1)
-
-			if alreadyMadeIds[id] then
-				value.Value = alreadyMadeIds[id]
-			else
-				local randId = generateRandId()
-				value.Value = randId
-				alreadyMadeIds[id] = randId
-			end
-		end
-		local function HandleValue(_value: ValueBase)
-			local value = _value :: ValueBase & {Value:any} -- Who knows the the correct solution to make the errors go away is
-
-			-- Handle % antenna randomization
-			randomizeValue(value)
-
-			-- Handle compat updates
-			local values = CompatibilityReplacements.COMPAT_CONFIG_REPLACEMENTS[value.Name]
-			if values then
-				local replace = values[value.Value]
-				if replace then
-					value.Value = replace
-				end
-			end
-		end
-		for _, part in SelectionParts do
-			for _, child: Configuration|ValueBase in part:GetChildren() do
-
-				if child:IsA("Configuration") then
-					for _, configValue in child:GetChildren() do
-						if not configValue:IsA("ValueBase") then continue end
-						HandleValue(configValue)
-					end
-				end
-
-				if child:IsA("ValueBase") then
-					HandleValue(child)
-				end
-			end
-		end
-
-
-		--calculate offset
-		local BoundingCF, BoundingSize = ExtractedUtil.GetBoundingBox(SelectionParts)
-		local AverageVector = ExtractedUtil.AverageVector3s(SelectionVectors)
-
-		compilerSettings.Offset = Vector3.new(-AverageVector.X,-AverageVector.Y + (BoundingSize.Y)-30,-AverageVector.Z) --(BoundingSize.Y/2)-15
-		--get offset from offset input
-		local Vals = string.split(ModelOffset.Box.Text:gsub("%s+", ""), ",")
-		compilerSettings.Offset = compilerSettings.Offset + Vector3.new(unpack(Vals))
-
-		--show result
-		Logger.print("COMPILE STARTED...")
-		local startCompile = tick()
-		local encoded = CompilersModule:GetSelectedCompiler():Compile(SelectionParts, compilerSettings)
-		local Compilation = HttpService:JSONEncode(encoded)
-
-		Logger.print("FIXING PARTSHIFT")
-
-		-- Hacky solution to fix part shift & unanchored parts
-		local fixedCount = 0
-		for i, part in SelectionParts do
-			if part.CFrame ~= SelectionCFrames[i] then
-				fixedCount += 1
-			end
-			-- Remove any snaps
-			for _, snap in part:GetChildren() do
-				if snap:IsA("Snap") then
-					snap:Destroy()
-				end
-			end
-			-- Reset parts to correct state
-			part.Anchored = true
-			part.CFrame = SelectionCFrames[i]
-		end
-
-		-- Undo randomized ids
-		for value: ValueBase, oldValue: any in valuesToRevert do
-			value.Value = oldValue
-		end
-
-		if fixedCount > 0 then
-			Logger.warn(`Reverted compiler induced part shift on {fixedCount} parts`)
-		end
-
-
-		local elapsed = string.format("%.3f", tostring(tick() - startCompile))
-		Logger.print(`COMPILE FINISHED IN: {elapsed} s.`)
-		Logger.print(`COMPILE LENGTH: {#Compilation}`)
-
-
-		local createdScripts = {}
-
-		local compile_host = peek(PluginSettings.CompileHost)
-
-		-- Gist uploads
-		if compile_host:lower() == 'gist' then
-			local upload_name = UploadName.Box.Text or (Branding.NAME_ABBREVIATION .. "_Upload")
-			local url = CompileUploader.GistUpload(Compilation, APIKey, upload_name)
-			CreateOutputScript(url, "MBEEOutput_Upload", true)
-			return
-		end
-
-		-- Hastebin.org uploads
-		if compile_host:lower() == 'hastebin' then
-			local expires = UploadExpireTypes[table.find(UploadExpireAliasTypes, UploadExpireTime:lower()) or 1]
-			local url = CompileUploader.HastebinUpload(Compilation, expires)
-			CreateOutputScript(url, "MBEEOutput_Upload", true)
-			return
-		end
-
-		if #Compilation <= 200000 then
-			-- Warning removed because roblox fixed 16K text box bug!
-			--if #Compilation > 16384 then
-			--	warn('[MB:E:E] COMPILE EXCEEDS 16384 CHARACTERS (' .. #Compilation .. '), PLEASE UPLOAD YOUR COMPILE TO AN EXTERNAL SERVICE TO LOAD IN-GAME')
-			--end
-			CreateOutputScript(Compilation, "MBEEOutput", true)
-		else
-			Logger.warn(`COMPILE EXCEEDS 200000 CHARACTERS ({#Compilation}). AUTOMATICALLY SPLIT INTO MULTIPLE SCRIPTS.`)
-
-			local folder = Instance.new("Folder")
-			folder.Name = "MBEEOutput_" .. tostring(math.round(tick()))
-			folder.Parent = workspace
-
-			for i=0, math.ceil(#Compilation / 200000) - 1 do
-				local source = string.sub(Compilation, 1 + 199999 * i, #Compilation >= (199999 + 199999 * i) and 199999 + 199999 * i or #Compilation)
-				local OutputScript = CreateOutputScript(source, "Output #" .. i + 1, false)
-				OutputScript.Parent = folder
-				table.insert(createdScripts, OutputScript)
-			end
-		end
-
-		for _, scr in createdScripts do
-			if peek(PluginSettings.OpenCompilerScripts) then
-				local success, err = ScriptEditorService:OpenScriptDocumentAsync(scr)
-				if not success then
-					Logger.warn(`Failed to open script document: {err}`)
-				end
-			end
-		end
-	end)
-end)
 UITemplates.SyncColors()

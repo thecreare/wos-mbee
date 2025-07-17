@@ -1,4 +1,5 @@
 local plugin = _G.plugin
+local Branding = require(script.Parent.Branding)
 local Fusion = require(script.Parent.Parent.Packages.fusion)
 local peek = Fusion.peek
 
@@ -9,6 +10,14 @@ export type Setting = {
     Type: string,
     Default: any,
     Options: {string}?,
+}
+
+local UploadExpireAliasTypes = {
+	"single use",
+	"never expire",
+	"1 hour",
+	"1 week",
+	"1 month",
 }
 
 -- Ordered array of settings
@@ -43,6 +52,28 @@ local SettingInfo: {Setting} = {
         Options = {"gist", "hastebin"}
 	},
     {
+        Key = "APIKey",
+        Name = "PAT Token",
+		Categories = {"main"},
+		Type = "string",
+		Default = "",
+    },
+    {
+        Key = "UploadName",
+        Name = "Upload Name",
+		Categories = {"main"},
+		Type = "string",
+		Default = Branding.NAME_ABBREVIATION .. "_Upload",
+    },
+    {
+        Key = "UploadExpireTime",
+        Name = "Expire Time",
+        Categories = {"main"},
+        Type = "string",
+        Options = UploadExpireAliasTypes,
+        Default = UploadExpireAliasTypes[4],
+    },
+    {
 		Key = "MalleabilityToggle",
         Name = "Malleability Check",
 		Categories = {"main"},
@@ -55,6 +86,18 @@ local SettingInfo: {Setting} = {
 		Categories = {"main"},
 		Type = "boolean",
 		Default = true,
+    },
+    { --?
+        Key = "TemplateMaterial",
+        Name = "Template Material",
+		Categories = {"main"},
+		Type = "string",
+    },
+    {
+        Key = "ModelOffset",
+        Name = "Model Offset",
+		Categories = {"main"},
+		Type = "Vector3",
     },
     {
         Key = "ScrollingText",
@@ -82,7 +125,6 @@ local SettingInfo: {Setting} = {
 local SettingsInfoHash: {[string]: Setting} = {}
 for _, setting in SettingInfo do SettingsInfoHash[setting.Key] = setting end
 
--- This is not a component!! do not use this as a component!!
 local function InitPluginSettings(scope: Fusion.Scope<typeof(Fusion)>)
     local PluginSettingsTable = {}
     for _, setting in SettingInfo do
@@ -101,6 +143,6 @@ local PluginSettings = {}
 
 PluginSettings.Info = SettingsInfoHash
 PluginSettings.InfoArray = SettingInfo
-PluginSettings.CreateFusionValues = InitPluginSettings
+PluginSettings.Values = InitPluginSettings(Fusion:scoped())
 
 return PluginSettings

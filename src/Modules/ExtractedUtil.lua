@@ -209,12 +209,12 @@ function ExtractedUtil.ApplyTemplates(List: {BasePart}, Material: Enum.Material?
 	end
 end
 
-function ExtractedUtil.GetInsertPoint(distance: number, shift_up: number)
+function ExtractedUtil.GetInsertPoint(distance: number, shift_up: number?)
 	local cam_cf = workspace.CurrentCamera.CFrame
 	local direction = cam_cf.LookVector * distance
 	local hit = workspace:Raycast(cam_cf.Position, direction)
 	local hit_point = if hit then hit.Position else cam_cf.Position + direction
-	return (hit_point + Vector3.yAxis * shift_up):Floor()
+	return (hit_point + Vector3.yAxis * (shift_up or 0)):Floor()
 end
 
 function ExtractedUtil.SpawnPart(Part: BasePart): BasePart?

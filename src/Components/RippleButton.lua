@@ -11,6 +11,7 @@ local function RippleButton(
         OnPressed: ()->(),
         Parent: UsedAs<Instance>?,
         Style: UsedAs<"Flat"|"Outlined"|"Contained">?,
+        BorderRadius: UsedAs<number>?,
         Layout: {
             LayoutOrder: UsedAs<number>?,
             Position: UsedAs<UDim2>?,
@@ -47,7 +48,7 @@ local function RippleButton(
         Size = UDim2.fromScale(1, 1),
 
         -- idk
-        BorderRadius = 0,
+        BorderRadius = props.BorderRadius or 0,
         Style = props.Style or "Outlined",
     }
     button.OnPressed:Connect(props.OnPressed)
