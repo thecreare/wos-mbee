@@ -12,6 +12,9 @@ local Adornees = {}
 -- Apparently module scripts don't get the plugin global so I need to do this.
 _G.plugin = plugin
 
+-- Load the MBReflect plugin that is now bundled with MBEE
+require(script.MBReflect)
+
 local compilerSettings = {
 	Offset = Vector3.zero,
 	ShowTODO = false,
