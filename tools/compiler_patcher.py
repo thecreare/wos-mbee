@@ -4,7 +4,7 @@ Is it better than copy-pasting changes for every new compiler? Also yes.
 """
 import re
 
-COMPILERS = ["2.6.1", "2.6.1R"]
+COMPILERS = ["2.6.4", "2.6.4R"]
 
 PATCH_BEGIN = "--[[PB]]"
 PATCH_END = "--[[PE]]"

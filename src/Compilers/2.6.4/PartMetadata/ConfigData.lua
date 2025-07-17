@@ -1218,7 +1218,12 @@ return {
 					1,
 				},
 				["Name"] = "Rate",
-			},
+			},--[[PB]]
+			{
+				["Type"] = "number",
+				["Default"] = "1",
+				["Name"] = "TriggerQuantity"
+			},--[[PE]]
 		},
 		["ProximityButton"] = {
 			{
