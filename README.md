@@ -9,22 +9,23 @@ The plugin can be found here: <https://create.roblox.com/store/asset/11707735968
 - Automatic dpaste.org/gist uploading
 - Faster compile times
 - 3D Part face customizer
-- Automatic wireless ID securing. Prefix any `Antenna`/`Router`/etc ID with % to automatically randmize its ID at compile time.
+- Automatic wireless ID securing. Prefix any `Antenna`/`Router`/etc ID with % to automatically randomize its ID at compile time.
+- Builtin mirror tool
 - Range and capacity visualizations for parts like `EnergyShield` & `PowerCell`
 - Part name & config autocomplete
 - Support for decompiling pre 2024 wipe model codes
 - Automatically open `Microcontroller` code as script
 - Get resource cost of model
-- Extra developer parts that aren't shown in MB
+- Extra developer parts that aren't shown in the classic model builder tools
 - Customizable UI
 - Support for components in UI
-- Part list UI shows minature part icon
+- Part list UI shows miniature part icon
 - UI Dropdown for enum configs
 
 ## History
 
 The original [MBTools](https://create.roblox.com/store/asset/6724254977) was developed by [Austism](https://www.roblox.com/users/52134822/profile) and later by [Hexcede](https://www.roblox.com/users/35904028/profile).
-[MBE](https://www.roblox.com/library/10075508989/WoS-MBTools-EDITED) is a fork of Austism's MBTools, created by [Crenbow](https://www.roblox.com/users/306951138/profile/). It added quite a few quality of life features but was unfortunatly retried when Crenbow left. [MBEE](https://create.roblox.com/store/asset/11707735968) is the latest itteration and is primarily developed by [creare](https://www.roblox.com/users/857491600/profile).
+[MBE](https://www.roblox.com/library/10075508989/WoS-MBTools-EDITED) is a fork of Austism's MBTools, created by [Crenbow](https://www.roblox.com/users/306951138/profile/). It added quite a few quality of life features but was unfortunately retried when Crenbow left. [MBEE](https://create.roblox.com/store/asset/11707735968) is the latest iteration and is primarily developed by [creare](https://www.roblox.com/users/857491600/profile).
 
 ## Contributing
 
@@ -40,4 +41,4 @@ The original [MBTools](https://create.roblox.com/store/asset/6724254977) was dev
 
 ### Saving as a local plugin
 
-1. Right click the `MBEE` folder and select `Save as Local Plugin...`
+1. Right click the `MBEE` folder and in the `Save / Export` option select `Save as Local Plugin...`
