@@ -3,24 +3,13 @@ local ChangeHistoryService = game:GetService("ChangeHistoryService")
 local Branding = require(script.Parent.Branding)
 local Logger = require(script.Parent.Logger)
 local CompilersModule = require(script.Parent.Compilers)
+local Fusion = require(script.Parent.Parent.Packages.fusion)
+local PluginSettings = require(script.Parent.PluginSettings)
 
+local peek = Fusion.peek
 local PARTS = script.Parent.Parent.Parts
 
 local ExtractedUtil = {}
-
---[[
-Due to still being in the process of refactoring things there are
-some global things that I can't yet untangle.
-
-This table just serves as a way for the main script to push data into this module.
-List of things that get put in:
-- `TemplateMaterial` This is the text box below the part menu that controls what template material
-	to use when spawning a template
-
-]]
-ExtractedUtil.StupidGlobals = {
-	TemplateMaterial = nil :: any,
-}
 
 --https://devforum.roblox.com/t/how-does-roblox-calculate-the-bounding-boxes-on-models-getextentssize/216581/8
 function ExtractedUtil.GetBoundingBox(model, orientation)
@@ -229,7 +218,7 @@ function ExtractedUtil.SpawnPart(Part: BasePart): BasePart?
 		SelectedPart.Parent = workspace
 
 		if ExtractedUtil.IsSpecialTemplate(SelectedPart) then
-			local query = ExtractedUtil.StupidGlobals.TemplateMaterial.Box.Text
+			local query = peek(PluginSettings.Values.TemplateMaterial)
 			if query == "" or query == nil then return SelectedPart end
 			local Matched = ExtractedUtil.MatchQueryToList(query, PARTS:GetChildren())
 			if not Matched then return SelectedPart end
