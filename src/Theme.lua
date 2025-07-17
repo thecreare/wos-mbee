@@ -1,5 +1,6 @@
 local plugin = _G.plugin
 
+local ExtractedUtil = require(script.Parent.Modules.ExtractedUtil)
 local Fusion = require(script.Parent.Packages.fusion)
 local scoped = Fusion.scoped
 
@@ -89,8 +90,13 @@ Theme.COLORS = {} :: {
 
 -- Load colors from plugin settings
 for k, v in DEFAULTS do
-    local color = StringToColor3(plugin:GetSetting(tostring(k) .. "Color")) or v
-    Theme.COLORS[k] = scope:Value(color)
+    local key = tostring(k) .. "Color"
+    local color = StringToColor3(plugin:GetSetting(key)) or v
+    local value = scope:Value(color)
+    Theme.COLORS[k] = value
+    scope:Observer(value):onChange(function()
+        plugin:SetSetting(key, ExtractedUtil.Color3ToString(Fusion.peek(value)))
+    end)
 end
 
 function Theme.Set(theme: string)
