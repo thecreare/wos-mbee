@@ -6,6 +6,8 @@ local InfoConstants = require(script.Parent.Settings)
 local ExtractedUtil = require(script.Parent.ExtractedUtil)
 local CustomMaterials = require(script.Parent.CustomMaterials)
 local Logger = require(script.Parent.Logger)
+local Fusion = require(script.Parent.Parent.Packages.fusion)
+local THEME = require(script.Parent.Parent.Theme)
 
 local UITemplates = {}
 
@@ -520,6 +522,8 @@ function UITemplates.CreateTipBoxes(Gui, Table)
 			TipBox.ZIndex = 10
 			TipBox.Name = typeof(v) == 'string' and v or tostring(v)
 			UITemplates.SyncColors({TextButtons = {TipBox}})
+			-- ahhhhhhhh FIXME
+			TipBox.TextColor3 = Fusion.peek(THEME.COLORS.MainText)
 
 			TipBox.Activated:Connect(function()
 				Gui.Text = TipBox.Text
