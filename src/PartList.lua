@@ -31,7 +31,7 @@ local children = {}
 -- MARK: GUI
 local SearchBoxHolder = Instance.new("Frame")
 SearchBoxHolder.Size = UDim2.new(1, -6, 0, Widgets.PrimaryWidget.AbsoluteSize.Y - 248) -- UDim2.new(1, -6, 0, 30)
-SearchBoxHolder.LayoutOrder = 0
+SearchBoxHolder.LayoutOrder = 5
 table.insert(children, SearchBoxHolder)
 
 local SearchBox = Instance.new("TextBox")
@@ -85,15 +85,6 @@ AddMaterialButton.Font = Enum.Font.SourceSans
 AddMaterialButton.TextSize = 16
 AddMaterialButton.Parent = SearchBoxHolder
 table.insert(UIElements.Buttons, AddMaterialButton)
-
-local TemplateMaterial = UITemplates.UITemplatesCreateTextBox({
-    Name = "TemplateMaterial",
-    LabelText = "Template Material",
-    BoxPlaceholderText = "Resource [string]",
-    LayoutOrder = 0,
-})
-table.insert(children, TemplateMaterial.Holder)
-ExtractedUtil.StupidGlobals.TemplateMaterial = TemplateMaterial
 
 -- MARK: Logic
 do -- Create object buttons for normal wos parts
@@ -169,12 +160,6 @@ local FocusSearch = plugin:CreatePluginAction(
 FocusSearch.Triggered:Connect(function()
 	task.wait()
 	SearchBox:CaptureFocus()
-end)
-
-UITemplates.ConnectBoxToAutocomplete(TemplateMaterial.Box, AllParts).Event:Connect(function(Matched)
-	if #Matched > 16 then return end
-	if Matched[1] == nil then return end
-	ExtractedUtil.ApplyTemplates(Selection:Get(), Matched[1])
 end)
 
 UITemplates.ConnectBoxToAutocomplete(SearchBox, AllParts).Event:Connect(function(MatchedParts)
@@ -256,7 +241,6 @@ SearchBox.FocusLost:Connect(function(EnterPressed)
 
 	ExtractedUtil.SpawnPart(Part)
 end)
-
 
 AddMaterialButton.OnPressed:Connect(function()
 	if #Selection:Get() <= 0 then

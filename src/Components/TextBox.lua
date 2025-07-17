@@ -115,7 +115,6 @@ local function TextBox(
     end
 
     if props.Options then
-        print(UITemplates)
         UITemplates.CreateTipBoxes(Box :: any, props.Options)
     end
     local container = scope:New "Frame" {

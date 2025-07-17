@@ -87,11 +87,11 @@ local SettingInfo: {Setting} = {
 		Type = "boolean",
 		Default = true,
     },
-    { --?
+    {
         Key = "TemplateMaterial",
         Name = "Template Material",
 		Categories = {"main"},
-		Type = "string",
+		Type = "Resource",
     },
     {
         Key = "ModelOffset",

@@ -464,21 +464,34 @@ UserInputService[table.concat({"Win","dowFoc","used"}, "")]:Connect(function()
 end)
 
 -- Primary Window
-local function AutomaticIndividualLabeledSetting(setting: string)
+local function AutomaticIndividualLabeledSetting(setting: string, layout_order: number?)
 	return scope:LabeledSetting {
 		Setting = setting,
+		Layout = {
+			LayoutOrder = layout_order,
+		}
 	}
 end
+local upload_to_gist = scope:Computed(function(use)
+	return use(PluginSettings.CompileHost):lower() == "gist"
+end)
+local upload_to_hastebin = scope:Computed(function(use)
+	return use(PluginSettings.CompileHost):lower() == "hastebin"
+end)
+local no_upload = scope:Computed(function(use)
+	return not use(upload_to_gist) and not use(upload_to_hastebin)
+end)
 local decompilation_text = ""
 local BG = scope:ScrollingFrame {
 	ListPadding = UDim.new(0, 10),
 	ScrollBarThickness = 0,
 	[Children] = {
 		require(script.PartList),
+		AutomaticIndividualLabeledSetting("TemplateMaterial", 5),
 		-- Template Material
-		AutomaticIndividualLabeledSetting("MalleabilityToggle"),
-		AutomaticIndividualLabeledSetting("OverlapToggle"),
-		AutomaticIndividualLabeledSetting("ModelOffset"),
+		AutomaticIndividualLabeledSetting("MalleabilityToggle", 10),
+		AutomaticIndividualLabeledSetting("OverlapToggle", 15),
+		AutomaticIndividualLabeledSetting("ModelOffset", 20),
 		-- Compile Button
 		scope:RippleButton {
 			Label = "Compile",
@@ -487,23 +500,44 @@ local BG = scope:ScrollingFrame {
 			OnPressed = Compile,
 			Layout = {
 				Size = UDim2.new(1, -6, 0, 32),
+				LayoutOrder = 25,
 			}
 		},
 		-- Replace Old Compiles/Uploads
-		AutomaticIndividualLabeledSetting("ReplaceCompiles"),
-		AutomaticIndividualLabeledSetting("ReplaceUploads"),
+		scope:Computed(function(use)
+			if use(no_upload) then
+				return AutomaticIndividualLabeledSetting("ReplaceCompiles", 30)
+			else
+				return AutomaticIndividualLabeledSetting("ReplaceUploads", 30)
+			end
+		end),
 		-- Upload To
-		AutomaticIndividualLabeledSetting("CompileHost"),
+		AutomaticIndividualLabeledSetting("CompileHost", 35),
+		scope:Computed(function(use): Fusion.Child?
+			if use(upload_to_gist) then
+				return {
+					AutomaticIndividualLabeledSetting("APIKey", 40),
+					AutomaticIndividualLabeledSetting("UploadName", 41),
+				}
+				elseif use(upload_to_hastebin) then
+					return AutomaticIndividualLabeledSetting("UploadExpireTime", 40)
+			end
+			return nil
+		end),
 		-- Divider
 		scope:Divider {
 			Thickness = 1,
+			LayoutOrder = 45,
 		},
 		-- Compilation
 		scope:TextBox {
 			Text = "",
 			PlaceholderText = "Compiled Model Code/Link",
 			Label = {
-				Text = "Compilation"
+				Text = "Compilation",
+			},
+			Layout = {
+				LayoutOrder = 50,
 			},
 			onTextChange = function(text: string)
 				decompilation_text = text
@@ -519,6 +553,7 @@ local BG = scope:ScrollingFrame {
 			end,
 			Layout = {
 				Size = UDim2.new(1, -6, 0, 32),
+				LayoutOrder = 55,
 			}
 		},
 
@@ -542,60 +577,6 @@ ReplaceCompiles only visible if CompileHost not valid
 ]]
 --[[
 
-
-UploadTo = UITemplates.UITemplatesCreateTextBox(
-	{
-		Name = "UploadTo",
-		LabelText = "Upload To",
-		BoxPlaceholderText = "hastebin/gist",
-		BoxText = CompileHost,
-		BoxFont = (CompileHost:lower() == "gist" or CompileHost:lower() == "hastebin") and "SourceSans" or "SourceSansLight",
-		Parent = BG,
-		LayoutOrder = 8,
-	})
-UITemplates.ConnectBoxToAutocomplete(UploadTo.Box, {"hastebin"})
-UITemplates.CreateTipBoxes(UploadTo.Box, {"hastebin"})
-
-UpladExpiry = UITemplates.UITemplatesCreateTextBox(
-	{
-		Name = "Expires",
-		LabelText = "Expire Time",
-		BoxPlaceholderText = "...",
-		BoxText = "Single Use",
-		BoxFont = (table.find(UploadExpireAliasTypes, UploadExpireTime:lower())) and "SourceSans" or "SourceSansLight",
-		Parent = BG,
-		HolderVisible = (CompileHost:lower() == "hastebin"),
-		LayoutOrder = 8,
-	})
-UITemplates.ConnectBoxToAutocomplete(UpladExpiry.Box, UploadExpireAliasTypes)
-UITemplates.CreateTipBoxes(UpladExpiry.Box, UploadExpireAliasTypes)
-
-UploadToken = UITemplates.UITemplatesCreateTextBox(
-	{
-		Name = "UploadToken",
-		LabelText = "Upload Token",
-		BoxText = APIKey,
-		BoxPlaceholderText = (CompileHost:lower() == "gist") and "PAT Token" or "...",
-		Parent = BG,
-		HolderVisible = (CompileHost:lower() == "gist"),
-		LayoutOrder = 9,
-	})
-
-UploadName = UITemplates.UITemplatesCreateTextBox(
-	{
-		Name = "UploadName",
-		LabelText = "Upload Name",
-		BoxText = "MBEOutput_Creation",
-		BoxPlaceholderText = "...",
-		Parent = BG,
-		HolderVisible = (CompileHost:lower() == "gist"),
-		LayoutOrder = 10,
-	})
-
-UploadToken.Box:GetPropertyChangedSignal("Text"):Connect(function()
-	APIKey = UploadToken.Box.Text
-	plugin:SetSetting("APIKey", APIKey)
-end)
 
 UploadTo.Box:GetPropertyChangedSignal("Text"):Connect(function()
 	if UploadTo.Box.Text:lower() == "gist" then
@@ -625,13 +606,6 @@ UploadTo.Box:GetPropertyChangedSignal("Text"):Connect(function()
 
 		UpladExpiry.Holder.Visible = false
 	end
-	CompileHost = UploadTo.Box.Text
-	plugin:SetSetting("CompileHost", CompileHost)
-end)
-
-UpladExpiry.Box:GetPropertyChangedSignal("Text"):Connect(function()
-	UploadExpireTime = UpladExpiry.Box.Text
-	plugin:SetSetting("UploadExpireTime", UploadExpireTime)
 end)
 ]]
 
