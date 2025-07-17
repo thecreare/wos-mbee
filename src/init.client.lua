@@ -1260,6 +1260,10 @@ local ConfigsContainerFrame = scope:New "Frame" {
 	Size = UDim2.fromScale(1, 0),
 	AutomaticSize = Enum.AutomaticSize.Y,
 	BackgroundTransparency = 1,
+	[Children] = scope:New "UIListLayout" {
+		SortOrder = Enum.SortOrder.LayoutOrder,
+		Padding = UDim.new(0, 1),
+	},
 }
 local function AddConfigItem(Item: BasePart)
 	-- Force port templates to the new version
