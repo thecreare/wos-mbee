@@ -40,6 +40,7 @@ def GetAllPaths(end):
 # For every opened file write its contents back to its file path.
 def WritebackFiles():
     for path, contents in opened_files.items():        
+        print("Writing to", path)
         with open(path, "w") as f:
             f.write(contents)
 
@@ -80,25 +81,25 @@ PART_METADATA = "PartMetadata/init.lua"
 CONFIG_DATA = "PartMetadata/ConfigData.lua"
 GET_SHAPE_ROOT = 'elseif part:IsA("Part") then'
 # Things that use MeshType
-for mesh, return_value in {"Brick": "nil", "Wedge": "Wedge", "Cylinder": "Cylinder"}.items():
-    PrependPatchTo(
-        PART_METADATA,
-        f'elseif mesh and mesh.MeshType == Enum.MeshType.{mesh} then\n\t\treturn "{return_value}"\n\t',
-        GET_SHAPE_ROOT,
-    )
+# for mesh, return_value in {"Brick": "nil", "Wedge": "Wedge", "Cylinder": "Cylinder"}.items():
+#     PrependPatchTo(
+#         PART_METADATA,
+#         f'elseif mesh and mesh.MeshType == Enum.MeshType.{mesh} then\n\t\treturn "{return_value}"\n\t',
+#         GET_SHAPE_ROOT,
+#     )
     
-# Things that use MeshId
-PrependPatchTo(
-    PART_METADATA,
-    'elseif mesh and shapesByMeshId[mesh.MeshId] then\n\t\treturn shapesByMeshId[mesh.MeshId]\n\t',
-    GET_SHAPE_ROOT,
-)
-# Edge case for CornerWedge
-PrependPatchTo(
-    PART_METADATA,
-    'elseif mesh and mesh.MeshId == "http://www.roblox.com/asset/?id=11294911" then\n\t\treturn "CornerWedge"\n\t',
-    GET_SHAPE_ROOT,
-)
+# # Things that use MeshId
+# PrependPatchTo(
+#     PART_METADATA,
+#     'elseif mesh and shapesByMeshId[mesh.MeshId] then\n\t\treturn shapesByMeshId[mesh.MeshId]\n\t',
+#     GET_SHAPE_ROOT,
+# )
+# # Edge case for CornerWedge
+# PrependPatchTo(
+#     PART_METADATA,
+#     'elseif mesh and mesh.MeshId == "http://www.roblox.com/asset/?id=11294911" then\n\t\treturn "CornerWedge"\n\t',
+#     GET_SHAPE_ROOT,
+# )
 
 ### Sorters missing TriggerQuantity
 PrependPatchTo(
@@ -107,10 +108,44 @@ PrependPatchTo(
     '\n\t\t},\n\t\t["ProximityButton"] = {', # I know it says proximity button but its because sorter is the config before it
 )
 
+### Fix packages path
 PatchOver(
     "init.lua",
     "MBEPackages",
     "Packages",
+)
+
+### Fix compiler not handling RotateV correctly or something
+### I really don't understand this
+## All this does is ports some code from the 2.6.1 compiler into the 2.6.4 compiler that was removed for some reason
+PatchOver(
+    "init.lua",
+    """
+					if joint:IsA("DynamicRotate") or joint:IsA("Rotate") then
+						if joint.Parent ~= primaryPart then
+							continue
+						end
+
+						local c0, c1 = joint.C0, joint.C1
+
+						local face = GetClosestFace(-c0.LookVector)
+
+						local hingeData = hinges[face.Value] or {}
+						hinges[face.Value] = hingeData
+
+						local otherFace = GetClosestFace(-c1.LookVector)
+						local look = CFrame.lookAt(Vector3.zero, Vector3.FromNormalId(otherFace))
+						local rotation = math.acos(look.UpVector:Dot(c1.RightVector)) * math.sign(look.RightVector:Dot(c1.RightVector))
+
+						table.insert(hingeData, {otherPartIndex, c1.Position.X, c1.Position.Y, c1.Position.Z, otherFace.Value, rotation})
+						continue
+					end
+""",
+"""
+					if joint:IsA("DynamicRotate") or joint:IsA("Rotate") then
+						continue
+					end
+"""
 )
 
 WritebackFiles()

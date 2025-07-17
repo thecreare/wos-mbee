@@ -317,6 +317,10 @@ function ModelBuilder:Compile(instances: {Instance}, saveConfig: SaveConfig): bu
 	for _, instance in pairs(instances) do
 		instance.Anchored = false
 		instance:MakeJoints()
+		-- local evil = instance:FindFirstChildOfClass("Rotate") or instance:FindFirstChildOfClass("RotateV")
+		-- if evil then
+		-- 	evil:Destroy()
+		-- end
 	end
 
 	throttle()
@@ -446,11 +450,31 @@ function ModelBuilder:Compile(instances: {Instance}, saveConfig: SaveConfig): bu
 					if not otherPartIndex then
 						continue
 					end
+--[[PB]]
+					if joint:IsA("DynamicRotate") or joint:IsA("Rotate") then
+						if joint.Parent ~= primaryPart then
+							continue
+						end
 
+						local c0, c1 = joint.C0, joint.C1
+
+						local face = GetClosestFace(-c0.LookVector)
+
+						local hingeData = hinges[face.Value] or {}
+						hinges[face.Value] = hingeData
+
+						local otherFace = GetClosestFace(-c1.LookVector)
+						local look = CFrame.lookAt(Vector3.zero, Vector3.FromNormalId(otherFace))
+						local rotation = math.acos(look.UpVector:Dot(c1.RightVector)) * math.sign(look.RightVector:Dot(c1.RightVector))
+
+						table.insert(hingeData, {otherPartIndex, c1.Position.X, c1.Position.Y, c1.Position.Z, otherFace.Value, rotation})
+						continue
+					end
+--[[PE]]--[[RM;
 					if joint:IsA("DynamicRotate") or joint:IsA("Rotate") then
 						continue
 					end
-
+;RM]]
 					if not otherWelds[partIndex] then
 						weldSet[otherPartIndex] = true
 					end
