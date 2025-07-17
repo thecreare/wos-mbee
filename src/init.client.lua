@@ -1052,46 +1052,39 @@ local function SelectCompilerButton()
 	Dialog.Parent = SettingsWidget
 end
 
-local function MigrateSelectionButton()
-	local Compiler = CompilersModule:GetSelectedCompiler()
-	local function tryMigrateTemplates(instances: {Instance})
+local function PerformGenericMigration(name: string, callback: (part: BasePart)->())
+	local function tryMigrate(instances: {Instance})
 		for _, instance in instances do
 			if not instance:IsA("BasePart") then
 				continue
 			end
 
-			-- Try to migrate templates for the instance
-			Compiler:TryMigrateTemplates(instance)
+			callback(instance)
 		end
 	end
-
-	ExtractedUtil.HistoricEvent("MigrateTemplates", nil, function()
-		for _, selection in Selection:Get() do
-			tryMigrateTemplates(selection:GetDescendants())
+	ExtractedUtil.HistoricEvent(name, nil, function()
+		local selected = Selection:Get()
+		tryMigrate(selected)
+		for _, selection in selected do
+			tryMigrate(selection:GetDescendants())
 		end
+	end)
+end
+
+local function MigrateSelectionButton()
+	local Compiler = CompilersModule:GetSelectedCompiler()
+
+	PerformGenericMigration("MigrateTemplates", function(part: BasePart)
+		-- Try to migrate templates for the instance
+		Compiler:TryMigrateTemplates(part)
 	end)
 end
 
 local function MigrateConfigurablesButton()
 	local Compiler = CompilersModule:GetSelectedCompiler()
-	local function migrateConfigurables(instances: {Instance})
-		for _, instance in instances do
-			if not instance:IsA("BasePart") then
-				continue
-			end
-
-			-- Try to migrate templates for the instance
-			Compiler:MigrateConfigurables(instance)
-		end
-	end
-
-	ExtractedUtil.HistoricEvent("MigrateConfigurables", nil, function()
-		local selectedInstances = Selection:Get()
-
-		migrateConfigurables(selectedInstances)
-		for _, selection in selectedInstances do
-			migrateConfigurables(selection:GetDescendants())
-		end
+	PerformGenericMigration("MigrateConfigurables", function(part: BasePart)
+		-- Try to migrate templates for the instance
+		Compiler:MigrateConfigurables(part)
 	end)
 end
 
