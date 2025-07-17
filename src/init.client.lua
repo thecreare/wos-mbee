@@ -1465,7 +1465,7 @@ scope:Container {
 				},
 				SettingGroup(scope, {
 					[Children] = {
-		
+
 						-- Color Settings
 						-- TODO: fix formatting
 						scope:ForPairs(THEME.COLORS, function(use, scope: typeof(scope), key, value: Fusion.Value<Color3>)
@@ -2005,13 +2005,13 @@ local UpdateFaceSelectionViewport;do
 
 	--- Part that is currently being mirrored to the viewport frame
 	local selected_part = scope:Value(nil :: BasePart?)
-	
+
 	--- CFrame of the local player's camera
 	local camera_cframe = scope:Value(Camera.CFrame)
 	table.insert(scope, Camera:GetPropertyChangedSignal("CFrame"):Connect(function()
 		camera_cframe:set(Camera.CFrame)
 	end))
-	
+
 	--- Computed cframe for the viewport frame camera
 	local viewport_camera_cframe = scope:Computed(function(use)
 		local block = use(selected_part)
@@ -2026,7 +2026,7 @@ local UpdateFaceSelectionViewport;do
 	--- Faces of currently selected part
 	--- Maps Front/Back/etc to Universal/Weld/etc
 	local SelectionFaces = scope:Value({})
-	
+
 	-- Update currently selected faces list
 	table.insert(scope, Selection.SelectionChanged:Connect(function()
 		if peek(selected_part) == nil then return end
@@ -2085,9 +2085,9 @@ local UpdateFaceSelectionViewport;do
 	local function OnTextChange(surface_type_name: string)
 		local surface_type = MAP_SURFACE_NAME_TO_ENUM[surface_type_name]
 		if not surface_type then return end
-	
+
 		local current_face_name = peek(closest_face)
-	
+
 		-- Apply new surface to every selected part's face
 		local function TryApplySurface(part: BasePart)
 			if part:IsA("BasePart") then
@@ -2100,7 +2100,7 @@ local UpdateFaceSelectionViewport;do
 				TryApplySurface(instance)
 			end
 		end
-	
+
 		-- Update SelectionFaces value with the new surface type at the given face
 		local _SelectionFaces = peek(SelectionFaces)
 		_SelectionFaces[current_face_name] = surface_type.Name
