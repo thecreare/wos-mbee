@@ -7,6 +7,7 @@ export type Setting = {
     Categories: {string},
     Type: string,
     Default: any,
+    Options: {string}?,
 }
 
 -- Ordered array of settings
@@ -34,6 +35,7 @@ local SettingInfo: {Setting} = {
 		Categories = {"main"},
 		Type = "string",
 		Default = "",
+        Options = {"gist", "hastebin"}
 	},
     {
 		Key = "MalleabilityToggle",

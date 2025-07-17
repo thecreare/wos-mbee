@@ -892,6 +892,7 @@ do
 					Parent = container,
 					Text = PluginSettings[setting.Key],
 					Layout = layout,
+					Options = setting.Options,
 					Label = {
 						Text = setting.Key,
 					}
