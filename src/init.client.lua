@@ -28,6 +28,7 @@ local repr = require(script.MBEPackages.repr)
 local ApplyColorCopy = require(script.Modules.ApplyColorCopy)
 local ApplyConfigurationValues = require(script.Modules.ApplyConfigurationValues)
 local GetEnumNames = require(script.Modules.GetEnumNames)
+local UpdatePilotTypes = require(script.Modules.UpdatePilotTypes)
 
 local CustomModules = script.Modules
 local Components = script.Components
@@ -933,12 +934,16 @@ ScriptEditorService.TextDocumentDidChange:Connect(function(document: ScriptDocum
 	if document_script.Parent == nil then return end
 	local value = document_script.Parent :: StringValue
 	if value.Name ~= "Code" then return end
-	print("Updating Value from script")
 	value.Value = document:GetText()
 end)
 
 local function UpdateScript(script: LuaSourceContainer, new_value: string)
+	local do_write_pilot_types = new_value == "" and peek(PluginSettings.InsertPilotTypeChecker)
+	local pilot_types = if do_write_pilot_types then UpdatePilotTypes() else ""
 	ScriptEditorService:UpdateSourceAsync(script, function(_)
+		if do_write_pilot_types then
+			return pilot_types
+		end
 		return new_value
 	end)
 end
@@ -958,7 +963,11 @@ local SpecialMaterialValues =
 			if MicrocontrollerScript == nil then
 				local new_script = Instance.new("Script")
 				new_script.Name = MICROCONTROLLER_SCRIPT_NAME
-				UpdateScript(new_script, ConfigValue.Value)
+				if peek(PluginSettings.InsertPilotTypeChecker) then
+					UpdateScript(new_script, UpdatePilotTypes() .. ConfigValue.Value)
+				else
+					UpdateScript(new_script, ConfigValue.Value)
+				end
 				new_script.Parent = ConfigValue
 				MicrocontrollerScript = new_script
 			end

@@ -125,6 +125,13 @@ local SettingInfo: {Setting} = {
         Type = "boolean",
         Default = true,
     },
+    {
+        Key = "InsertPilotTypeChecker",
+        Name = "Microcontroller Type Checking",
+        Categories = {"advanced"},
+        Type = "boolean",
+        Default = true,
+    },
 }
 -- Convert setting key to setting info
 local SettingsInfoHash: {[string]: Setting} = {}
