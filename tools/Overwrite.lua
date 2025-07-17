@@ -18,6 +18,9 @@ local EXCLUDE = {
 	"Pipe",
 	"Chute",
 	"HeatPipe",
+
+	"Microcontroller", -- Resized from default
+	"Rocket", -- Changed collision fidelity to box
 }
 
 local Selection = game:GetService("Selection")
