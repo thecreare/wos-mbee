@@ -63,6 +63,7 @@ local scope = Fusion.scoped(Fusion, {
 	Padding = require(Components.Padding),
 	CheckBox = require(Components.Checkbox),
 	TextBox = require(Components.TextBox),
+	LabeledSetting = require(Components.LabeledSetting),
 	RippleButton = require(Components.RippleButton),
 	UIListLayout = require(Components.UIListLayout),
 })
@@ -662,47 +663,23 @@ local BG = scope:ScrollingFrame {
 	ScrollBarThickness = 0,
 	[Children] = {
 		require(script.PartList),
+		-- Primary window config
+		scope:ForPairs(PluginSettings, function(use, scope: typeof(scope), key, value)
+			local setting = PluginSettingsModule.Info[key]
+			if not table.find(setting.Categories, "main") then
+				return key, nil :: any
+			end
+			return key, scope:LabeledSetting {
+				Setting = setting,
+				PluginSettingValues = PluginSettings,
+				Layout = {
+					LayoutOrder = 1
+				}
+			}
+		end),
 	}
 } :: ScrollingFrame
 
--- MARK: Setting UI
--- Create the UI buttons and stuff to control internal setting states
-do
-	local CATEGORY_CONTAINERS = {
-		-- advanced = _, -- TODO
-		main = BG,
-	}
-	for i, setting in PluginSettingsModule.InfoArray do
-		for _, category in setting.Categories do
-			local container = CATEGORY_CONTAINERS[category]
-			if not container then continue end
-			local layout = {
-				LayoutOrder = i
-			}
-			-- This will eventually be integrated entierly into fusion based UI
-			-- For now its this hack until then
-			if setting.Type == "boolean" then
-				scope:CheckBox {
-					Label = setting.Key,
-					Parent = container,
-					Checked = PluginSettings[setting.Key],
-					Layout = layout,
-				}
-			else
-				scope:TextBox {
-					Parent = container,
-					Text = PluginSettings[setting.Key],
-					Layout = layout,
-					Options = setting.Options,
-					Label = {
-						Text = setting.Key,
-					}
-				}
-			end
-
-		end
-	end
-end
 
 scope:Observer(PluginSettings.MalleabilityToggle):onChange(function()
 	CheckTableMalleability(Selection:Get())
@@ -1241,20 +1218,10 @@ scope:Container {
 				SettingGroup(scope, {
 					[Children] = scope:ForPairs(PluginSettings, function(use, scope: typeof(scope), key, value)
 						local setting = PluginSettingsModule.Info[key]
-
-						if setting.Type == "boolean" then
-							return key, scope:CheckBox {
-								Label = setting.Key,
-								Checked = value,
-							}
-						else
-							return key, scope:TextBox {
-								Text = value,
-								Label = {
-									Text = setting.Key,
-								}
-							}
-						end
+						return key, scope:LabeledSetting {
+							Setting = setting,
+							PluginSettingValues = PluginSettings,
+						}
 					end),
 				}),
 

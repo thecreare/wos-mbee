@@ -4,6 +4,7 @@ local peek = Fusion.peek
 
 export type Setting = {
     Key: string,
+    Name: string,
     Categories: {string},
     Type: string,
     Default: any,
@@ -14,24 +15,28 @@ export type Setting = {
 local SettingInfo: {Setting} = {
 	{
 		Key = "OpenCompilerScripts",
-		Categories = {"main"},
+        Name = "Open Compiler Scripts",
+		Categories = {"advanced"},
 		Type = "boolean",
 		Default = true,
 	},
     {
 		Key = "ReplaceCompiles",
+        Name = "Replace Old Compiles",
 		Categories = {"main"},
 		Type = "boolean",
 		Default = false,
 	},
     {
 		Key = "ReplaceUploads",
+        Name = "Replace Old Uploads",
 		Categories = {"main"},
 		Type = "boolean",
 		Default = false,
 	},
     {
         Key = "CompileHost",
+        Name = "Upload To",
 		Categories = {"main"},
 		Type = "string",
 		Default = "",
@@ -39,30 +44,35 @@ local SettingInfo: {Setting} = {
 	},
     {
 		Key = "MalleabilityToggle",
+        Name = "Malleability Check",
 		Categories = {"main"},
 		Type = "boolean",
 		Default = true,
 	},
     {
         Key = "OverlapToggle",
+        Name = "Overlap Check",
 		Categories = {"main"},
 		Type = "boolean",
 		Default = true,
     },
     {
         Key = "ScrollingText",
+        Name = "Scrolling Text",
 		Categories = {"advanced"},
 		Type = "boolean",
 		Default = true,
     },
     {
         Key = "VisualizeSpecial",
+        Name = "Visualize Special Parts",
         Categories = {"advanced"},
         Type = "boolean",
         Default = true,
     },
     {
         Key = "ShowSurfaceSelector",
+        Name = "Show Surface Selector",
         Categories = {"advanced"},
         Type = "boolean",
         Default = true,
