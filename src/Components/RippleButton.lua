@@ -45,6 +45,7 @@ local function RippleButton(
         Font = THEME.font,
         TextSize = 24,
         PrimaryColor3 = THEME.COLORS.MainContrast,
+        SecondaryColor3 = THEME.COLORS.ButtonText,
         Size = UDim2.fromScale(1, 1),
 
         -- idk
