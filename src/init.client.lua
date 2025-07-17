@@ -749,21 +749,8 @@ local function GetRequiredMaterialsButton()
 	Logger.print("Calculated Creation Requirements:\n", repr(Required :: any, {pretty=true} :: any))
 end
 
--- Eventually `ConfigList` will be removed when fusion is more prevasive
--- Configure part Widget
-local ConfigList = scope:ScrollingFrame {
-	ScrollingDirection = "Y",
-	BackgroundTransparency = 0,
-	ListPadding = UDim.new(0, 1),
-} :: ScrollingFrame
-scope:New "Frame" {
-	Size = UDim2.fromScale(1, 1),
-	Parent = ConfigWidget,
-	BackgroundColor3 = THEME.COLORS.MainBackground,
-	[Children] = {
-		ConfigList,
-	}
-}
+-- Eventually this will be removed when fusion is more pervasive
+local ChildrenOfConfigList = {}
 
 ----==== Plugin Settings Widget ====----
 local function SettingGroup(
@@ -1259,6 +1246,12 @@ local function ForeachSelectedPart(callback: (part: BasePart)->())
 end
 
 local Configs = {}
+local ConfigsContainerFrame = scope:New "Frame" {
+	Name = "Configurations",
+	Size = UDim2.fromScale(1, 0),
+	AutomaticSize = Enum.AutomaticSize.Y,
+	BackgroundTransparency = 1,
+}
 local function AddConfigItem(Item: BasePart)
 	-- Force port templates to the new version
 	-- I am tired of being compatible with TempTypes so its over. No more TempTypes.
@@ -1332,7 +1325,7 @@ local function AddConfigItem(Item: BasePart)
 		end
 
 		UITemplates.SyncColors({Labels = configLabels, Frames = configContainers})
-		primaryConfigContainer.Parent = ConfigList
+		primaryConfigContainer.Parent = ConfigsContainerFrame
 		table.insert(Configs, primaryConfigContainer)
 	end
 
@@ -1522,14 +1515,13 @@ local UpdateFaceSelectionViewport;do
 		end)
 	end
 
-	scope:New "Frame" {
+	local face_selection_holder = scope:New "Frame" {
 		Name = "FaceSelectionHolder",
 		Size = UDim2.new(1, 0, 0, 120),
 		Visible = scope:Computed(function(use)
 			return use(PluginSettings.ShowSurfaceSelector) and use(selected_part) ~= nil
 		end),
 		BackgroundColor3 = THEME.COLORS.MainBackground,
-		Parent = ConfigList,
 		[Children] = {
 			viewport_camera,
 			scope:New "ViewportFrame" {
@@ -1605,6 +1597,8 @@ local UpdateFaceSelectionViewport;do
 		}
 	}
 
+	table.insert(ChildrenOfConfigList, face_selection_holder)
+
 	UpdateFaceSelectionViewport = function()
 		for _, instance in Selection:Get() do
 			if instance:IsA("BasePart") then
@@ -1619,9 +1613,10 @@ end
 
 -- Add component button and dropdown
 local ComponentSelectionHolder = Instance.new("Frame")
+ComponentSelectionHolder.Name = "ComponentInserter"
 ComponentSelectionHolder.Size = UDim2.new(1, 0, 0, 50)
 ComponentSelectionHolder.Visible = false
-ComponentSelectionHolder.Parent = ConfigList
+table.insert(ChildrenOfConfigList, ComponentSelectionHolder)
 table.insert(UIElements.Frames, ComponentSelectionHolder)
 
 local pad = Instance.new("UIPadding")
@@ -1660,6 +1655,16 @@ local ComponentSelectionTab = UITemplates.UITemplatesCreateTextBox({
 	Parent = ComponentSelectionHolder,
 })
 ComponentSelectionTab.Label.TextStrokeTransparency = 0
+
+scope:ScrollingFrame {
+	ScrollingDirection = "Y",
+	ListPadding = UDim.new(0, 1),
+	Parent = ConfigWidget,
+	[Children] = {
+		ChildrenOfConfigList :: Fusion.Child,
+		ConfigsContainerFrame,
+	}
+}
 
 -- If part is left
 function AddComponentToPart(part: BasePart, componentName: string)
