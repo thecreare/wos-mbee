@@ -2389,9 +2389,7 @@ function ClearScriptsOfName(name: string)
 end
 
 CompileButton.OnPressed:Connect(function()
-	local recordingId = ChangeHistoryService:TryBeginRecording("MBEECompile", "Compile Model")
-
-	local success, err = pcall(function()
+	ExtractedUtil.HistoricEvent("Compile", "Compile Model", function()
 		if peek(PluginSettings.ReplaceCompiles) then
 			ClearScriptsOfName("MBEOutput")
 			ClearScriptsOfName("MBEEOutput")
@@ -2566,14 +2564,5 @@ CompileButton.OnPressed:Connect(function()
 			end
 		end
 	end)
-
-	ChangeHistoryService:FinishRecording(recordingId, Enum.FinishRecordingOperation.Commit)
-
-	if not success then
-		Logger.warn(err)
-		Logger.warn(debug.traceback())
-		ChangeHistoryService:Undo()
-	end
-
 end)
 UITemplates.SyncColors()
