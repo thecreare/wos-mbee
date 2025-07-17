@@ -1,7 +1,6 @@
-local plugin = _G.plugin
-local is_local = if string.find(plugin.Name, ".rbxm") or string.find(plugin.Name, ".lua") then true else false
+local Constants = require(script.Parent.Constants)
 
-if is_local then
+if Constants.IS_LOCAL then
     -- Developer environment branding
     return {
         NAME = "Model Builder: Edited Edited [DEV]",
