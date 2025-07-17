@@ -209,15 +209,21 @@ function ExtractedUtil.ApplyTemplates(List: {BasePart}, Material: Enum.Material?
 	end
 end
 
-function ExtractedUtil.SpawnPart(Part: BasePart): Model?
+function ExtractedUtil.GetInsertPoint(distance: number, shift_up: number)
+	local cam_cf = workspace.CurrentCamera.CFrame
+	local direction = cam_cf.LookVector * distance
+	local hit = workspace:Raycast(cam_cf.Position, direction)
+	local hit_point = if hit then hit.Position else cam_cf.Position + direction
+	return (hit_point + Vector3.yAxis * shift_up):Floor()
+end
+
+function ExtractedUtil.SpawnPart(Part: BasePart): BasePart?
 	local SelectedPart
 
 	ExtractedUtil.HistoricEvent("InsertPart", "Insert Part", function()
-		SelectedPart = Part:IsA("BasePart") and Part:Clone() or ExtractedUtil.MatchQueryToList(tostring(Part), PARTS:GetChildren())
-		if not SelectedPart then return end
-		local cam_cf = workspace.CurrentCamera.CFrame
-		local RayResult = workspace:Raycast(cam_cf.Position, cam_cf.LookVector * ((SelectedPart.Size.X + SelectedPart.Size.Y + SelectedPart.Size.Z) / 3 * 1.5 + 10))
-		SelectedPart.Position = RayResult and RayResult.Position and Vector3.new(RayResult.Position.X, RayResult.Position.Y + SelectedPart.Size.Y / 2, RayResult.Position.Z) or cam_cf.Position + cam_cf.LookVector * 12
+		SelectedPart = Part:Clone()
+		local distance = (SelectedPart.Size.X + SelectedPart.Size.Y + SelectedPart.Size.Z) / 3 * 1.5 + 10
+		SelectedPart.Position = ExtractedUtil.GetInsertPoint(distance, SelectedPart.Size.Y / 2)
 		ExtractedUtil.RoundPos(SelectedPart)
 
 		SelectedPart.Parent = workspace
