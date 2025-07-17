@@ -20,6 +20,7 @@ local EXCLUDE = {
 	"HeatPipe",
 
 	"Microcontroller", -- Resized from default
+	"Gold", -- Resized from default
 	"Rocket", -- Changed collision fidelity to box
 }
 
