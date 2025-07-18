@@ -55,7 +55,7 @@ local SettingInfo: {Setting} = {
         Name = "Upload To",
 		Categories = {"main"},
 		Type = "string",
-        Options = {"gist", "hastebin"}
+        Options = {"gist", "hastebin", "none"}
 	},
     {
         Key = "APIKey",
