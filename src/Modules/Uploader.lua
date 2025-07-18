@@ -1,5 +1,6 @@
 local http = game:GetService("HttpService")
 
+local Branding = require(script.Parent.Branding)
 local Log = require(script.Parent.Logger)
 local warn = Log.warn
 
@@ -35,10 +36,28 @@ function module.HastebinUpload(content: string, expires: string): string?
 end
 
 function module.GistUpload(content: string, APIKey: string, upload_name: string): string?
-	local FormattedCompilation = content:gsub("\\\"", "\""):gsub('"', '\\"')
+	local file_name = upload_name .. ".wos.json"
 	local success, response = pcall(function()
-		local body = '{"description":"Roblox Studio creation auto-uploaded by MBEE", "public":false,"files":{"' .. upload_name .. '.json":{"content":"' .. FormattedCompilation .. '"}}}'
-		local response = http:PostAsync("https://api.github.com/gists", body, Enum.HttpContentType.ApplicationJson, false, {Authorization = "token " .. APIKey})
+		local json = {
+			description = "Roblox Studio creation auto-uploaded by " .. Branding.NAME_ABBREVIATION,
+			public = false,
+			files = {
+				[file_name] = {
+					content = content,
+				}
+			},
+		}
+		local body = http:JSONEncode(json)
+		local response = http:PostAsync(
+			"https://api.github.com/gists",
+			body,
+			Enum.HttpContentType.ApplicationJson,
+			false,
+			{
+				Authorization = "Bearer " .. APIKey,
+				["X-GitHub-Api-Version"] = "2022-11-28",
+				Accept = "application/vnd.github+json",
+			})
 		return http:JSONDecode(response)
 	end)
 
@@ -47,7 +66,7 @@ function module.GistUpload(content: string, APIKey: string, upload_name: string)
 		return nil
 	else
 		warn("SUCCESSFULLY AUTO PUBLISHED AS A GIST")
-		return response.files[1].raw_url
+		return response.files[file_name].raw_url
 	end
 end
 
