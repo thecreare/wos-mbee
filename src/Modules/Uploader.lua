@@ -1,15 +1,14 @@
 local http = game:GetService("HttpService")
 
 local Log = require(script.Parent.Logger)
-local print, warn = Log.print, Log.warn
+local warn = Log.warn
 
 local module = {}
 
 function module.HastebinUpload(content: string, expires: string): string?
 	local data_fields = {
 		content = content,
-		--content = "test",
-		--lexer = "Plain Text",
+		lexer = "json",
 		expires = expires,
 		format =  "url", -- How dpaste.org should return the url
 	}
@@ -27,7 +26,6 @@ function module.HastebinUpload(content: string, expires: string): string?
 
 	if not success then
 		warn("HASTEBIN AUTO PUBLISH ERROR: " .. (response or 'UNKNOWN'))
-		print(response)
 		return nil
 	else
 		warn("SUCCESSFULLY AUTO PUBLISHED AS A HASTE. EXPIRE TIME: " .. expires)
