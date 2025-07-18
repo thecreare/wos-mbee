@@ -925,6 +925,14 @@ local function ConvertTextBoxInputToResource(TextBox, ConfigValue)
 end
 
 local MICROCONTROLLER_SCRIPT_NAME = "MicrocontrollerCode"
+local TYPECHECKING_LINE_FILLER = "-- Removed Typechecking Line\n"
+
+local function Clean(str: string)
+	return str
+		:gsub(TYPECHECKING_LINE_FILLER, "")
+		:gsub("local PilotLua.-require.-PilotLua%)\n", TYPECHECKING_LINE_FILLER)
+		:gsub("local .-PilotLua%(%)\n", TYPECHECKING_LINE_FILLER)
+end
 
 ScriptEditorService.TextDocumentDidChange:Connect(function(document: ScriptDocument)
 	local document_script = document:GetScript() :: LuaSourceContainer?
@@ -934,16 +942,14 @@ ScriptEditorService.TextDocumentDidChange:Connect(function(document: ScriptDocum
 	if document_script.Parent == nil then return end
 	local value = document_script.Parent :: StringValue
 	if value.Name ~= "Code" then return end
-	value.Value = document:GetText()
+	value.Value = Clean(document:GetText())
 end)
 
 local function UpdateScript(script: LuaSourceContainer, new_value: string)
-	local do_write_pilot_types = new_value == "" and peek(PluginSettings.InsertPilotTypeChecker)
-	local pilot_types = if do_write_pilot_types then UpdatePilotTypes() else ""
+	if peek(PluginSettings.InsertPilotTypeChecker) then
+		new_value = UpdatePilotTypes() .. new_value
+	end
 	ScriptEditorService:UpdateSourceAsync(script, function(_)
-		if do_write_pilot_types then
-			return pilot_types
-		end
 		return new_value
 	end)
 end
@@ -958,6 +964,7 @@ local SpecialMaterialValues =
 		["Assemble"] = ConvertTextBoxInputToResource,
 
 		["Code"] = function(TextBox, ConfigValue: StringValue)
+			TextBox.Box.Text = Clean(TextBox.Box.Text)
 			local MicrocontrollerScript = ConfigValue:FindFirstChildWhichIsA("Script")
 
 			if MicrocontrollerScript == nil then
@@ -979,14 +986,18 @@ local SpecialMaterialValues =
 			end)
 
 			local am_i_updating_box = false
+			local am_i_updating_value = false
 			local box_changed = TextBox.Box:GetPropertyChangedSignal("Text"):Connect(function()
 				if am_i_updating_box then return end
+				am_i_updating_value = true
 				UpdateScript(MicrocontrollerScript, TextBox.Box.Text)
+				am_i_updating_value = false
 			end)
 			
 			local changed = ConfigValue.Changed:Connect(function(new: string)
+				if am_i_updating_value then return end
 				am_i_updating_box = true
-				TextBox.Box.Text = new
+				TextBox.Box.Text = Clean(new)
 				am_i_updating_box = false
 			end)
 
