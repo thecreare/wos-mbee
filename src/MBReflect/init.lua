@@ -34,6 +34,7 @@ createSharedToolbar(plugin, sharedToolbarSettings)
 
 local Gui = script.ReflectPluginGui:Clone()
 --local Gui = Workspace.ReflectPlugin.ReflectPluginGui:Clone()
+Gui.Archivable = false
 Gui.Parent = game:GetService('CoreGui')
 
 local Dialog = Gui:WaitForChild('Dialog')
