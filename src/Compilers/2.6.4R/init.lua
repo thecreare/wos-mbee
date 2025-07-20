@@ -354,9 +354,19 @@ function ModelBuilder:Compile(instances: {Instance}, saveConfig: SaveConfig): bu
 			end
 
 			local properties: {[string]: unknown} = {}
-
+--[[PB]]
 			local configurables = PartMetadata:GetConfigurables(part)
-			local components = PartMetadata:GetComponents(part)
+			for key, value in configurables do
+				for _, override in saveConfig.Overrides do
+					local new = override(key, value)
+					if new ~= nil then
+						configurables[key] = new
+					end
+				end
+			end
+--[[PE]]--[[RM;
+			local configurables = PartMetadata:GetConfigurables(part)
+;RM]]			local components = PartMetadata:GetComponents(part)
 
 			local configData = ConfigData.Parts[className]
 			local compressedConfigurables = if configData then PartMetadata:CompressConfigurables(configurables, configData) else configurables

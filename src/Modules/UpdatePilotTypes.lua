@@ -11,7 +11,7 @@ local HEAD = "-- PilotLua Globals: "
 local function DetermineRequire(script: ModuleScript)
     local contents = script.Source
     local match = contents:match(HEAD .. ".-\n"):gsub(HEAD, ""):sub(1, -2)
-    return `local PilotLua = require(game.{script:GetFullName()})\nlocal {match} = PilotLua()\n`
+    return `local PilotLua = require(game.{script:GetFullName()})\nlocal {match} = PilotLua()\n\n`
 end
 
 local response_cache
@@ -33,7 +33,7 @@ local function UpdatePilotTypes(): string
             if output_script then
                 return DetermineRequire(output_script)
             else
-                return "-- Failed to fetch PilotLua type checking file. Try restarting studio, if that fails contact creare\n"
+                return "-- Failed to fetch PilotLua type checking file. Try restarting studio, if that fails contact creare\n\n"
             end
         end
         response_cache = response

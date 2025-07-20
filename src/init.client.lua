@@ -926,15 +926,8 @@ local function ConvertTextBoxInputToResource(TextBox, ConfigValue)
 end
 
 local MICROCONTROLLER_SCRIPT_NAME = "MicrocontrollerCode"
-local TYPECHECKING_LINE_FILLER = "-- Removed Typechecking Line\n"
 
-local function Clean(str: string)
-	return str
-		:gsub(TYPECHECKING_LINE_FILLER, "")
-		:gsub("local PilotLua.-require.-PilotLua%)\n", TYPECHECKING_LINE_FILLER)
-		:gsub("local .-PilotLua%(%)\n", TYPECHECKING_LINE_FILLER)
-end
-
+-- On script change, update corresponding microcontroller Code value
 ScriptEditorService.TextDocumentDidChange:Connect(function(document: ScriptDocument)
 	local document_script = document:GetScript() :: LuaSourceContainer?
 	-- Script can be nil if the edited document is the command bar
@@ -943,13 +936,11 @@ ScriptEditorService.TextDocumentDidChange:Connect(function(document: ScriptDocum
 	if document_script.Parent == nil then return end
 	local value = document_script.Parent :: StringValue
 	if value.Name ~= "Code" then return end
-	value.Value = Clean(document:GetText())
+	value.Value = document:GetText()
 end)
 
+--- Wrapper to update a script's source.
 local function UpdateScript(script: LuaSourceContainer, new_value: string)
-	if peek(PluginSettings.InsertPilotTypeChecker) then
-		new_value = UpdatePilotTypes() .. new_value
-	end
 	ScriptEditorService:UpdateSourceAsync(script, function(_)
 		return new_value
 	end)
@@ -965,47 +956,49 @@ local SpecialMaterialValues =
 		["Assemble"] = ConvertTextBoxInputToResource,
 
 		["Code"] = function(TextBox, ConfigValue: StringValue)
-			TextBox.Box.Text = Clean(TextBox.Box.Text)
 			local MicrocontrollerScript = ConfigValue:FindFirstChildWhichIsA("Script")
 
 			if MicrocontrollerScript == nil then
 				local new_script = Instance.new("Script")
 				new_script.Name = MICROCONTROLLER_SCRIPT_NAME
-				if peek(PluginSettings.InsertPilotTypeChecker) then
-					UpdateScript(new_script, UpdatePilotTypes() .. ConfigValue.Value)
-				else
-					UpdateScript(new_script, ConfigValue.Value)
-				end
 				new_script.Parent = ConfigValue
 				MicrocontrollerScript = new_script
 			end
 			assert(MicrocontrollerScript)
 
-			local focused = TextBox.Box.Focused:Connect(function()
+			-- Insert type checking if the setting is enabled and the script is blank
+			if peek(PluginSettings.InsertPilotTypeChecker) and ConfigValue.Value == "" then
+				ConfigValue.Value = UpdatePilotTypes() .. ConfigValue.Value
+				TextBox.Box.Text = ConfigValue.Value
+			end
+			UpdateScript(MicrocontrollerScript, ConfigValue.Value)
+
+			-- When the user clicks the text box, open a script
+			local textbox_focused_event = TextBox.Box.Focused:Connect(function()
 				UpdateScript(MicrocontrollerScript, TextBox.Box.Text)
 				ScriptEditorService:OpenScriptDocumentAsync(MicrocontrollerScript)
 			end)
 
-			local am_i_updating_box = false
-			local am_i_updating_value = false
-			local box_changed = TextBox.Box:GetPropertyChangedSignal("Text"):Connect(function()
-				if am_i_updating_box then return end
-				am_i_updating_value = true
+			local textbox_updating = false
+			local script_updating = false
+			local textbox_edited_event = TextBox.Box:GetPropertyChangedSignal("Text"):Connect(function()
+				if textbox_updating then return end
+				script_updating = true
 				UpdateScript(MicrocontrollerScript, TextBox.Box.Text)
-				am_i_updating_value = false
+				script_updating = false
 			end)
 			
-			local changed = ConfigValue.Changed:Connect(function(new: string)
-				if am_i_updating_value then return end
-				am_i_updating_box = true
-				TextBox.Box.Text = Clean(new)
-				am_i_updating_box = false
+			local value_changed_event = ConfigValue.Changed:Connect(function(new: string)
+				if script_updating then return end
+				textbox_updating = true
+				TextBox.Box.Text = new
+				textbox_updating = false
 			end)
 
 			TextBox.Box.Destroying:Once(function()
-				focused:Disconnect()
-				box_changed:Disconnect()
-				changed:Disconnect()
+				textbox_focused_event:Disconnect()
+				textbox_edited_event:Disconnect()
+				value_changed_event:Disconnect()
 			end)
 		end,
 	}

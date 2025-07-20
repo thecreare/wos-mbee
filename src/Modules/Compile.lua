@@ -33,6 +33,20 @@ function ClearScriptsOfName(name: string)
 	until not workspace:FindFirstChild(name)
 end
 
+local function generateRandId()
+	-- Max is 64 https://discord.com/channels/616089055532417036/685118583713562647/1296564993679953931
+	local length = 16
+	-- inclusive safe utf-8 charcters to use for the antenna ID
+	local minchar = 33
+	local maxchar = 126
+
+	local id = table.create(length)
+	for i = 1, length do
+		id[i] = string.char(math.random(minchar, maxchar))
+	end
+	return table.concat(id)
+end
+
 local function GetSelection()
 	local SelectionParts = {}
 	local SelectionVectors = {}
@@ -56,6 +70,8 @@ local function GetSelection()
 	return SelectionParts, SelectionVectors, SelectionCFrames
 end
 
+local TYPECHECKING_LINE_FILLER = "-- Removed Typechecking Line\n"
+
 return function()
 	ExtractedUtil.HistoricEvent("Compile", "Compile Model", function()
 		if peek(PluginSettings.Values.ReplaceCompiles) then
@@ -72,69 +88,6 @@ return function()
 		local SelectionParts, SelectionVectors, SelectionCFrames = GetSelection()
 		Logger.print(`{#SelectionParts} PARTS COLLECTED`)
 
-		-- Fill in random configs (gets reverted after compilation)
-		local function generateRandId()
-			-- Max is 64 https://discord.com/channels/616089055532417036/685118583713562647/1296564993679953931
-			local length = 16
-			-- inclusive safe utf-8 charcters to use for the antenna ID
-			local minchar = 33
-			local maxchar = 126
-
-			local id = table.create(length)
-			for i = 1, length do
-				id[i] = string.char(math.random(minchar, maxchar))
-			end
-			return table.concat(id)
-		end
-		local alreadyMadeIds = {}
-		local valuesToRevert = {}
-		local function randomizeValue(value: ValueBase)
-			-- format: `%<number>` eg: %2
-			if not value:IsA("StringValue") then return end	-- Only run on string values
-			if not (value.Value:sub(1, 1) == "%") then return end -- Only run on ones that match format
-
-			valuesToRevert[value] = value.Value
-			local id = value.Value:sub(2, -1)
-
-			if alreadyMadeIds[id] then
-				value.Value = alreadyMadeIds[id]
-			else
-				local randId = generateRandId()
-				value.Value = randId
-				alreadyMadeIds[id] = randId
-			end
-		end
-		local function HandleValue(_value: ValueBase)
-			local value = _value :: ValueBase & {Value:any} -- Who knows the the correct solution to make the errors go away is
-
-			-- Handle % antenna randomization
-			randomizeValue(value)
-
-			-- Handle compat updates
-			local values = Compatibility.COMPAT_CONFIG_REPLACEMENTS[value.Name]
-			if values then
-				local replace = values[value.Value]
-				if replace then
-					value.Value = replace
-				end
-			end
-		end
-		for _, part in SelectionParts do
-			for _, child: Configuration|ValueBase in part:GetChildren() do
-
-				if child:IsA("Configuration") then
-					for _, configValue in child:GetChildren() do
-						if not configValue:IsA("ValueBase") then continue end
-						HandleValue(configValue)
-					end
-				end
-
-				if child:IsA("ValueBase") then
-					HandleValue(child)
-				end
-			end
-		end
-
 		-- Get Model Offset (currently unused ingame?)
 		local components = string.split(peek(PluginSettings.Values.ModelOffset):gsub("%s+", ""), ",")
 		local offset = Vector3.new(tonumber(components[1]), tonumber(components[2]), tonumber(components[3]))
@@ -143,11 +96,49 @@ return function()
 		-- Set final origin of compiled model
 		compilerSettings.Offset = origin + offset
 
+		local alreadyMadeIds = {}
+
+		compilerSettings.Overrides = {
+			-- Remove microcontroller type checking
+			function(key: string, value: any)
+				if key ~= "Code" then return end
+				return value
+					:gsub("local PilotLua.-require.-PilotLua%)\n", TYPECHECKING_LINE_FILLER)
+					:gsub("local .-PilotLua%(%)\n", TYPECHECKING_LINE_FILLER)
+			end,
+			-- Fill in randomized configs
+			function(key: string, value: any)
+				-- format: `%<number>` eg: %2
+				if typeof(value) ~= "string" then return end	-- Only run on string values
+				if value:sub(1, 1) ~= "%" then return end -- Only run on ones that match format
+
+				if alreadyMadeIds[value] then
+					return alreadyMadeIds[value]
+				end
+
+				local randId = generateRandId()
+				alreadyMadeIds[value] = randId
+				return randId
+			end,
+			-- Handle compat updates
+			function(key: string, value: any)
+				local values = Compatibility.COMPAT_CONFIG_REPLACEMENTS[key]
+				if values then
+					local replace = values[value]
+					if replace then
+						return replace
+					end
+				end
+			end
+		}
+
 		--show result
 		Logger.print("COMPILE STARTED...")
 		local startCompile = os.clock()
 		local encoded = Compilers:GetSelectedCompiler():Compile(SelectionParts, compilerSettings)
 		local Compilation = HttpService:JSONEncode(encoded)
+
+		local COMPILE_LEN = #Compilation
 
 		Logger.print("FIXING PARTSHIFT")
 
@@ -168,22 +159,13 @@ return function()
 			part.CFrame = SelectionCFrames[i]
 		end
 
-		-- Undo randomized ids
-		for value: ValueBase & any, oldValue: any in valuesToRevert do
-			value.Value = oldValue
-		end
-
 		if fixedCount > 0 then
 			Logger.warn(`Reverted compiler induced part shift on {fixedCount} parts`)
 		end
 
-
 		local elapsed = string.format("%.3f", os.clock() - startCompile)
 		Logger.print(`COMPILE FINISHED IN: {elapsed} s.`)
-		Logger.print(`COMPILE LENGTH: {#Compilation}`)
-
-
-		local createdScripts = {}
+		Logger.print(`COMPILE SIZE: {COMPILE_LEN} CHARACTERS (~{string.format("%.1f", COMPILE_LEN/1024)}KB)`)
 
 		local compile_host = peek(PluginSettings.Values.CompileHost)
 
@@ -195,46 +177,40 @@ return function()
             assert(url, "Gist upload failed")
 			CreateOutputScript(url, "MBEEOutput_Upload", true)
 			return
-		end
-
+		
 		-- Hastebin.org uploads
-		if compile_host:lower() == 'hastebin' then
+		elseif compile_host:lower() == 'hastebin' then
 			local expires = UploadExpireTypes[peek(PluginSettings.Values.UploadExpireTime)] or "3600"
 			local url = CompileUploader.HastebinUpload(Compilation, expires)
             assert(url, "Hastebin upload failed")
 			CreateOutputScript(url, "MBEEOutput_Upload", true)
 			return
-		end
-
-		if #Compilation <= 200000 then
-			-- Warning removed because roblox fixed 16K text box bug!
-			--if #Compilation > 16384 then
-			--	warn('[MB:E:E] COMPILE EXCEEDS 16384 CHARACTERS (' .. #Compilation .. '), PLEASE UPLOAD YOUR COMPILE TO AN EXTERNAL SERVICE TO LOAD IN-GAME')
-			--end
+		
+		-- Standard offline output
+		elseif COMPILE_LEN <= 200000 then
 			CreateOutputScript(Compilation, "MBEEOutput", true)
+
+		-- Split offline output for huge compiles
 		else
-			Logger.warn(`COMPILE EXCEEDS 200000 CHARACTERS ({#Compilation}). AUTOMATICALLY SPLIT INTO MULTIPLE SCRIPTS.`)
+			Logger.warn(`COMPILE EXCEEDS 200000 CHARACTERS ({COMPILE_LEN}). AUTOMATICALLY SPLIT INTO MULTIPLE SCRIPTS.`)
 
 			local folder = Instance.new("Folder")
 			folder.Name = "MBEEOutput_" .. tostring(math.round(tick()))
 			folder.Parent = workspace
 
-			for i=0, math.ceil(#Compilation / 200000) - 1 do
-				local source = string.sub(Compilation, 1 + 199999 * i, #Compilation >= (199999 + 199999 * i) and 199999 + 199999 * i or #Compilation)
+			for i=0, math.ceil(COMPILE_LEN / 200000) - 1 do
+				local source = string.sub(Compilation, 1 + 199999 * i, COMPILE_LEN >= (199999 + 199999 * i) and 199999 + 199999 * i or COMPILE_LEN)
 				local OutputScript = CreateOutputScript(source, "Output #" .. i + 1, false)
                 assert(OutputScript, `Failed to create output script #{i}`)
 				OutputScript.Parent = folder
-				table.insert(createdScripts, OutputScript)
-			end
-		end
-
-		for _, scr in createdScripts do
-			if peek(PluginSettings.Values.OpenCompilerScripts) then
-				local success, err = ScriptEditorService:OpenScriptDocumentAsync(scr)
-				if not success then
-					Logger.warn(`Failed to open script document: {err}`)
+				if peek(PluginSettings.Values.OpenCompilerScripts) then
+					local success, err = ScriptEditorService:OpenScriptDocumentAsync(OutputScript)
+					if not success then
+						Logger.warn(`Failed to open script document: {err}`)
+					end
 				end
 			end
 		end
+
 	end)
 end

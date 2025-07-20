@@ -4,7 +4,7 @@ Is it better than copy-pasting changes for every new compiler? Also yes.
 """
 import re
 
-COMPILERS = ["2.6.4", "2.6.4R"]
+COMPILERS = ["2.6.1", "2.6.1R", "2.6.4", "2.6.4R"]
 
 PATCH_BEGIN = "--[[PB]]"
 PATCH_END = "--[[PE]]"
@@ -146,6 +146,26 @@ PatchOver(
 						continue
 					end
 """
+)
+
+## Add a compiler feature to override configs based on a list of callbacks
+## Used for microcontroller typing removal, randomized antenna ids, and backwards compatible config values
+PatchOver("init.lua",
+"""
+			local configurables = PartMetadata:GetConfigurables(part)
+			for key, value in configurables do
+				for _, override in saveConfig.Overrides do
+					local new = override(key, value)
+					if new ~= nil then
+						configurables[key] = new
+					end
+				end
+			end
+""",
+"""
+			local configurables = PartMetadata:GetConfigurables(part)
+"""
+
 )
 
 WritebackFiles()
