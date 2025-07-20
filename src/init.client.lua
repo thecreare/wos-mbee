@@ -493,7 +493,8 @@ local BG = scope:ScrollingFrame {
 		-- Template Material
 		AutomaticIndividualLabeledSetting("MalleabilityToggle", 10),
 		AutomaticIndividualLabeledSetting("OverlapToggle", 15),
-		AutomaticIndividualLabeledSetting("ModelOffset", 20),
+		-- Removed because it doesn't seem to do anything
+		-- AutomaticIndividualLabeledSetting("ModelOffset", 20),
 		-- Compile Button
 		scope:RippleButton {
 			Label = "Compile",
