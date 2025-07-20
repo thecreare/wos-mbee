@@ -29,6 +29,7 @@ local ApplyColorCopy = require(script.Modules.ApplyColorCopy)
 local ApplyConfigurationValues = require(script.Modules.ApplyConfigurationValues)
 local GetEnumNames = require(script.Modules.GetEnumNames)
 local UpdatePilotTypes = require(script.Modules.UpdatePilotTypes)
+local WosSelection = require(script.Modules.WosSelection)
 
 local CustomModules = script.Modules
 local Components = script.Components
@@ -1253,14 +1254,6 @@ local function CreateResourceConfigElement(
 	UITemplates.SyncColors({Labels = {TextBox.Label}, Boxes = {TextBox.Box}})
 end
 
-local function ForeachSelectedPart(callback: (part: BasePart)->())
-	for _, Element in Selection:Get() do
-		if typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() then
-			callback(Element)
-		end
-	end
-end
-
 local Configs = {}
 local ConfigsContainerFrame = scope:New "Frame" {
 	Name = "Configurations",
@@ -1708,9 +1701,9 @@ end
 AddComponentButton.OnPressed:Connect(function()
 	local componentName = ComponentSelectionTab.Box.Text
 	-- Add component to parts
-	ForeachSelectedPart(function(selected: BasePart)
-		AddComponentToPart(selected, componentName)
-	end)
+	for _, part in WosSelection() do
+		AddComponentToPart(part, componentName)
+	end
 
 	-- Update part selection GUI
 	RefreshSelection()
@@ -1741,7 +1734,7 @@ function RefreshSelection()
 
 	table.clear(ConfigValues)
 
-	local SelectedParts = ExtractedUtil.SearchTableWithRecursion(Selection:Get(), function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end)
+	local SelectedParts = WosSelection()
 
 	CheckTableMalleability(SelectedParts)
 	CheckTableOverlap(SelectedParts)
@@ -1751,7 +1744,7 @@ function RefreshSelection()
 	end
 
 	-- Create the button and dropdown for adding components
-	if #Selection:Get() > 0 then
+	if #SelectedParts > 0 then
 		UITemplates.CreateTipBoxes(ComponentSelectionTab.Box, CompilersModule:GetComponents())
 		ComponentSelectionHolder.Visible = true
 	else
