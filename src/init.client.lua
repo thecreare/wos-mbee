@@ -967,7 +967,7 @@ local SpecialMaterialValues =
 			assert(MicrocontrollerScript)
 
 			-- Insert type checking if the setting is enabled and the script is blank
-			if peek(PluginSettings.InsertPilotTypeChecker) and ConfigValue.Value == "" then
+			if peek(PluginSettings.InsertPilotTypeChecker) and peek(PluginSettings.OpenMicrocontrollerScripts) and ConfigValue.Value == "" then
 				ConfigValue.Value = UpdatePilotTypes() .. ConfigValue.Value
 				TextBox.Box.Text = ConfigValue.Value
 			end
@@ -976,7 +976,9 @@ local SpecialMaterialValues =
 			-- When the user clicks the text box, open a script
 			local textbox_focused_event = TextBox.Box.Focused:Connect(function()
 				UpdateScript(MicrocontrollerScript, TextBox.Box.Text)
-				ScriptEditorService:OpenScriptDocumentAsync(MicrocontrollerScript)
+				if peek(PluginSettings.OpenMicrocontrollerScripts) then
+					ScriptEditorService:OpenScriptDocumentAsync(MicrocontrollerScript)
+				end
 			end)
 
 			local textbox_updating = false

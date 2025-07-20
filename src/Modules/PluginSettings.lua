@@ -133,6 +133,13 @@ local SettingInfo: {Setting} = {
         Type = "boolean",
         Default = true,
     },
+    {
+        Key = "OpenMicrocontrollerScripts",
+        Name = "Open Microcontroller Scripts",
+        Categories = {"advanced"},
+        Type = "boolean",
+        Default = true,
+    },
 }
 -- Convert setting key to setting info
 local SettingsInfoHash: {[string]: Setting} = {}
