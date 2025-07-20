@@ -1,12 +1,12 @@
-local function _Resource_Get_(ClassName, Name, Parent)
-	local IsPlugin = script.Parent.Parent.Parent.ClassName == "Plugin"
+local function _Resource_Get_(ClassName: string, Name: string, Parent: Instance)
+	local IsPlugin = (plugin or _G.plugin) ~= nil
 
 	if not Parent then
 		Parent = _Resource_Get_("Folder", ClassName .. "Folder", game:GetService(IsPlugin and "CoreGui" or "ReplicatedStorage"))
 	end
 
 	if IsPlugin or game:GetService("RunService"):IsServer() then
-		local Object = Instance.new(ClassName)
+		local Object = Parent:FindFirstChild(Name) or Instance.new(ClassName)
 		Object.Name = Name
 		Object.Parent = Parent
 		return Object
