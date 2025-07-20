@@ -69,7 +69,7 @@ return function()
 		end
 
 		Logger.print("COLLECTING PARTS...")
-		local SelectionParts, _, SelectionCFrames = GetSelection()
+		local SelectionParts, SelectionVectors, SelectionCFrames = GetSelection()
 		Logger.print(`{#SelectionParts} PARTS COLLECTED`)
 
 		-- Fill in random configs (gets reverted after compilation)
@@ -135,15 +135,13 @@ return function()
 			end
 		end
 
-
-		--calculate offset
-		-- local BoundingCF, BoundingSize = ExtractedUtil.GetBoundingBox(SelectionParts)
-		-- local AverageVector = ExtractedUtil.AverageVector3s(SelectionVectors)
-
-		-- compilerSettings.Offset = Vector3.new(-AverageVector.X,-AverageVector.Y + (BoundingSize.Y)-30,-AverageVector.Z) --(BoundingSize.Y/2)-15
-		--get offset from offset input
-		local Vals = string.split(peek(PluginSettings.Values.ModelOffset):gsub("%s+", ""), ",")
-		compilerSettings.Offset = compilerSettings.Offset + Vector3.new(table.unpack(Vals) :: any)
+		-- Get Model Offset (currently unused ingame?)
+		local components = string.split(peek(PluginSettings.Values.ModelOffset):gsub("%s+", ""), ",")
+		local offset = Vector3.new(tonumber(components[1]), tonumber(components[2]), tonumber(components[3]))
+		-- Calculate center of selection
+		local origin = ExtractedUtil.AverageVector3s(SelectionVectors)
+		-- Set final origin of compiled model
+		compilerSettings.Offset = origin + offset
 
 		--show result
 		Logger.print("COMPILE STARTED...")
