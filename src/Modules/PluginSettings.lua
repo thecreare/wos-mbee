@@ -3,6 +3,15 @@ local Branding = require(script.Parent.Branding)
 local Fusion = require(script.Parent.Parent.Packages.fusion)
 local peek = Fusion.peek
 
+type SparseSetting = {
+    Key: string,
+    Name: string,
+    Categories: {string},
+    Type: string,
+    Default: any,
+    Options: {string}?,
+}
+
 export type Setting = {
     Key: string,
     Name: string,
@@ -10,6 +19,7 @@ export type Setting = {
     Type: string,
     Default: any,
     Options: {string}?,
+    Index: number,
 }
 
 local UploadExpireAliasTypes = {
@@ -28,7 +38,7 @@ local GENERIC_TYPE_DEFAULT = {
 }
 
 -- Ordered array of settings
-local SettingInfo: {Setting} = {
+local SettingInfo: {SparseSetting} = {
 	{
 		Key = "OpenCompilerScripts",
         Name = "Open Compiler Scripts",
@@ -143,7 +153,11 @@ local SettingInfo: {Setting} = {
 }
 -- Convert setting key to setting info
 local SettingsInfoHash: {[string]: Setting} = {}
-for _, setting in SettingInfo do SettingsInfoHash[setting.Key] = setting end
+for i, sparse_setting in SettingInfo do
+    local setting = sparse_setting :: Setting
+    setting.Index = i
+    SettingsInfoHash[setting.Key] = setting
+end
 
 local function InitPluginSettings(scope: Fusion.Scope<typeof(Fusion)>)
     local PluginSettingsTable = {}

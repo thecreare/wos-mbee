@@ -87,6 +87,7 @@ do
 	end
 end
 
+type UsedAs<T>  = Fusion.UsedAs<T>
 type ConfigValue = (ValueBase & {Value: any})
 
 local TemporaryConnections = {} :: {any}
@@ -759,6 +760,7 @@ local ChildrenOfConfigList = {}
 local function SettingGroup(
 	scope: Fusion.Scope<typeof(Fusion)>,
 	props: {
+		SortOrder: UsedAs<Enum.SortOrder>?,
 		[typeof(Children)]: Fusion.Child,
 	}
 ): Fusion.Child
@@ -774,7 +776,7 @@ local function SettingGroup(
 		},
 		[Children] = {
 			scope:UIListLayout {
-				SortOrder = Enum.SortOrder.Name
+				SortOrder = props.SortOrder or Enum.SortOrder.Name
 			},
 			props[Children],
 		}
@@ -818,10 +820,14 @@ scope:Container {
 
 				-- Settings
 				SettingGroup(scope, {
+					SortOrder = Enum.SortOrder.LayoutOrder,
 					[Children] = scope:ForPairs(PluginSettings, function(use, scope: typeof(scope), key, value)
 						return key, scope:LabeledSetting {
 							Setting = key,
 							PluginSettingValues = PluginSettings,
+							Layout = {
+								LayoutOrder = PluginSettingsModule.Info[key].Index
+							}
 						}
 					end),
 				}),
