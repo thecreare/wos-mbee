@@ -31,6 +31,8 @@ local GetEnumNames = require(script.Modules.GetEnumNames)
 local UpdatePilotTypes = require(script.Modules.UpdatePilotTypes)
 local WosSelection = require(script.Modules.WosSelection)
 
+UpdatePilotTypes.UpdatePilotTypes()
+
 local CustomModules = script.Modules
 local Components = script.Components
 
@@ -974,8 +976,8 @@ local SpecialMaterialValues =
 			assert(MicrocontrollerScript)
 
 			-- Insert type checking if the setting is enabled and the script is blank
-			if peek(PluginSettings.InsertPilotTypeChecker) and peek(PluginSettings.OpenMicrocontrollerScripts) and ConfigValue.Value == "" then
-				ConfigValue.Value = UpdatePilotTypes() .. ConfigValue.Value
+			if peek(PluginSettings.InsertPilotTypeChecker) and peek(PluginSettings.OpenMicrocontrollerScripts) then
+				ConfigValue.Value = UpdatePilotTypes.UpdateHeaderInString(ConfigValue.Value)
 				TextBox.Box.Text = ConfigValue.Value
 			end
 			UpdateScript(MicrocontrollerScript, ConfigValue.Value)

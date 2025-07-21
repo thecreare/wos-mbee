@@ -141,6 +141,7 @@ local function TextBox(
                 BackgroundTransparency = 1,
                 Size = UDim2.fromScale(1, 1),
                 Text = props.Label.Text,
+                RichText = true,
                 FontFace = THEME.font_regular,
                 TextColor3 = props.Label.TextColor3 or THEME.COLORS.MainText,
                 TextXAlignment = Enum.TextXAlignment.Left,

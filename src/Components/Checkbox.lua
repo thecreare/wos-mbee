@@ -45,6 +45,7 @@ local function Checkbox(
                 BackgroundTransparency = 1,
                 Size = UDim2.fromScale(1, 1),
                 Text = props.Label,
+                RichText = true,
                 FontFace = THEME.font_regular,
                 TextColor3 = THEME.COLORS.MainText,
                 TextXAlignment = Enum.TextXAlignment.Left,

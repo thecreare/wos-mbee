@@ -70,8 +70,6 @@ local function GetSelection()
 	return SelectionParts, SelectionVectors, SelectionCFrames
 end
 
-local TYPECHECKING_LINE_FILLER = "-- Removed Typechecking Line\n"
-
 return function()
 	ExtractedUtil.HistoricEvent("Compile", "Compile Model", function()
 		if peek(PluginSettings.Values.ReplaceCompiles) then
@@ -99,13 +97,6 @@ return function()
 		local alreadyMadeIds = {}
 
 		compilerSettings.Overrides = {
-			-- Remove microcontroller type checking
-			function(key: string, value: any)
-				if key ~= "Code" then return end
-				return value
-					:gsub("local PilotLua.-require.-PilotLua%)\n", TYPECHECKING_LINE_FILLER)
-					:gsub("local .-PilotLua%(%)\n", TYPECHECKING_LINE_FILLER)
-			end,
 			-- Fill in randomized configs
 			function(key: string, value: any)
 				-- format: `%<number>` eg: %2
@@ -120,6 +111,7 @@ return function()
 				alreadyMadeIds[value] = randId
 				return randId
 			end,
+
 			-- Handle compat updates
 			function(key: string, value: any)
 				local values = Compatibility.COMPAT_CONFIG_REPLACEMENTS[key]
@@ -178,7 +170,7 @@ return function()
 			CreateOutputScript(url, "MBEEOutput_Upload", true)
 			return
 		
-		-- Hastebin.org uploads
+		-- dpaste.org uploads
 		elseif compile_host:lower() == 'hastebin' then
 			local expires = UploadExpireTypes[peek(PluginSettings.Values.UploadExpireTime)] or "3600"
 			local url = CompileUploader.HastebinUpload(Compilation, expires)

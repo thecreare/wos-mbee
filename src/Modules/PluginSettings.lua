@@ -138,10 +138,17 @@ local SettingInfo: {SparseSetting} = {
     },
     {
         Key = "InsertPilotTypeChecker",
-        Name = "Microcontroller Type Checking",
+        Name = "Microcontroller Typechecking",
         Categories = {"advanced"},
         Type = "boolean",
         Default = true,
+    },
+    {
+        Key = "AutomaticPilotTypeUpdates",
+        Name = `<font size="20">Auto Typechecking Updates</font>\n<i><font size="12">(requires github permission)</font></i>`,
+        Categories = {"advanced"},
+        Type = "boolean",
+        Default = false,
     },
     {
         Key = "OpenMicrocontrollerScripts",
@@ -182,5 +189,9 @@ local PluginSettings = {}
 PluginSettings.Info = SettingsInfoHash
 PluginSettings.InfoArray = SettingInfo
 PluginSettings.Values = InitPluginSettings(Fusion:scoped())
+
+function PluginSettings.Get(key: string)
+    return peek(PluginSettings.Values[key])
+end
 
 return PluginSettings
