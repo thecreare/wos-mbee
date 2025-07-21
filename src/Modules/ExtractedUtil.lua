@@ -177,8 +177,16 @@ function ExtractedUtil.MatchQueryToList(Query, List)
 	return Matched
 end
 
-function ExtractedUtil.ApplyTemplates(List: {BasePart}, Material: Enum.Material?)
-	for _, Part in ExtractedUtil.SearchTableWithRecursion(List, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
+function ExtractedUtil.ApplyTemplates(List: {BasePart}, Material: string?)
+	for _, Part: BasePart in ExtractedUtil.SearchTableWithRecursion(List, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
+		-- Remove material gui things
+		for _, child in Part:GetChildren() do
+			if child:IsA("Decal") or child:IsA("Texture") then
+				child:Destroy()
+			end
+		end
+
+		-- Reset Part to default template
 		if Material == nil then
 			Part.Material = Enum.Material.Concrete
 			Part.Transparency = 0
@@ -195,6 +203,12 @@ function ExtractedUtil.ApplyTemplates(List: {BasePart}, Material: Enum.Material?
 		Part.Transparency = TemplatePart.Transparency
 		Part.Reflectance = TemplatePart.Reflectance
 		Part.Name = TemplatePart.Name
+
+		for _, child in TemplatePart:GetChildren() do
+			if child:IsA("Decal") or child:IsA("Texture") then
+				child:Clone().Parent = Part
+			end
+		end
 	end
 end
 
