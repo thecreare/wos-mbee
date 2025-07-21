@@ -964,9 +964,11 @@ local SpecialMaterialValues =
 		["Fluid"] = ConvertTextBoxInputToResource,
 		["Assemble"] = ConvertTextBoxInputToResource,
 
+		-- Gets called for every selected microcontroller's code value
+		-- but TextBox is just a reference to the same element
 		["Code"] = function(TextBox, ConfigValue: StringValue)
+			-- Get microcontroller script, create if not exists
 			local MicrocontrollerScript = ConfigValue:FindFirstChildWhichIsA("Script")
-
 			if MicrocontrollerScript == nil then
 				local new_script = Instance.new("Script")
 				new_script.Name = MICROCONTROLLER_SCRIPT_NAME
@@ -975,47 +977,31 @@ local SpecialMaterialValues =
 			end
 			assert(MicrocontrollerScript)
 
-			local textbox_updating = false
-			local script_updating = false
-
-			-- Insert type checking if the setting is enabled and the script is blank
+			-- Insert/update type checking if the setting is enabled
 			if peek(PluginSettings.InsertPilotTypeChecker) and peek(PluginSettings.OpenMicrocontrollerScripts) then
 				ConfigValue.Value = UpdatePilotTypes.UpdateHeaderInString(ConfigValue.Value)
-				TextBox.Box.Text = ConfigValue.Value
 			end
 			
+			-- Make sure the script is up to date
 			task.spawn(function()
-				script_updating = true
 				UpdateScript(MicrocontrollerScript, ConfigValue.Value)
-				script_updating = false
 			end)
 
 			-- When the user clicks the text box, open a script
 			local textbox_focused_event = TextBox.Box.Focused:Connect(function()
-				UpdateScript(MicrocontrollerScript, TextBox.Box.Text)
 				if peek(PluginSettings.OpenMicrocontrollerScripts) then
 					ScriptEditorService:OpenScriptDocumentAsync(MicrocontrollerScript)
 				end
 			end)
 
+			-- When the text is edited, update every microcontroller
 			local textbox_edited_event = TextBox.Box:GetPropertyChangedSignal("Text"):Connect(function()
-				if textbox_updating then return end
-				script_updating = true
 				UpdateScript(MicrocontrollerScript, TextBox.Box.Text)
-				script_updating = false
-			end)
-			
-			local value_changed_event = ConfigValue.Changed:Connect(function(new: string)
-				if script_updating then return end
-				textbox_updating = true
-				TextBox.Box.Text = new
-				textbox_updating = false
 			end)
 
 			TextBox.Box.Destroying:Once(function()
 				textbox_focused_event:Disconnect()
 				textbox_edited_event:Disconnect()
-				value_changed_event:Disconnect()
 			end)
 		end,
 	}
