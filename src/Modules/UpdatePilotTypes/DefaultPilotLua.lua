@@ -296,6 +296,7 @@ export type PlanetRegionInfo = {
 	StarType: never,
 	BlackHoleSize: never,
 	StarSize: never,
+	OrbitBody: never,
 	PlanetData: {
 		DayCycleIncrement: number,
 		EnterLocation: RegionEntryLocation,
@@ -318,6 +319,7 @@ export type StarRegionInfo = {
 	BlackHoleSize: never,
 	EnterLocation: RegionEntryLocation,
 	StarSize: number,
+	OrbitBody: never,
 	PlanetData: never,
 } & PlayableRegionInfo
 type RegionColor = {
@@ -350,12 +352,14 @@ type RingData = {
 }
 export type SpaceRegionInfo = {
 	RegionType: "Space",
+	OrbitBody: never,
 } & PlayableRegionInfo
 export type BlackHoleRegionInfo = {
 	StarSize: never,
 	BlackHoleSize: number,
 	EnterLocation: RegionEntryLocation,
 	StarType: never,
+	OrbitBody: never,
 	PlanetData: never,
 } & PlayableRegionInfo
 export type Coordinates = typeof(setmetatable(
@@ -434,714 +438,7 @@ export type EventConnection<Name = string, Callback = (...unknown) -> ()> = type
 	},
 	{} :: EventConnectionMetatable<Name, Callback>
 ))
-export type Spotlight = {
-	ClassName: "Spotlight",
-	SetColor: (self: Spotlight, color: Color3) -> (),
-}
-export type Silicon = {
-	ClassName: "Silicon",
-}
-export type Beacon = {
-	ShowOnMap: boolean,
-	BeaconName: string,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	ClassName: "Beacon",
-	Configure: (self: Beacon, configuration: BeaconConfiguration) -> (),
-}
-export type Port = {
-	PortID: number,
-	Configure: (self: Port, configuration: PortConfiguration) -> (),
-	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	ClassName: "Port",
-}
-export type Switch = {
-	Configure: (self: Switch, configuration: SwitchConfiguration) -> (),
-	ClassName: "Switch",
-	SwitchValue: boolean,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
-}
-export type Tank = {
-	ContainerChanged: Event<"ContainerChanged", (resourceType: "Power" | "Solid" | "Fluid", resourceAmount: number) -> ()>,
-	Configure: (self: Tank, configuration: TankConfiguration) -> (),
-	Resource: string,
-	CanBeCraftedFrom: boolean,
-	GetResourceAmount: (self: Tank) -> (number),
-	ClassName: "Tank",
-	GetAmount: (self: Tank) -> (number),
-	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
-	GetResource: (self: Tank) -> (string | "nil"),
-}
-export type NuclearWaste = {
-	ClassName: "NuclearWaste",
-}
-export type HyperspaceRadar = {
-	ViewCoordinates: Coordinates,
-	Configure: (self: HyperspaceRadar, configuration: HyperspaceRadarConfiguration) -> (),
-	ClassName: "HyperspaceRadar",
-}
-export type Asphalt = {
-	ClassName: "Asphalt",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type Boiler = {
-	ClassName: "Boiler",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type SMG = {
-	ClassName: "SMG",
-}
-export type Plasma = {
-	ClassName: "Plasma",
-}
-export type Kiln = {
-	ClassName: "Kiln",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type Copper = {
-	ClassName: "Copper",
-}
-export type CornerWedge = {
-	ClassName: "CornerWedge",
-}
-export type Propeller = {
-	ClassName: "Propeller",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type Bin = {
-	ContainerChanged: Event<"ContainerChanged", (resourceType: "Power" | "Solid" | "Fluid", resourceAmount: number) -> ()>,
-	Configure: (self: Bin, configuration: BinConfiguration) -> (),
-	Resource: string,
-	CanBeCraftedFrom: boolean,
-	GetResourceAmount: (self: Bin) -> (number),
-	ClassName: "Bin",
-	GetAmount: (self: Bin) -> (number),
-	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
-	GetResource: (self: Bin) -> (string | "nil"),
-}
-export type Refinery = {
-	ClassName: "Refinery",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type SolarScoop = {
-	ClassName: "SolarScoop",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type Handle = {
-	TriggerMode: HandleTriggerMode,
-	ClassName: "Handle",
-	Configure: (self: Handle, configuration: HandleConfiguration) -> (),
-	Swing: HandleSwingMode,
-	ToolName: string,
-}
-export type Door = {
-	ComponentsUpdated: Event<"ComponentsUpdated", (...any) -> ()>,
-	ClassName: "Door",
-}
-export type Uranium = {
-	ClassName: "Uranium",
-}
-export type DevBattery = {
-	ContainerChanged: Event<"ContainerChanged", (resourceType: "Power" | "Solid" | "Fluid", resourceAmount: number) -> ()>,
-	GetAmount: (self: DevBattery) -> (number),
-	ClassName: "DevBattery",
-	GetResourceAmount: (self: DevBattery) -> (number),
-	GetResource: (self: DevBattery) -> (string | "nil"),
-}
-export type Oil = {
-	ClassName: "Oil",
-}
-export type Transporter = {
-	Configure: (self: Transporter, configuration: TransporterConfiguration) -> (),
-	ClassName: "Transporter",
-	TransporterID: string,
-}
-export type Relay = {
-	LinkerID: number,
-	Mode: RelayMode,
-	Configure: (self: Relay, configuration: RelayConfiguration) -> (),
-	ClassName: "Relay",
-}
-export type FourthOfJuly = {
-	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	Damaged: Event<"Damaged", (damage: number, damageType: "Kinetic" | "Energy", damageSource: PilotObject?) -> ()>,
-	ClassName: "FourthOfJuly",
-}
-export type Button = {
-	ClassName: "Button",
-}
-export type Hologram = {
-	Configure: (self: Hologram, configuration: HologramConfiguration) -> (),
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	UserId: number,
-	ClassName: "Hologram",
-}
-export type Titanium = {
-	ClassName: "Titanium",
-}
-export type Shotgun = {
-	ClassName: "Shotgun",
-}
-export type Egg = {
-	ClassName: "Egg",
-}
-export type Plastic = {
-	ClassName: "Plastic",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type ConveyorBelt = {
-	ConveyorBeltSpeed: number,
-	Configure: (self: ConveyorBelt, configuration: ConveyorBeltConfiguration) -> (),
-	ClassName: "ConveyorBelt",
-}
-export type Radiator = {
-	ClassName: "Radiator",
-}
-export type Sign = {
-	TextFont: string,
-	Configure: (self: Sign, configuration: SignConfiguration) -> (),
-	ClassName: "Sign",
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	TextColor: Color3,
-	SignText: string,
-}
-export type Cylinder = {
-	ClassName: "Cylinder",
-}
-export type EnergySword = {
-	ClassName: "EnergySword",
-}
-export type WindTurbine = {
-	ClassName: "WindTurbine",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type Gyro = {
-	Configure: (self: Gyro, configuration: GyroConfiguration) -> (),
-	DisableWhenUnpowered: boolean,
-	MaxTorque: number,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	TriggerWhenSeeked: boolean,
-	ClassName: "Gyro",
-	PointAlong: (self: Gyro, direction: Vector3, up: Vector3?) -> (),
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	PointAt: (self: Gyro, position: Vector3, up: Vector3?) -> (),
-	Seek: string,
-}
-export type Flashlight = {
-	ClassName: "Flashlight",
-}
-export type GravityGenerator = {
-	Gravity: number,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	Configure: (self: GravityGenerator, configuration: GravityGeneratorConfiguration) -> (),
-	ClassName: "GravityGenerator",
-}
-export type FloatDevice = {
-	ClassName: "FloatDevice",
-}
-export type Hydroponic = {
-	Grow: string,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	Configure: (self: Hydroponic, configuration: HydroponicConfiguration) -> (),
-	ClassName: "Hydroponic",
-}
-export type Framewire = {
-	ClassName: "Framewire",
-}
-export type Goo = {
-	ClassName: "Goo",
-}
-export type Sorter = {
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	Sort: (self: Sorter, amount: number?) -> (),
-	ClassName: "Sorter",
-	Configure: (self: Sorter, configuration: SorterConfiguration) -> (),
-	TriggerQuantity: number,
-	Rate: number,
-	Resource: string,
-}
-export type Blade = {
-	ComponentsUpdated: Event<"ComponentsUpdated", (...any) -> ()>,
-	Configure: (self: Blade, configuration: BladeConfiguration) -> (),
-	Shape: BladeShape,
-	ClassName: "Blade",
-}
-export type Gun = {
-	ClassName: "Gun",
-}
-export type VintagePlasmaPistol = {
-	ClassName: "VintagePlasmaPistol",
-}
-export type Heater = {
-	ClassName: "Heater",
-}
-export type Hotdog = {
-	ClassName: "Hotdog",
-}
-export type Gold = {
-	ClassName: "Gold",
-}
-export type Microphone = {
-	Chatted: Event<"Chatted", (player: number, message: string) -> ()>,
-	ClassName: "Microphone",
-}
-export type Aerogel = {
-	ClassName: "Aerogel",
-}
-export type Katana = {
-	ClassName: "Katana",
-}
-export type Lantern = {
-	ClassName: "Lantern",
-}
-export type Beaker = {
-	ClassName: "Beaker",
-}
-export type StorageSensor = {
-	Configure: (self: StorageSensor, configuration: StorageSensorConfiguration) -> (),
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	QuantityRange: Range,
-	ClassName: "StorageSensor",
-}
-export type PDWX44 = {
-	ClassName: "PDW-X44",
-}
-export type TouchSensor = {
-	Touched: Event<"Touched", (object: (number | PilotObject)?) -> ()>,
-	ClassName: "TouchSensor",
-}
-export type PlasmaCannon = {
-	ClassName: "PlasmaCannon",
-}
-export type EnergyShield = {
-	Configure: (self: EnergyShield, configuration: EnergyShieldConfiguration) -> (),
-	GetShieldHealth: (self: EnergyShield) -> (number),
-	ShieldStrength: number,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	CalculateCost: (self: EnergyShield, radius: number?) -> (number),
-	ClassName: "EnergyShield",
-	ShieldRadius: number,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	RegenerationSpeed: number,
-	SetColor: (self: EnergyShield, color: Color3) -> (),
-}
-export type SmoothReinforcedGlass = {
-	ClassName: "SmoothReinforcedGlass",
-}
-export type Pulverizer = {
-	ClassName: "Pulverizer",
-}
-export type RegionCloaker = {
-	ClassName: "RegionCloaker",
-}
-export type Rice = {
-	ClassName: "Rice",
-}
-export type Hydrogen = {
-	ClassName: "Hydrogen",
-}
-export type EnergyBomb = {
-	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	Damaged: Event<"Damaged", (damage: number, damageType: "Kinetic" | "Energy", damageSource: PilotObject?) -> ()>,
-	ClassName: "EnergyBomb",
-}
-export type SmoothGlass = {
-	ClassName: "SmoothGlass",
-}
-export type Primer = {
-	ClassName: "Primer",
-}
-export type tinnitus = {
-	ClassName: "tinnitus",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type Constructor = {
-	CalculateModelRecipe: (self: Constructor, modelCode: string) -> ({
-		[string]: number,
-	}),
-	Configure: (self: Constructor, configuration: ConstructorConfiguration) -> (),
-	ModelCode: string,
-	ClassName: "Constructor",
-	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	Autolock: boolean,
-	RelativeToConstructor: boolean,
-}
-export type AirSupply = {
-	ClassName: "AirSupply",
-}
-export type Spheroid = {
-	ClassName: "Spheroid",
-}
-export type HeatValve = {
-	Configure: (self: HeatValve, configuration: HeatValveConfiguration) -> (),
-	ClassName: "HeatValve",
-	SwitchValue: boolean,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
-}
-export type TriggerWire = {
-	ClassName: "TriggerWire",
-}
-export type Truss = {
-	ClassName: "Truss",
-}
-export type StudAligner = {
-	ClassName: "StudAligner",
-}
-export type Artillery = {
-	ClassName: "Artillery",
-}
-export type Tire = {
-	ClassName: "Tire",
-}
-export type HalfSphere = {
-	ClassName: "HalfSphere",
-}
-export type Rifle = {
-	ClassName: "Rifle",
-}
-export type Anchor = {
-	Anchored: boolean,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	Configure: (self: Anchor, configuration: AnchorConfiguration) -> (),
-	ClassName: "Anchor",
-}
-export type Flint = {
-	ClassName: "Flint",
-}
-export type Wire = {
-	ClassName: "Wire",
-}
-export type Wing = {
-	ClassName: "Wing",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type ZapWire = {
-	ClassName: "ZapWire",
-}
-export type RustedMetal = {
-	ClassName: "RustedMetal",
-}
-export type Dispenser = {
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	Filter: string,
-	ClassName: "Dispenser",
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	Configure: (self: Dispenser, configuration: DispenserConfiguration) -> (),
-	Dispense: (self: Dispenser) -> (),
-}
-export type Railgun = {
-	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	Damaged: Event<"Damaged", (damage: number, damageType: "Kinetic" | "Energy", damageSource: PilotObject?) -> ()>,
-	ClassName: "Railgun",
-}
-export type AlienCore = {
-	ClassName: "AlienCore",
-}
-export type MustardGas = {
-	ClassName: "MustardGas",
-}
-export type Beryllium = {
-	ClassName: "Beryllium",
-}
-export type ChemicalSynthiser = {
-	ClassName: "ChemicalSynthiser",
-}
-export type Coal = {
-	ClassName: "Coal",
-}
-export type Melter = {
-	ClassName: "Melter",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type DarkMatter = {
-	ClassName: "DarkMatter",
-}
-export type Freezer = {
-	ClassName: "Freezer",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type Diamond = {
-	ClassName: "Diamond",
-}
-export type CornerRoundWedge = {
-	ClassName: "CornerRoundWedge",
-}
-export type ExoticMatter = {
-	ClassName: "ExoticMatter",
-}
-export type Valve = {
-	Configure: (self: Valve, configuration: ValveConfiguration) -> (),
-	ClassName: "Valve",
-	SwitchValue: boolean,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
-}
-export type Wedge = {
-	ClassName: "Wedge",
-}
-export type Part100k = {
-	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
-	ClassName: "100k",
-}
-export type Glass = {
-	ClassName: "Glass",
-}
-export type ImpulseCannon = {
-	ClassName: "ImpulseCannon",
-}
-export type Seat = {
-	OccupantChanged: Event<"OccupantChanged", () -> ()>,
-	EjectOccupant: (self: Seat) -> (),
-	GetOccupant: (self: Seat) -> (number?),
-	ClassName: "Seat",
-}
-export type PlutoniumCore = {
-	ClassName: "PlutoniumCore",
-}
-export type Grass = {
-	ClassName: "Grass",
-}
-export type HeatSink = {
-	ClassName: "HeatSink",
-}
-export type Heatshield = {
-	ClassName: "Heatshield",
-}
-export type Helium = {
-	ClassName: "Helium",
-}
-export type Rubber = {
-	ClassName: "Rubber",
-}
-export type Mandrillium = {
-	ClassName: "Mandrillium",
-}
-export type Lava = {
-	ClassName: "Lava",
-}
-export type DevTeleporter = {
-	TeleporterID: string,
-	Configure: (self: DevTeleporter, configuration: DevTeleporterConfiguration) -> (),
-	ClassName: "DevTeleporter",
-}
-export type Jade = {
-	ClassName: "Jade",
-}
-export type Iron = {
-	ClassName: "Iron",
-}
-export type Coupler = {
-	Couple: Event<"Couple", () -> ()>,
-	Configure: (self: Coupler, configuration: CouplerConfiguration) -> (),
-	IsCoupled: (self: Coupler) -> (boolean),
-	CouplerID: string,
-	ClassName: "Coupler",
-	AutoTrigger: boolean,
-	Decouple: Event<"Decouple", () -> ()>,
-	GetAttachedCoupler: (self: Coupler) -> (Coupler?),
-}
-export type Neutronium = {
-	ClassName: "Neutronium",
-}
-export type Battery = {
-	ContainerChanged: Event<"ContainerChanged", (resourceType: "Power" | "Solid" | "Fluid", resourceAmount: number) -> ()>,
-	GetAmount: (self: Battery) -> (number),
-	ClassName: "Battery",
-	GetResourceAmount: (self: Battery) -> (number),
-	GetResource: (self: Battery) -> (string | "nil"),
-}
-export type NitrogenOxide = {
-	ClassName: "NitrogenOxide",
-}
-export type Turbofan = {
-	TurboFanSpeed: number,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	Configure: (self: Turbofan, configuration: TurbofanConfiguration) -> (),
-	ClassName: "Turbofan",
-}
-export type Obamium = {
-	ClassName: "Obamium",
-}
-export type TractorBeam = {
-	PowerPercent: number,
-	Configure: (self: TractorBeam, configuration: TractorBeamConfiguration) -> (),
-	ClassName: "TractorBeam",
-}
-export type Perfectium = {
-	ClassName: "Perfectium",
-}
-export type StarMap = {
-	GetBodies: (self: StarMap) -> ({
-		[string]: {
-			PlanetType: PlanetType,
-		},
-	}),
-	GetSystems: (self: StarMap) -> ({ string }),
-	ClassName: "StarMap",
-}
-export type Ice = {
-	ClassName: "Ice",
-}
-export type ObjectDetector = {
-	MaxDistance: number,
-	ClassName: "ObjectDetector",
-	TriggerAtDistance: Vector2,
-	Configure: (self: ObjectDetector, configuration: ObjectDetectorConfiguration) -> (),
-	GetLastHitPart: (self: ObjectDetector) -> (PilotObject),
-	GetLastHitData: (self: ObjectDetector) -> (ObjectDetectorHitData),
-}
-export type Generator = {
-	ClassName: "Generator",
-}
-export type Explosive = {
-	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	Damaged: Event<"Damaged", (damage: number, damageType: "Kinetic" | "Energy", damageSource: PilotObject?) -> ()>,
-	ClassName: "Explosive",
-}
-export type Router = {
-	RouterID: string,
-	Configure: (self: Router, configuration: RouterConfiguration) -> (),
-	ClassName: "Router",
-}
-export type CrossBow = {
-	ClassName: "CrossBow",
-}
-export type Ruby = {
-	ClassName: "Ruby",
-}
-export type Sand = {
-	ClassName: "Sand",
-}
-export type Claymore = {
-	ClassName: "Claymore",
-}
-export type Petroleum = {
-	ClassName: "Petroleum",
-}
-export type BallastTank = {
-	ClassName: "BallastTank",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	Configure: (self: BallastTank, configuration: BallastTankConfiguration) -> (),
-	Buoyancy: number,
-}
-export type Snow = {
-	ClassName: "Snow",
-}
-export type Stanlium = {
-	ClassName: "Stanlium",
-}
-export type IonRocket = {
-	ClassName: "IonRocket",
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	Configure: (self: IonRocket, configuration: IonRocketConfiguration) -> (),
-	Propulsion: number,
-}
-export type Steam = {
-	ClassName: "Steam",
-}
-export type TintedGlass = {
-	ClassName: "TintedGlass",
-}
-export type Stone = {
-	ClassName: "Stone",
-}
-export type Sulfur = {
-	ClassName: "Sulfur",
-}
-export type MiningLaser = {
-	Configure: (self: MiningLaser, configuration: MiningLaserConfiguration) -> (),
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	MaterialToExtract: string,
-	ClassName: "MiningLaser",
-}
-export type Chute = {
-	ClassName: "Chute",
-}
-export type RepairPlate = {
-	ClassName: "RepairPlate",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type AdminTool = {
-	ClassName: "AdminTool",
-}
-export type FireWood = {
-	ClassName: "FireWood",
-}
-export type Radar = {
-	ClassName: "Radar",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type ImpactPlate = {
-	ClassName: "ImpactPlate",
-}
-export type Engine = {
-	Configure: (self: Engine, configuration: EngineConfiguration) -> (),
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	EngineSpeed: number,
-	ClassName: "Engine",
-}
-export type StanSword = {
-	ClassName: "StanSword",
-}
-export type TemperatureSensor = {
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	GetTemp: (self: TemperatureSensor) -> (number),
-	ClassName: "TemperatureSensor",
-	Configure: (self: TemperatureSensor, configuration: TemperatureSensorConfiguration) -> (),
-	TemperatureRange: Range,
-}
-export type Modem = {
-	GetAsync: (self: Modem, url: string, nocache: boolean?, headers: {
-		[string]: any,
-	}?) -> (string),
-	Configure: (self: Modem, configuration: ModemConfiguration) -> (),
-	PostAsync: (self: Modem, url: string, data: string, contentType: Enum.HttpContentType?, compress: boolean?, headers: {
-		[string]: any,
-	}?) -> (string),
-	SendLocalMessage: (self: Modem, ...any) -> (),
-	PostRequest: (self: Modem, domain: string, data: string) -> (),
-	UrlEncode: (self: Modem, input: string) -> (string),
-	GetRequest: (self: Modem, domain: string) -> (string),
-	RealPostRequest: (self: Modem, domain: string, data: string, asyncBool: boolean, transformFunction: (...any) -> (), optionalHeaders: {
-		[string]: any,
-	}?) -> ({
-		success: boolean,
-		response: string,
-	}),
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	ClassName: "Modem",
-	NetworkID: string,
-	SendMessage: (self: Modem, data: string, id: string?) -> (),
-	RequestAsync: (self: Modem, options: ModemRequest) -> (ModemRequestResponse),
-	MessageSent: Event<"MessageSent", () -> ()>,
-}
-export type SubspaceTripmine = {
-	ClassName: "SubspaceTripmine",
-}
-export type Gasoline = {
-	ClassName: "Gasoline",
-}
-export type Camera = {
-	VideoID: number,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	Configure: (self: Camera, configuration: CameraConfiguration) -> (),
-	ClassName: "Camera",
-}
-export type HeatCell = {
-	ContainerChanged: Event<"ContainerChanged", (resourceType: "Power" | "Solid" | "Fluid", resourceAmount: number) -> ()>,
-	GetAmount: (self: HeatCell) -> (number),
-	ClassName: "HeatCell",
-	GetResourceAmount: (self: HeatCell) -> (number),
-	GetResource: (self: HeatCell) -> (string | "nil"),
-}
-export type GeigerCounter = {
-	ClassName: "GeigerCounter",
-}
-export type TouchScreen = {
+export type TouchScreen = Screen & {
 	CursorReleased: Event<"CursorReleased", (Cursor: Cursor) -> ()>,
 	CursorMoved: Event<"CursorMoved", (Cursor: Cursor) -> ()>,
 	GetCursor: (self: TouchScreen, username: string) -> (Cursor),
@@ -1151,453 +448,6 @@ export type TouchScreen = {
 		[string]: Cursor,
 	}),
 	CursorPressed: Event<"CursorPressed", (Cursor: Cursor) -> ()>,
-} | Screen
-export type CombustionTurbine = {
-	ClassName: "CombustionTurbine",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type Billboardium = {
-	ClassName: "Billboardium",
-}
-export type Thruster = {
-	ClassName: "Thruster",
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	Configure: (self: Thruster, configuration: ThrusterConfiguration) -> (),
-	Propulsion: number,
-}
-export type NightVisionGoggles = {
-	ClassName: "NightVisionGoggles",
-}
-export type Faucet = {
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	Filter: string,
-	ClassName: "Faucet",
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	Configure: (self: Faucet, configuration: FaucetConfiguration) -> (),
-	Dispense: (self: Faucet) -> (),
-}
-export type AutomaticLaser = {
-	ClassName: "AutomaticLaser",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type EthernetCable = {
-	ClassName: "EthernetCable",
-}
-export type Pipe = {
-	ClassName: "Pipe",
-}
-export type Tetrahedron = {
-	ClassName: "Tetrahedron",
-}
-export type CornerRoundWedge2 = {
-	ClassName: "CornerRoundWedge2",
-}
-export type DevSource = {
-	Configure: (self: DevSource, configuration: DevSourceConfiguration) -> (),
-	GetAmountGenerated: (self: DevSource, ...any) -> (...any),
-	ClassName: "DevSource",
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
-	Resource: ResourceString,
-}
-export type Cannon = {
-	ClassName: "Cannon",
-}
-export type Furnace = {
-	ClassName: "Furnace",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type Gear = {
-	ClassName: "Gear",
-}
-export type CornerTetra = {
-	ClassName: "CornerTetra",
-}
-export type Scanner = {
-	CalculateCost: (self: Scanner, range: number?) -> (number),
-	Locate: (self: Scanner, part: PilotObject, scanners: { Scanner }) -> (Vector3),
-	GetPartsInRange: (self: Scanner, range: number?, className: string?) -> ({ PilotObject }),
-	ClassName: "Scanner",
-	GetDistance: (self: Scanner, part: PilotObject) -> (number),
-	Range: number,
-	Configure: (self: Scanner, configuration: ScannerConfiguration) -> (),
-}
-export type Polysilicon = {
-	Configure: (self: Polysilicon, configuration: PolysiliconConfiguration) -> (),
-	ClassName: "Polysilicon",
-	PolysiliconMode: PolysiliconMode,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	Frequency: number,
-}
-export type RepairLaser = {
-	ClassName: "RepairLaser",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type Rail = {
-	SetPosition: (self: Rail, depth: number) -> (),
-	Configure: (self: Rail, configuration: RailConfiguration) -> (),
-	ClassName: "Rail",
-	Position1: number,
-	TweenTime: number,
-	Position2: number,
-}
-export type Sail = {
-	ClassName: "Sail",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type Extinguisher = {
-	ClassName: "Extinguisher",
-}
-export type DarkReactor = {
-	ClassName: "DarkReactor",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type BeamRifle = {
-	ClassName: "BeamRifle",
-}
-export type VitalScanner = {
-	ClassName: "VitalScanner",
-}
-export type Balloon = {
-	ClassName: "Balloon",
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	Configure: (self: Balloon, configuration: BalloonConfiguration) -> (),
-	Buoyancy: number,
-}
-export type Light = {
-	Shadows: boolean,
-	Configure: (self: Light, configuration: LightConfiguration) -> (),
-	ClassName: "Light",
-	Brightness: number,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	LightRange: number,
-	SetColor: (self: Light, color: Color3) -> (),
-}
-export type Flamethrower = {
-	ClassName: "Flamethrower",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type RemoteControl = {
-	ClassName: "RemoteControl",
-	Configure: (self: RemoteControl, configuration: RemoteControlConfiguration) -> (),
-	RemoteControlMode: RemoteControlMode,
-	RemoteControlRange: number,
-}
-export type TemperatureGate = {
-	Configure: (self: TemperatureGate, configuration: TemperatureGateConfiguration) -> (),
-	Inverted: boolean,
-	GetState: (self: TemperatureGate) -> (),
-	ClassName: "TemperatureGate",
-	GetTemp: (self: TemperatureGate) -> (number),
-	SwitchValue: boolean,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	TemperatureRange: Range,
-	GetTemperature: (self: TemperatureGate) -> (number),
-}
-export type Scrapper = {
-	ClassName: "Scrapper",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type Rocket = {
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	ClassName: "Rocket",
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	Configure: (self: Rocket, configuration: RocketConfiguration) -> (),
-	Propulsion: number,
-}
-export type SpawnPoint = {
-	ClassName: "SpawnPoint",
-}
-export type Electromagnet = {
-	ClassName: "Electromagnet",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type DeleteSwitch = {
-	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	ClassName: "DeleteSwitch",
-}
-export type FactionSpawn = {
-	ClassName: "FactionSpawn",
-}
-export type Igniter = {
-	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	ClassName: "Igniter",
-}
-export type RepairKit = {
-	ClassName: "RepairKit",
-}
-export type Boombox = {
-	Configure: (self: Boombox, configuration: BoomboxConfiguration) -> (),
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	Audio: number,
-	ClassName: "Boombox",
-}
-export type SolarPanel = {
-	ClassName: "SolarPanel",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type TriggerSwitch = {
-	Configure: (self: TriggerSwitch, configuration: TriggerSwitchConfiguration) -> (),
-	ClassName: "TriggerSwitch",
-	SwitchValue: boolean,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
-}
-export type Tile = {
-	ClassName: "Tile",
-}
-export type HyperDrive = {
-	GetRequiredPower: (self: HyperDrive) -> (),
-	Coordinates: Coordinates,
-	ClassName: "HyperDrive",
-	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	Configure: (self: HyperDrive, configuration: HyperDriveConfiguration) -> (),
-}
-export type DevSink = {
-	ContainerChanged: Event<"ContainerChanged", (resourceType: "Power" | "Solid" | "Fluid", resourceAmount: number) -> ()>,
-	Configure: (self: DevSink, configuration: DevSinkConfiguration) -> (),
-	GetAmount: (self: DevSink) -> (number),
-	GetResourceAmount: (self: DevSink) -> (number),
-	Resource: ResourceString,
-	ClassName: "DevSink",
-	GetAmountConsumed: (self: DevSink, ...any) -> (...any),
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
-	GetResource: (self: DevSink) -> (string | "nil"),
-}
-export type Solenoid = {
-	Configure: (self: Solenoid, configuration: SolenoidConfiguration) -> (),
-	PowerRange: Range,
-	Inverted: boolean,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
-	ClassName: "Solenoid",
-}
-export type Decoupler = {
-	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	ClassName: "Decoupler",
-}
-export type RoundWedge2 = {
-	ClassName: "RoundWedge2",
-}
-export type Prosthetic = {
-	Limb: PlayerLimb,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	Configure: (self: Prosthetic, configuration: ProstheticConfiguration) -> (),
-	ClassName: "Prosthetic",
-}
-export type Reactor = {
-	ClassName: "Reactor",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	GetFuel: (self: Reactor) -> ({ number }),
-	GetTemp: (self: Reactor) -> (number),
-	GetEfficiency: (self: Reactor) -> (number),
-	Configure: (self: Reactor, configuration: ReactorConfiguration) -> (),
-	TriggerWhenEmpty: boolean,
-	Alarm: boolean,
-}
-export type BlackBox = {
-	GetLogs: (self: BlackBox) -> ({ RegionLog }),
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
-	ClassName: "BlackBox",
-}
-export type Telescope = {
-	WhenRegionLoads: (self: Telescope, callback: (regionInfo: CompleteRegionInfo) -> ()) -> (),
-	Configure: (self: Telescope, configuration: TelescopeConfiguration) -> (),
-	GetCurrentCoordinate: (self: Telescope) -> (Coordinates),
-	ClassName: "Telescope",
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	GetCoordinate: (self: Telescope) -> (RegionInfo),
-	ViewCoordinates: Coordinates,
-}
-export type Aluminum = {
-	ClassName: "Aluminum",
-}
-export type Motor = {
-	Configure: (self: Motor, configuration: MotorConfiguration) -> (),
-	Power: number,
-	Ratio: number,
-	ClassName: "Motor",
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-}
-export type Obelisk = {
-	ClassName: "Obelisk",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type Controller = {
-	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	ClassName: "Controller",
-}
-export type Rotor = {
-	ClassName: "Rotor",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type RTG = {
-	ClassName: "RTG",
-}
-export type Insulation = {
-	ClassName: "Insulation",
-}
-export type Winch = {
-	Configure: (self: Winch, configuration: WinchConfiguration) -> (),
-	ClassName: "Winch",
-	AdjustLength: (self: Winch, adjustment: number) -> (),
-	DeltaLength: number,
-	SetLength: (self: Winch, length: number) -> (),
-	MaxLength: number,
-	MinLength: number,
-}
-export type RoundWedge = {
-	ClassName: "RoundWedge",
-}
-export type VehicleSeat = {
-	Enabled: boolean,
-	Configure: (self: VehicleSeat, configuration: VehicleSeatConfiguration) -> (),
-	OccupantChanged: Event<"OccupantChanged", () -> ()>,
-	GetOccupant: (self: VehicleSeat) -> (number?),
-	ClassName: "VehicleSeat",
-	EjectOccupant: (self: VehicleSeat) -> (),
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	Mode: VehicleSeatMode,
-	Speed: number,
-}
-export type Hull = {
-	ComponentsUpdated: Event<"ComponentsUpdated", (...any) -> ()>,
-	ClassName: "Hull",
-}
-export type SoundMuffler = {
-	ClassName: "SoundMuffler",
-}
-export type Magnesium = {
-	ClassName: "Magnesium",
-}
-export type Cloth = {
-	ClassName: "Cloth",
-}
-export type Speaker = {
-	Pitch: number,
-	ClearSounds: (self: Speaker) -> (),
-	Audio: string,
-	LoadSound: (self: Speaker, soundId: string) -> (Sound),
-	Chat: (self: Speaker, message: string) -> (),
-	ClassName: "Speaker",
-	Volume: number,
-	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	Configure: (self: Speaker, configuration: SpeakerConfiguration) -> (),
-	PlaySound: (self: Speaker, soundId: string?) -> (),
-}
-export type HeatPump = {
-	Configure: (self: HeatPump, configuration: HeatPumpConfiguration) -> (),
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	TransferRate: number,
-	ClassName: "HeatPump",
-}
-export type Plutonium = {
-	ClassName: "Plutonium",
-}
-export type Microcontroller = {
-	Receive: (self: Microcontroller) -> (Microcontroller, ...any),
-	Configure: (self: Microcontroller, configuration: MicrocontrollerConfiguration) -> (),
-	Code: string,
-	StartOnSpawn: boolean,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	Shutdown: (self: Microcontroller) -> (),
-	ClassName: "Microcontroller",
-	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
-	Send: (self: Microcontroller, ...any) -> (),
-}
-export type SteamEngine = {
-	Configure: (self: SteamEngine, configuration: SteamEngineConfiguration) -> (),
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	EngineSpeed: number,
-	ClassName: "SteamEngine",
-}
-export type Quartz = {
-	ClassName: "Quartz",
-}
-export type CrudeWing = {
-	ClassName: "CrudeWing",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type Marble = {
-	ClassName: "Marble",
-}
-export type Treads = {
-	ClassName: "Treads",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type Piston = {
-	SetPosition: (self: Piston) -> (),
-	Configure: (self: Piston, configuration: PistonConfiguration) -> (),
-	ClassName: "Piston",
-	Speed: number,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	Position1: number,
-	Position2: number,
-}
-export type Transistor = {
-	Configure: (self: Transistor, configuration: TransistorConfiguration) -> (),
-	Inverted: boolean,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
-	ClassName: "Transistor",
-}
-export type PowerCell = {
-	ContainerChanged: Event<"ContainerChanged", (resourceType: "Power" | "Solid" | "Fluid", resourceAmount: number) -> ()>,
-	GetAmount: (self: PowerCell) -> (number),
-	ClassName: "PowerCell",
-	GetResourceAmount: (self: PowerCell) -> (number),
-	GetResource: (self: PowerCell) -> (string | "nil"),
-}
-export type TriggerRelay = {
-	Configure: (self: TriggerRelay, configuration: TriggerRelayConfiguration) -> (),
-	ClassName: "TriggerRelay",
-	SwitchValue: boolean,
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
-}
-export type FactionHub = {
-	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
-	ClassName: "FactionHub",
-}
-export type Pistol = {
-	ClassName: "Pistol",
-}
-export type Cleat = {
-	ClassName: "Cleat",
-}
-export type Fireworks = {
-	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	Damaged: Event<"Damaged", (damage: number, damageType: "Kinetic" | "Energy", damageSource: PilotObject?) -> ()>,
-	ClassName: "Fireworks",
-}
-export type Transformer = {
-	Configure: (self: Transformer, configuration: TransformerConfiguration) -> (),
-	ClassName: "Transformer",
-	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-	LoopTime: number,
-}
-export type AdBoard = {
-	ClassName: "AdBoard",
-}
-export type Warhead = {
-	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	Damaged: Event<"Damaged", (damage: number, damageType: "Kinetic" | "Energy", damageSource: PilotObject?) -> ()>,
-	ClassName: "Warhead",
-}
-export type Brick = {
-	ClassName: "Brick",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
-}
-export type Component = {
-	ComponentsUpdated: Event<"ComponentsUpdated", (...any) -> ()>,
-	ClassName: "Component",
 }
 export type PilotObject = {
 	Durability: number,
@@ -1645,27 +495,1181 @@ export type PilotObject = {
 	GetSize: (self: PilotObject) -> (Vector3),
 	GetTemperature: (self: PilotObject) -> (number),
 }
-export type SteamTurbine = {
+export type Spotlight = PilotObject & {
+	ClassName: "Spotlight",
+	SetColor: (self: Spotlight, color: Color3) -> (),
+}
+export type Silicon = PilotObject & {
+	ClassName: "Silicon",
+}
+export type Beacon = PilotObject & {
+	ShowOnMap: boolean,
+	BeaconName: string,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	ClassName: "Beacon",
+	Configure: (self: Beacon, configuration: BeaconConfiguration) -> (),
+}
+export type Port = PilotObject & {
+	PortID: number,
+	Configure: (self: Port, configuration: PortConfiguration) -> (),
+	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
+	ClassName: "Port",
+}
+export type Switch = PilotObject & {
+	Configure: (self: Switch, configuration: SwitchConfiguration) -> (),
+	ClassName: "Switch",
+	SwitchValue: boolean,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
+}
+export type Tank = PilotObject & {
+	ContainerChanged: Event<"ContainerChanged", (resourceType: "Power" | "Solid" | "Fluid", resourceAmount: number) -> ()>,
+	Configure: (self: Tank, configuration: TankConfiguration) -> (),
+	Resource: string,
+	CanBeCraftedFrom: boolean,
+	GetResourceAmount: (self: Tank) -> (number),
+	ClassName: "Tank",
+	GetAmount: (self: Tank) -> (number),
+	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
+	GetResource: (self: Tank) -> (string | "nil"),
+}
+export type NuclearWaste = PilotObject & {
+	ClassName: "NuclearWaste",
+}
+export type HyperspaceRadar = PilotObject & {
+	ViewCoordinates: Coordinates,
+	Configure: (self: HyperspaceRadar, configuration: HyperspaceRadarConfiguration) -> (),
+	ClassName: "HyperspaceRadar",
+}
+export type Asphalt = PilotObject & {
+	ClassName: "Asphalt",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type Boiler = PilotObject & {
+	ClassName: "Boiler",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type SMG = PilotObject & {
+	ClassName: "SMG",
+}
+export type Plasma = PilotObject & {
+	ClassName: "Plasma",
+}
+export type Kiln = PilotObject & {
+	ClassName: "Kiln",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type Copper = PilotObject & {
+	ClassName: "Copper",
+}
+export type CornerWedge = PilotObject & {
+	ClassName: "CornerWedge",
+}
+export type Propeller = PilotObject & {
+	ClassName: "Propeller",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type Bin = PilotObject & {
+	ContainerChanged: Event<"ContainerChanged", (resourceType: "Power" | "Solid" | "Fluid", resourceAmount: number) -> ()>,
+	Configure: (self: Bin, configuration: BinConfiguration) -> (),
+	Resource: string,
+	CanBeCraftedFrom: boolean,
+	GetResourceAmount: (self: Bin) -> (number),
+	ClassName: "Bin",
+	GetAmount: (self: Bin) -> (number),
+	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
+	GetResource: (self: Bin) -> (string | "nil"),
+}
+export type Refinery = PilotObject & {
+	ClassName: "Refinery",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type SolarScoop = PilotObject & {
+	ClassName: "SolarScoop",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type Handle = PilotObject & {
+	TriggerMode: HandleTriggerMode,
+	ClassName: "Handle",
+	Configure: (self: Handle, configuration: HandleConfiguration) -> (),
+	Swing: HandleSwingMode,
+	ToolName: string,
+}
+export type Door = PilotObject & {
+	ComponentsUpdated: Event<"ComponentsUpdated", (...any) -> ()>,
+	ClassName: "Door",
+}
+export type Uranium = PilotObject & {
+	ClassName: "Uranium",
+}
+export type DevBattery = PilotObject & {
+	ContainerChanged: Event<"ContainerChanged", (resourceType: "Power" | "Solid" | "Fluid", resourceAmount: number) -> ()>,
+	GetAmount: (self: DevBattery) -> (number),
+	ClassName: "DevBattery",
+	GetResourceAmount: (self: DevBattery) -> (number),
+	GetResource: (self: DevBattery) -> (string | "nil"),
+}
+export type Oil = PilotObject & {
+	ClassName: "Oil",
+}
+export type Transporter = PilotObject & {
+	Configure: (self: Transporter, configuration: TransporterConfiguration) -> (),
+	ClassName: "Transporter",
+	TransporterID: string,
+}
+export type Relay = PilotObject & {
+	LinkerID: number,
+	Mode: RelayMode,
+	Configure: (self: Relay, configuration: RelayConfiguration) -> (),
+	ClassName: "Relay",
+}
+export type FourthOfJuly = PilotObject & {
+	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
+	Damaged: Event<"Damaged", (damage: number, damageType: "Kinetic" | "Energy", damageSource: PilotObject?) -> ()>,
+	ClassName: "FourthOfJuly",
+}
+export type Button = PilotObject & {
+	ClassName: "Button",
+}
+export type Hologram = PilotObject & {
+	Configure: (self: Hologram, configuration: HologramConfiguration) -> (),
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	UserId: number,
+	ClassName: "Hologram",
+}
+export type Titanium = PilotObject & {
+	ClassName: "Titanium",
+}
+export type Shotgun = PilotObject & {
+	ClassName: "Shotgun",
+}
+export type Egg = PilotObject & {
+	ClassName: "Egg",
+}
+export type Plastic = PilotObject & {
+	ClassName: "Plastic",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type ConveyorBelt = PilotObject & {
+	ConveyorBeltSpeed: number,
+	Configure: (self: ConveyorBelt, configuration: ConveyorBeltConfiguration) -> (),
+	ClassName: "ConveyorBelt",
+}
+export type Radiator = PilotObject & {
+	ClassName: "Radiator",
+}
+export type Sign = PilotObject & {
+	TextFont: string,
+	Configure: (self: Sign, configuration: SignConfiguration) -> (),
+	ClassName: "Sign",
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	TextColor: Color3,
+	SignText: string,
+}
+export type Cylinder = PilotObject & {
+	ClassName: "Cylinder",
+}
+export type EnergySword = PilotObject & {
+	ClassName: "EnergySword",
+}
+export type WindTurbine = PilotObject & {
+	ClassName: "WindTurbine",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type Gyro = PilotObject & {
+	Configure: (self: Gyro, configuration: GyroConfiguration) -> (),
+	DisableWhenUnpowered: boolean,
+	MaxTorque: number,
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	TriggerWhenSeeked: boolean,
+	ClassName: "Gyro",
+	PointAlong: (self: Gyro, direction: Vector3, up: Vector3?) -> (),
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	PointAt: (self: Gyro, position: Vector3, up: Vector3?) -> (),
+	Seek: string,
+}
+export type Flashlight = PilotObject & {
+	ClassName: "Flashlight",
+}
+export type GravityGenerator = PilotObject & {
+	Gravity: number,
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Configure: (self: GravityGenerator, configuration: GravityGeneratorConfiguration) -> (),
+	ClassName: "GravityGenerator",
+}
+export type FloatDevice = PilotObject & {
+	ClassName: "FloatDevice",
+}
+export type Hydroponic = PilotObject & {
+	Grow: string,
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Configure: (self: Hydroponic, configuration: HydroponicConfiguration) -> (),
+	ClassName: "Hydroponic",
+}
+export type Framewire = PilotObject & {
+	ClassName: "Framewire",
+}
+export type Goo = PilotObject & {
+	ClassName: "Goo",
+}
+export type Sorter = PilotObject & {
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Sort: (self: Sorter, amount: number?) -> (),
+	ClassName: "Sorter",
+	Configure: (self: Sorter, configuration: SorterConfiguration) -> (),
+	TriggerQuantity: number,
+	Rate: number,
+	Resource: string,
+}
+export type Blade = PilotObject & {
+	ComponentsUpdated: Event<"ComponentsUpdated", (...any) -> ()>,
+	Configure: (self: Blade, configuration: BladeConfiguration) -> (),
+	Shape: BladeShape,
+	ClassName: "Blade",
+}
+export type Gun = PilotObject & {
+	ClassName: "Gun",
+}
+export type VintagePlasmaPistol = PilotObject & {
+	ClassName: "VintagePlasmaPistol",
+}
+export type Heater = PilotObject & {
+	ClassName: "Heater",
+}
+export type Hotdog = PilotObject & {
+	ClassName: "Hotdog",
+}
+export type Gold = PilotObject & {
+	ClassName: "Gold",
+}
+export type Microphone = PilotObject & {
+	Chatted: Event<"Chatted", (player: number, message: string) -> ()>,
+	ClassName: "Microphone",
+}
+export type Aerogel = PilotObject & {
+	ClassName: "Aerogel",
+}
+export type Katana = PilotObject & {
+	ClassName: "Katana",
+}
+export type Lantern = PilotObject & {
+	ClassName: "Lantern",
+}
+export type Beaker = PilotObject & {
+	ClassName: "Beaker",
+}
+export type StorageSensor = PilotObject & {
+	Configure: (self: StorageSensor, configuration: StorageSensorConfiguration) -> (),
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	QuantityRange: Range,
+	ClassName: "StorageSensor",
+}
+export type PDWX44 = PilotObject & {
+	ClassName: "PDW-X44",
+}
+export type TouchSensor = PilotObject & {
+	Touched: Event<"Touched", (object: (number | PilotObject)?) -> ()>,
+	ClassName: "TouchSensor",
+}
+export type PlasmaCannon = PilotObject & {
+	ClassName: "PlasmaCannon",
+}
+export type EnergyShield = PilotObject & {
+	Configure: (self: EnergyShield, configuration: EnergyShieldConfiguration) -> (),
+	GetShieldHealth: (self: EnergyShield) -> (number),
+	ShieldStrength: number,
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	CalculateCost: (self: EnergyShield, radius: number?) -> (number),
+	ClassName: "EnergyShield",
+	ShieldRadius: number,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	RegenerationSpeed: number,
+	SetColor: (self: EnergyShield, color: Color3) -> (),
+}
+export type SmoothReinforcedGlass = PilotObject & {
+	ClassName: "SmoothReinforcedGlass",
+}
+export type Pulverizer = PilotObject & {
+	ClassName: "Pulverizer",
+}
+export type RegionCloaker = PilotObject & {
+	ClassName: "RegionCloaker",
+}
+export type Rice = PilotObject & {
+	ClassName: "Rice",
+}
+export type Hydrogen = PilotObject & {
+	ClassName: "Hydrogen",
+}
+export type EnergyBomb = PilotObject & {
+	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
+	Damaged: Event<"Damaged", (damage: number, damageType: "Kinetic" | "Energy", damageSource: PilotObject?) -> ()>,
+	ClassName: "EnergyBomb",
+}
+export type SmoothGlass = PilotObject & {
+	ClassName: "SmoothGlass",
+}
+export type Primer = PilotObject & {
+	ClassName: "Primer",
+}
+export type tinnitus = PilotObject & {
+	ClassName: "tinnitus",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type Constructor = PilotObject & {
+	CalculateModelRecipe: (self: Constructor, modelCode: string) -> ({
+		[string]: number,
+	}),
+	Configure: (self: Constructor, configuration: ConstructorConfiguration) -> (),
+	ModelCode: string,
+	ClassName: "Constructor",
+	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	Autolock: boolean,
+	RelativeToConstructor: boolean,
+}
+export type AirSupply = PilotObject & {
+	ClassName: "AirSupply",
+}
+export type Spheroid = PilotObject & {
+	ClassName: "Spheroid",
+}
+export type HeatValve = PilotObject & {
+	Configure: (self: HeatValve, configuration: HeatValveConfiguration) -> (),
+	ClassName: "HeatValve",
+	SwitchValue: boolean,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
+}
+export type TriggerWire = PilotObject & {
+	ClassName: "TriggerWire",
+}
+export type Truss = PilotObject & {
+	ClassName: "Truss",
+}
+export type StudAligner = PilotObject & {
+	ClassName: "StudAligner",
+}
+export type Artillery = PilotObject & {
+	ClassName: "Artillery",
+}
+export type Tire = PilotObject & {
+	ClassName: "Tire",
+}
+export type HalfSphere = PilotObject & {
+	ClassName: "HalfSphere",
+}
+export type Rifle = PilotObject & {
+	ClassName: "Rifle",
+}
+export type Anchor = PilotObject & {
+	Anchored: boolean,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	Configure: (self: Anchor, configuration: AnchorConfiguration) -> (),
+	ClassName: "Anchor",
+}
+export type Flint = PilotObject & {
+	ClassName: "Flint",
+}
+export type Wire = PilotObject & {
+	ClassName: "Wire",
+}
+export type Wing = PilotObject & {
+	ClassName: "Wing",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type ZapWire = PilotObject & {
+	ClassName: "ZapWire",
+}
+export type RustedMetal = PilotObject & {
+	ClassName: "RustedMetal",
+}
+export type Dispenser = PilotObject & {
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Filter: string,
+	ClassName: "Dispenser",
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	Configure: (self: Dispenser, configuration: DispenserConfiguration) -> (),
+	Dispense: (self: Dispenser) -> (),
+}
+export type Railgun = PilotObject & {
+	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Damaged: Event<"Damaged", (damage: number, damageType: "Kinetic" | "Energy", damageSource: PilotObject?) -> ()>,
+	ClassName: "Railgun",
+}
+export type AlienCore = PilotObject & {
+	ClassName: "AlienCore",
+}
+export type MustardGas = PilotObject & {
+	ClassName: "MustardGas",
+}
+export type Beryllium = PilotObject & {
+	ClassName: "Beryllium",
+}
+export type ChemicalSynthiser = PilotObject & {
+	ClassName: "ChemicalSynthiser",
+}
+export type Coal = PilotObject & {
+	ClassName: "Coal",
+}
+export type Melter = PilotObject & {
+	ClassName: "Melter",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type DarkMatter = PilotObject & {
+	ClassName: "DarkMatter",
+}
+export type Freezer = PilotObject & {
+	ClassName: "Freezer",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type Diamond = PilotObject & {
+	ClassName: "Diamond",
+}
+export type CornerRoundWedge = PilotObject & {
+	ClassName: "CornerRoundWedge",
+}
+export type ExoticMatter = PilotObject & {
+	ClassName: "ExoticMatter",
+}
+export type Valve = PilotObject & {
+	Configure: (self: Valve, configuration: ValveConfiguration) -> (),
+	ClassName: "Valve",
+	SwitchValue: boolean,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
+}
+export type Wedge = PilotObject & {
+	ClassName: "Wedge",
+}
+export type Part100k = PilotObject & {
+	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
+	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
+	ClassName: "100k",
+}
+export type Glass = PilotObject & {
+	ClassName: "Glass",
+}
+export type ImpulseCannon = PilotObject & {
+	ClassName: "ImpulseCannon",
+}
+export type Seat = PilotObject & {
+	OccupantChanged: Event<"OccupantChanged", () -> ()>,
+	EjectOccupant: (self: Seat) -> (),
+	GetOccupant: (self: Seat) -> (number?),
+	ClassName: "Seat",
+}
+export type PlutoniumCore = PilotObject & {
+	ClassName: "PlutoniumCore",
+}
+export type Grass = PilotObject & {
+	ClassName: "Grass",
+}
+export type HeatSink = PilotObject & {
+	ClassName: "HeatSink",
+}
+export type Heatshield = PilotObject & {
+	ClassName: "Heatshield",
+}
+export type Helium = PilotObject & {
+	ClassName: "Helium",
+}
+export type Rubber = PilotObject & {
+	ClassName: "Rubber",
+}
+export type Mandrillium = PilotObject & {
+	ClassName: "Mandrillium",
+}
+export type Lava = PilotObject & {
+	ClassName: "Lava",
+}
+export type DevTeleporter = PilotObject & {
+	TeleporterID: string,
+	Configure: (self: DevTeleporter, configuration: DevTeleporterConfiguration) -> (),
+	ClassName: "DevTeleporter",
+}
+export type Jade = PilotObject & {
+	ClassName: "Jade",
+}
+export type Iron = PilotObject & {
+	ClassName: "Iron",
+}
+export type Coupler = PilotObject & {
+	Couple: Event<"Couple", () -> ()>,
+	Configure: (self: Coupler, configuration: CouplerConfiguration) -> (),
+	IsCoupled: (self: Coupler) -> (boolean),
+	CouplerID: string,
+	ClassName: "Coupler",
+	AutoTrigger: boolean,
+	Decouple: Event<"Decouple", () -> ()>,
+	GetAttachedCoupler: (self: Coupler) -> (Coupler?),
+}
+export type Neutronium = PilotObject & {
+	ClassName: "Neutronium",
+}
+export type Battery = PilotObject & {
+	ContainerChanged: Event<"ContainerChanged", (resourceType: "Power" | "Solid" | "Fluid", resourceAmount: number) -> ()>,
+	GetAmount: (self: Battery) -> (number),
+	ClassName: "Battery",
+	GetResourceAmount: (self: Battery) -> (number),
+	GetResource: (self: Battery) -> (string | "nil"),
+}
+export type NitrogenOxide = PilotObject & {
+	ClassName: "NitrogenOxide",
+}
+export type Turbofan = PilotObject & {
+	TurboFanSpeed: number,
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Configure: (self: Turbofan, configuration: TurbofanConfiguration) -> (),
+	ClassName: "Turbofan",
+}
+export type Obamium = PilotObject & {
+	ClassName: "Obamium",
+}
+export type TractorBeam = PilotObject & {
+	PowerPercent: number,
+	Configure: (self: TractorBeam, configuration: TractorBeamConfiguration) -> (),
+	ClassName: "TractorBeam",
+}
+export type Perfectium = PilotObject & {
+	ClassName: "Perfectium",
+}
+export type StarMap = PilotObject & {
+	GetBodies: (self: StarMap) -> ({
+		[string]: {
+			PlanetType: PlanetType,
+		},
+	}),
+	GetSystems: (self: StarMap) -> ({ string }),
+	ClassName: "StarMap",
+}
+export type Ice = PilotObject & {
+	ClassName: "Ice",
+}
+export type ObjectDetector = PilotObject & {
+	MaxDistance: number,
+	ClassName: "ObjectDetector",
+	TriggerAtDistance: Vector2,
+	Configure: (self: ObjectDetector, configuration: ObjectDetectorConfiguration) -> (),
+	GetLastHitPart: (self: ObjectDetector) -> (PilotObject),
+	GetLastHitData: (self: ObjectDetector) -> (ObjectDetectorHitData),
+}
+export type Generator = PilotObject & {
+	ClassName: "Generator",
+}
+export type Explosive = PilotObject & {
+	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
+	Damaged: Event<"Damaged", (damage: number, damageType: "Kinetic" | "Energy", damageSource: PilotObject?) -> ()>,
+	ClassName: "Explosive",
+}
+export type Router = PilotObject & {
+	RouterID: string,
+	Configure: (self: Router, configuration: RouterConfiguration) -> (),
+	ClassName: "Router",
+}
+export type CrossBow = PilotObject & {
+	ClassName: "CrossBow",
+}
+export type Ruby = PilotObject & {
+	ClassName: "Ruby",
+}
+export type Sand = PilotObject & {
+	ClassName: "Sand",
+}
+export type Claymore = PilotObject & {
+	ClassName: "Claymore",
+}
+export type Petroleum = PilotObject & {
+	ClassName: "Petroleum",
+}
+export type BallastTank = PilotObject & {
+	ClassName: "BallastTank",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Configure: (self: BallastTank, configuration: BallastTankConfiguration) -> (),
+	Buoyancy: number,
+}
+export type Snow = PilotObject & {
+	ClassName: "Snow",
+}
+export type Stanlium = PilotObject & {
+	ClassName: "Stanlium",
+}
+export type IonRocket = PilotObject & {
+	ClassName: "IonRocket",
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	Configure: (self: IonRocket, configuration: IonRocketConfiguration) -> (),
+	Propulsion: number,
+}
+export type Steam = PilotObject & {
+	ClassName: "Steam",
+}
+export type TintedGlass = PilotObject & {
+	ClassName: "TintedGlass",
+}
+export type Stone = PilotObject & {
+	ClassName: "Stone",
+}
+export type Sulfur = PilotObject & {
+	ClassName: "Sulfur",
+}
+export type MiningLaser = PilotObject & {
+	Configure: (self: MiningLaser, configuration: MiningLaserConfiguration) -> (),
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	MaterialToExtract: string,
+	ClassName: "MiningLaser",
+}
+export type Chute = PilotObject & {
+	ClassName: "Chute",
+}
+export type RepairPlate = PilotObject & {
+	ClassName: "RepairPlate",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type AdminTool = PilotObject & {
+	ClassName: "AdminTool",
+}
+export type FireWood = PilotObject & {
+	ClassName: "FireWood",
+}
+export type Radar = PilotObject & {
+	ClassName: "Radar",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type ImpactPlate = PilotObject & {
+	ClassName: "ImpactPlate",
+}
+export type Engine = PilotObject & {
+	Configure: (self: Engine, configuration: EngineConfiguration) -> (),
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	EngineSpeed: number,
+	ClassName: "Engine",
+}
+export type StanSword = PilotObject & {
+	ClassName: "StanSword",
+}
+export type TemperatureSensor = PilotObject & {
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	GetTemp: (self: TemperatureSensor) -> (number),
+	ClassName: "TemperatureSensor",
+	Configure: (self: TemperatureSensor, configuration: TemperatureSensorConfiguration) -> (),
+	TemperatureRange: Range,
+}
+export type Modem = PilotObject & {
+	GetAsync: (self: Modem, url: string, nocache: boolean?, headers: {
+		[string]: any,
+	}?) -> (string),
+	Configure: (self: Modem, configuration: ModemConfiguration) -> (),
+	PostAsync: (self: Modem, url: string, data: string, contentType: Enum.HttpContentType?, compress: boolean?, headers: {
+		[string]: any,
+	}?) -> (string),
+	SendLocalMessage: (self: Modem, ...any) -> (),
+	PostRequest: (self: Modem, domain: string, data: string) -> (),
+	UrlEncode: (self: Modem, input: string) -> (string),
+	GetRequest: (self: Modem, domain: string) -> (string),
+	RealPostRequest: (self: Modem, domain: string, data: string, asyncBool: boolean, transformFunction: (...any) -> (), optionalHeaders: {
+		[string]: any,
+	}?) -> ({
+		success: boolean,
+		response: string,
+	}),
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	ClassName: "Modem",
+	NetworkID: string,
+	SendMessage: (self: Modem, data: string, id: string?) -> (),
+	RequestAsync: (self: Modem, options: ModemRequest) -> (ModemRequestResponse),
+	MessageSent: Event<"MessageSent", () -> ()>,
+}
+export type SubspaceTripmine = PilotObject & {
+	ClassName: "SubspaceTripmine",
+}
+export type Gasoline = PilotObject & {
+	ClassName: "Gasoline",
+}
+export type Camera = PilotObject & {
+	VideoID: number,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	Configure: (self: Camera, configuration: CameraConfiguration) -> (),
+	ClassName: "Camera",
+}
+export type HeatCell = PilotObject & {
+	ContainerChanged: Event<"ContainerChanged", (resourceType: "Power" | "Solid" | "Fluid", resourceAmount: number) -> ()>,
+	GetAmount: (self: HeatCell) -> (number),
+	ClassName: "HeatCell",
+	GetResourceAmount: (self: HeatCell) -> (number),
+	GetResource: (self: HeatCell) -> (string | "nil"),
+}
+export type GeigerCounter = PilotObject & {
+	ClassName: "GeigerCounter",
+}
+export type CombustionTurbine = PilotObject & {
+	ClassName: "CombustionTurbine",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type Billboardium = PilotObject & {
+	ClassName: "Billboardium",
+}
+export type Thruster = PilotObject & {
+	ClassName: "Thruster",
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	Configure: (self: Thruster, configuration: ThrusterConfiguration) -> (),
+	Propulsion: number,
+}
+export type NightVisionGoggles = PilotObject & {
+	ClassName: "NightVisionGoggles",
+}
+export type Faucet = PilotObject & {
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Filter: string,
+	ClassName: "Faucet",
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	Configure: (self: Faucet, configuration: FaucetConfiguration) -> (),
+	Dispense: (self: Faucet) -> (),
+}
+export type AutomaticLaser = PilotObject & {
+	ClassName: "AutomaticLaser",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type EthernetCable = PilotObject & {
+	ClassName: "EthernetCable",
+}
+export type Pipe = PilotObject & {
+	ClassName: "Pipe",
+}
+export type Tetrahedron = PilotObject & {
+	ClassName: "Tetrahedron",
+}
+export type CornerRoundWedge2 = PilotObject & {
+	ClassName: "CornerRoundWedge2",
+}
+export type DevSource = PilotObject & {
+	Configure: (self: DevSource, configuration: DevSourceConfiguration) -> (),
+	GetAmountGenerated: (self: DevSource, ...any) -> (...any),
+	ClassName: "DevSource",
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
+	Resource: ResourceString,
+}
+export type Cannon = PilotObject & {
+	ClassName: "Cannon",
+}
+export type Furnace = PilotObject & {
+	ClassName: "Furnace",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type Gear = PilotObject & {
+	ClassName: "Gear",
+}
+export type CornerTetra = PilotObject & {
+	ClassName: "CornerTetra",
+}
+export type Scanner = PilotObject & {
+	CalculateCost: (self: Scanner, range: number?) -> (number),
+	Locate: (self: Scanner, part: PilotObject, scanners: { Scanner }) -> (Vector3),
+	GetPartsInRange: (self: Scanner, range: number?, className: string?) -> ({ PilotObject }),
+	ClassName: "Scanner",
+	GetDistance: (self: Scanner, part: PilotObject) -> (number),
+	Range: number,
+	Configure: (self: Scanner, configuration: ScannerConfiguration) -> (),
+}
+export type Polysilicon = PilotObject & {
+	Configure: (self: Polysilicon, configuration: PolysiliconConfiguration) -> (),
+	ClassName: "Polysilicon",
+	PolysiliconMode: PolysiliconMode,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	Frequency: number,
+}
+export type RepairLaser = PilotObject & {
+	ClassName: "RepairLaser",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type Rail = PilotObject & {
+	SetPosition: (self: Rail, depth: number) -> (),
+	Configure: (self: Rail, configuration: RailConfiguration) -> (),
+	ClassName: "Rail",
+	Position1: number,
+	TweenTime: number,
+	Position2: number,
+}
+export type Sail = PilotObject & {
+	ClassName: "Sail",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type Extinguisher = PilotObject & {
+	ClassName: "Extinguisher",
+}
+export type DarkReactor = PilotObject & {
+	ClassName: "DarkReactor",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type BeamRifle = PilotObject & {
+	ClassName: "BeamRifle",
+}
+export type VitalScanner = PilotObject & {
+	ClassName: "VitalScanner",
+}
+export type Balloon = PilotObject & {
+	ClassName: "Balloon",
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	Configure: (self: Balloon, configuration: BalloonConfiguration) -> (),
+	Buoyancy: number,
+}
+export type Light = PilotObject & {
+	Shadows: boolean,
+	Configure: (self: Light, configuration: LightConfiguration) -> (),
+	ClassName: "Light",
+	Brightness: number,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	LightRange: number,
+	SetColor: (self: Light, color: Color3) -> (),
+}
+export type Flamethrower = PilotObject & {
+	ClassName: "Flamethrower",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type RemoteControl = PilotObject & {
+	ClassName: "RemoteControl",
+	Configure: (self: RemoteControl, configuration: RemoteControlConfiguration) -> (),
+	RemoteControlMode: RemoteControlMode,
+	RemoteControlRange: number,
+}
+export type TemperatureGate = PilotObject & {
+	Configure: (self: TemperatureGate, configuration: TemperatureGateConfiguration) -> (),
+	Inverted: boolean,
+	GetState: (self: TemperatureGate) -> (),
+	ClassName: "TemperatureGate",
+	GetTemp: (self: TemperatureGate) -> (number),
+	SwitchValue: boolean,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	TemperatureRange: Range,
+	GetTemperature: (self: TemperatureGate) -> (number),
+}
+export type Scrapper = PilotObject & {
+	ClassName: "Scrapper",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type Rocket = PilotObject & {
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	ClassName: "Rocket",
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	Configure: (self: Rocket, configuration: RocketConfiguration) -> (),
+	Propulsion: number,
+}
+export type SpawnPoint = PilotObject & {
+	ClassName: "SpawnPoint",
+}
+export type Electromagnet = PilotObject & {
+	ClassName: "Electromagnet",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type DeleteSwitch = PilotObject & {
+	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
+	ClassName: "DeleteSwitch",
+}
+export type FactionSpawn = PilotObject & {
+	ClassName: "FactionSpawn",
+}
+export type Igniter = PilotObject & {
+	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
+	ClassName: "Igniter",
+}
+export type RepairKit = PilotObject & {
+	ClassName: "RepairKit",
+}
+export type Boombox = PilotObject & {
+	Configure: (self: Boombox, configuration: BoomboxConfiguration) -> (),
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Audio: number,
+	ClassName: "Boombox",
+}
+export type SolarPanel = PilotObject & {
+	ClassName: "SolarPanel",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type TriggerSwitch = PilotObject & {
+	Configure: (self: TriggerSwitch, configuration: TriggerSwitchConfiguration) -> (),
+	ClassName: "TriggerSwitch",
+	SwitchValue: boolean,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
+}
+export type Tile = PilotObject & {
+	ClassName: "Tile",
+}
+export type HyperDrive = PilotObject & {
+	GetRequiredPower: (self: HyperDrive) -> (),
+	Coordinates: Coordinates,
+	ClassName: "HyperDrive",
+	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	Configure: (self: HyperDrive, configuration: HyperDriveConfiguration) -> (),
+}
+export type DevSink = PilotObject & {
+	ContainerChanged: Event<"ContainerChanged", (resourceType: "Power" | "Solid" | "Fluid", resourceAmount: number) -> ()>,
+	Configure: (self: DevSink, configuration: DevSinkConfiguration) -> (),
+	GetAmount: (self: DevSink) -> (number),
+	GetResourceAmount: (self: DevSink) -> (number),
+	Resource: ResourceString,
+	ClassName: "DevSink",
+	GetAmountConsumed: (self: DevSink, ...any) -> (...any),
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
+	GetResource: (self: DevSink) -> (string | "nil"),
+}
+export type Solenoid = PilotObject & {
+	Configure: (self: Solenoid, configuration: SolenoidConfiguration) -> (),
+	PowerRange: Range,
+	Inverted: boolean,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
+	ClassName: "Solenoid",
+}
+export type Decoupler = PilotObject & {
+	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
+	ClassName: "Decoupler",
+}
+export type RoundWedge2 = PilotObject & {
+	ClassName: "RoundWedge2",
+}
+export type Prosthetic = PilotObject & {
+	Limb: PlayerLimb,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	Configure: (self: Prosthetic, configuration: ProstheticConfiguration) -> (),
+	ClassName: "Prosthetic",
+}
+export type Reactor = PilotObject & {
+	ClassName: "Reactor",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	GetFuel: (self: Reactor) -> ({ number }),
+	GetTemp: (self: Reactor) -> (number),
+	GetEfficiency: (self: Reactor) -> (number),
+	Configure: (self: Reactor, configuration: ReactorConfiguration) -> (),
+	TriggerWhenEmpty: boolean,
+	Alarm: boolean,
+}
+export type BlackBox = PilotObject & {
+	GetLogs: (self: BlackBox) -> ({ RegionLog }),
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
+	ClassName: "BlackBox",
+}
+export type Telescope = PilotObject & {
+	WhenRegionLoads: (self: Telescope, callback: (regionInfo: CompleteRegionInfo) -> ()) -> (),
+	Configure: (self: Telescope, configuration: TelescopeConfiguration) -> (),
+	GetCurrentCoordinate: (self: Telescope) -> (Coordinates),
+	ClassName: "Telescope",
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	GetCoordinate: (self: Telescope) -> (RegionInfo),
+	ViewCoordinates: Coordinates,
+}
+export type Aluminum = PilotObject & {
+	ClassName: "Aluminum",
+}
+export type Motor = PilotObject & {
+	Configure: (self: Motor, configuration: MotorConfiguration) -> (),
+	Power: number,
+	Ratio: number,
+	ClassName: "Motor",
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+}
+export type Obelisk = PilotObject & {
+	ClassName: "Obelisk",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type Controller = PilotObject & {
+	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	ClassName: "Controller",
+}
+export type Rotor = PilotObject & {
+	ClassName: "Rotor",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type RTG = PilotObject & {
+	ClassName: "RTG",
+}
+export type Insulation = PilotObject & {
+	ClassName: "Insulation",
+}
+export type Winch = PilotObject & {
+	Configure: (self: Winch, configuration: WinchConfiguration) -> (),
+	ClassName: "Winch",
+	AdjustLength: (self: Winch, adjustment: number) -> (),
+	DeltaLength: number,
+	SetLength: (self: Winch, length: number) -> (),
+	MaxLength: number,
+	MinLength: number,
+}
+export type RoundWedge = PilotObject & {
+	ClassName: "RoundWedge",
+}
+export type VehicleSeat = PilotObject & {
+	Enabled: boolean,
+	Configure: (self: VehicleSeat, configuration: VehicleSeatConfiguration) -> (),
+	OccupantChanged: Event<"OccupantChanged", () -> ()>,
+	GetOccupant: (self: VehicleSeat) -> (number?),
+	ClassName: "VehicleSeat",
+	EjectOccupant: (self: VehicleSeat) -> (),
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	Mode: VehicleSeatMode,
+	Speed: number,
+}
+export type Hull = PilotObject & {
+	ComponentsUpdated: Event<"ComponentsUpdated", (...any) -> ()>,
+	ClassName: "Hull",
+}
+export type SoundMuffler = PilotObject & {
+	ClassName: "SoundMuffler",
+}
+export type Magnesium = PilotObject & {
+	ClassName: "Magnesium",
+}
+export type Cloth = PilotObject & {
+	ClassName: "Cloth",
+}
+export type Speaker = PilotObject & {
+	Pitch: number,
+	ClearSounds: (self: Speaker) -> (),
+	Audio: string,
+	LoadSound: (self: Speaker, soundId: string) -> (Sound),
+	Chat: (self: Speaker, message: string) -> (),
+	ClassName: "Speaker",
+	Volume: number,
+	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	Configure: (self: Speaker, configuration: SpeakerConfiguration) -> (),
+	PlaySound: (self: Speaker, soundId: string?) -> (),
+}
+export type HeatPump = PilotObject & {
+	Configure: (self: HeatPump, configuration: HeatPumpConfiguration) -> (),
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	TransferRate: number,
+	ClassName: "HeatPump",
+}
+export type Plutonium = PilotObject & {
+	ClassName: "Plutonium",
+}
+export type Microcontroller = PilotObject & {
+	Receive: (self: Microcontroller) -> (Microcontroller, ...any),
+	Configure: (self: Microcontroller, configuration: MicrocontrollerConfiguration) -> (),
+	Code: string,
+	StartOnSpawn: boolean,
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Shutdown: (self: Microcontroller) -> (),
+	ClassName: "Microcontroller",
+	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
+	Send: (self: Microcontroller, ...any) -> (),
+}
+export type SteamEngine = PilotObject & {
+	Configure: (self: SteamEngine, configuration: SteamEngineConfiguration) -> (),
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	EngineSpeed: number,
+	ClassName: "SteamEngine",
+}
+export type Quartz = PilotObject & {
+	ClassName: "Quartz",
+}
+export type CrudeWing = PilotObject & {
+	ClassName: "CrudeWing",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type Marble = PilotObject & {
+	ClassName: "Marble",
+}
+export type Treads = PilotObject & {
+	ClassName: "Treads",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type Piston = PilotObject & {
+	SetPosition: (self: Piston) -> (),
+	Configure: (self: Piston, configuration: PistonConfiguration) -> (),
+	ClassName: "Piston",
+	Speed: number,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	Position1: number,
+	Position2: number,
+}
+export type Transistor = PilotObject & {
+	Configure: (self: Transistor, configuration: TransistorConfiguration) -> (),
+	Inverted: boolean,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
+	ClassName: "Transistor",
+}
+export type PowerCell = PilotObject & {
+	ContainerChanged: Event<"ContainerChanged", (resourceType: "Power" | "Solid" | "Fluid", resourceAmount: number) -> ()>,
+	GetAmount: (self: PowerCell) -> (number),
+	ClassName: "PowerCell",
+	GetResourceAmount: (self: PowerCell) -> (number),
+	GetResource: (self: PowerCell) -> (string | "nil"),
+}
+export type TriggerRelay = PilotObject & {
+	Configure: (self: TriggerRelay, configuration: TriggerRelayConfiguration) -> (),
+	ClassName: "TriggerRelay",
+	SwitchValue: boolean,
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
+}
+export type FactionHub = PilotObject & {
+	Configured: Event<"Configured", (configurerId: number) -> ()>,
+	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
+	ClassName: "FactionHub",
+}
+export type Pistol = PilotObject & {
+	ClassName: "Pistol",
+}
+export type Cleat = PilotObject & {
+	ClassName: "Cleat",
+}
+export type Fireworks = PilotObject & {
+	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
+	Damaged: Event<"Damaged", (damage: number, damageType: "Kinetic" | "Energy", damageSource: PilotObject?) -> ()>,
+	ClassName: "Fireworks",
+}
+export type Transformer = PilotObject & {
+	Configure: (self: Transformer, configuration: TransformerConfiguration) -> (),
+	ClassName: "Transformer",
+	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	LoopTime: number,
+}
+export type AdBoard = PilotObject & {
+	ClassName: "AdBoard",
+}
+export type Warhead = PilotObject & {
+	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
+	Damaged: Event<"Damaged", (damage: number, damageType: "Kinetic" | "Energy", damageSource: PilotObject?) -> ()>,
+	ClassName: "Warhead",
+}
+export type Brick = PilotObject & {
+	ClassName: "Brick",
+	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+}
+export type Component = PilotObject & {
+	ComponentsUpdated: Event<"ComponentsUpdated", (...any) -> ()>,
+	ClassName: "Component",
+}
+export type SteamTurbine = PilotObject & {
 	GetEfficiency: (self: SteamTurbine) -> (number),
 	Loop: Event<"Loop", (deltaTime: number) -> ()>,
 	GetProductionRate: (self: SteamTurbine) -> (number),
 	ClassName: "SteamTurbine",
 }
-export type LifeSensor = {
+export type LifeSensor = PilotObject & {
 	ClassName: "LifeSensor",
 	GetReading: (self: LifeSensor) -> ({
-		[number]: Vector3,
+		[string]: Vector3,
 	}),
 	ListPlayers: (self: LifeSensor) -> ({ number }),
 	GetPlayers: (self: LifeSensor) -> ({
 		[number]: CFrame,
 	}),
 }
-export type LightTube = {
+export type LightTube = PilotObject & {
 	ClassName: "LightTube",
 	SetColor: (self: LightTube, color: Color3) -> (),
 }
-export type Disk = {
+export type Disk = PilotObject & {
 	Clear: (self: Disk) -> (),
 	Write: (self: Disk, key: any, value: any) -> (),
 	Compress: (self: Disk) -> (),
@@ -1684,18 +1688,18 @@ export type Disk = {
 	}),
 	ClearDisk: (self: Disk) -> (),
 }
-export type DarkConverter = {
+export type DarkConverter = PilotObject & {
 	ClassName: "DarkConverter",
 	Loop: Event<"Loop", (deltaTime: number) -> ()>,
 }
-export type WirelessButton = {
+export type WirelessButton = PilotObject & {
 	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
 	ClassName: "WirelessButton",
 }
-export type Block = {
+export type Block = PilotObject & {
 	ClassName: "Block",
 }
-export type ProximityButton = {
+export type ProximityButton = PilotObject & {
 	PromptTriggered: Event<"PromptTriggered", () -> ()>,
 	GamepadKeyCode: string,
 	HoldDuration: number,
@@ -1710,27 +1714,27 @@ export type ProximityButton = {
 	PromptTriggerEnded: Event<"PromptTriggerEnded", () -> ()>,
 	RequiresLineOfSight: boolean,
 }
-export type Ball = {
+export type Ball = PilotObject & {
 	ClassName: "Ball",
 }
-export type LightBridge = {
+export type LightBridge = PilotObject & {
 	Loop: Event<"Loop", (deltaTime: number) -> ()>,
 	ClassName: "LightBridge",
 	BeamColor: Color3,
 	Configure: (self: LightBridge, configuration: LightBridgeConfiguration) -> (),
 	Configured: Event<"Configured", (configurerId: number) -> ()>,
 }
-export type EnergyGun = {
+export type EnergyGun = PilotObject & {
 	ClassName: "EnergyGun",
 }
-export type StasisField = {
+export type StasisField = PilotObject & {
 	ClassName: "StasisField",
 	Loop: Event<"Loop", (deltaTime: number) -> ()>,
 }
-export type Cement = {
+export type Cement = PilotObject & {
 	ClassName: "Cement",
 }
-export type Keyboard = {
+export type Keyboard = PilotObject & {
 	TextInputted: Event<"TextInputted", (text: string, player: string) -> ()>,
 	ClassName: "Keyboard",
 	UserInput: Event<"UserInput", (inputObject: UserInputObject, userId: number) -> ()>,
@@ -1739,18 +1743,18 @@ export type Keyboard = {
 	SimulateTextInput: (self: Keyboard, input: string?, player: string) -> (),
 	KeyPressed: Event<"KeyPressed", (key: Enum.KeyCode, keyName: string, userId: number) -> ()>,
 }
-export type Neon = {
+export type Neon = PilotObject & {
 	ClassName: "Neon",
 }
-export type Diode = {
+export type Diode = PilotObject & {
 	ClassName: "Diode",
 }
-export type Assembler = {
+export type Assembler = PilotObject & {
 	CalculateCraftingRecipe: (self: Assembler, items: { string } | {
 		[string]: number,
 	}) -> ({
-		[string]: number,
 		Power: number,
+		[string]: number,
 	}),
 	Configure: (self: Assembler, configuration: AssemblerConfiguration) -> (),
 	CraftItems: (self: Assembler, items: { string } | {
@@ -1769,35 +1773,32 @@ export type Assembler = {
 	}),
 	Assemble: string,
 }
-export type Torch = {
+export type Torch = PilotObject & {
 	ClassName: "Torch",
 }
-export type Pump = {
+export type Pump = PilotObject & {
 	Loop: Event<"Loop", (deltaTime: number) -> ()>,
 	ClassName: "Pump",
 	Configured: Event<"Configured", (configurerId: number) -> ()>,
 	Configure: (self: Pump, configuration: PumpConfiguration) -> (),
 	LiquidToPump: string,
 }
-export type ARGlasses = {
-	ClassName: "ARGlasses",
-} | ARController | Microcontroller | Antenna | Router | Tool
-export type ElectricFence = {
+export type ElectricFence = PilotObject & {
 	ClassName: "ElectricFence",
 	Loop: Event<"Loop", (deltaTime: number) -> ()>,
 }
-export type TimeSensor = {
+export type TimeSensor = PilotObject & {
 	Configure: (self: TimeSensor, configuration: TimeSensorConfiguration) -> (),
 	Time: string,
 	ClassName: "TimeSensor",
 }
-export type MonsterMashPotion = {
+export type MonsterMashPotion = PilotObject & {
 	ClassName: "MonsterMashPotion",
 }
-export type ScubaMask = {
+export type ScubaMask = PilotObject & {
 	ClassName: "ScubaMask",
 }
-export type FluidProjector = {
+export type FluidProjector = PilotObject & {
 	Loop: Event<"Loop", (deltaTime: number) -> ()>,
 	ClassName: "FluidProjector",
 	Fluid: string,
@@ -1805,14 +1806,14 @@ export type FluidProjector = {
 	Configure: (self: FluidProjector, configuration: FluidProjectorConfiguration) -> (),
 	Size: Vector3,
 }
-export type DriveBox = {
+export type DriveBox = PilotObject & {
 	Configure: (self: DriveBox, configuration: DriveBoxConfiguration) -> (),
 	ClassName: "DriveBox",
 	Reversal: boolean,
 	Ratio: number,
 	Loop: Event<"Loop", (deltaTime: number) -> ()>,
 }
-export type Servo = {
+export type Servo = PilotObject & {
 	SetAngle: (self: Servo, angle: number) -> (),
 	Configure: (self: Servo, configuration: ServoConfiguration) -> (),
 	ServoSpeed: number,
@@ -1822,10 +1823,10 @@ export type Servo = {
 	Configured: Event<"Configured", (configurerId: number) -> ()>,
 	AngleStep: number,
 }
-export type Fence = {
+export type Fence = PilotObject & {
 	ClassName: "Fence",
 }
-export type DevGravityGenerator = {
+export type DevGravityGenerator = PilotObject & {
 	Enabled: boolean,
 	Radius: number,
 	ClassName: "DevGravityGenerator",
@@ -1833,42 +1834,42 @@ export type DevGravityGenerator = {
 	Configure: (self: DevGravityGenerator, configuration: DevGravityGeneratorConfiguration) -> (),
 	Loop: Event<"Loop", (deltaTime: number) -> ()>,
 }
-export type TestStarMap = {
+export type TestStarMap = PilotObject & {
 	ClassName: "TestStarMap",
 }
-export type BurnerGenerator = {
+export type BurnerGenerator = PilotObject & {
 	ClassName: "BurnerGenerator",
 	Loop: Event<"Loop", (deltaTime: number) -> ()>,
 }
-export type ReinforcedGlass = {
+export type ReinforcedGlass = PilotObject & {
 	ClassName: "ReinforcedGlass",
 }
-export type Cone = {
+export type Cone = PilotObject & {
 	ClassName: "Cone",
 }
-export type WaterCooler = {
+export type WaterCooler = PilotObject & {
 	ClassName: "WaterCooler",
 }
-export type DevHeatStorage = {
+export type DevHeatStorage = PilotObject & {
 	ContainerChanged: Event<"ContainerChanged", (resourceType: "Power" | "Solid" | "Fluid", resourceAmount: number) -> ()>,
 	GetAmount: (self: DevHeatStorage) -> (number),
 	ClassName: "DevHeatStorage",
 	GetResourceAmount: (self: DevHeatStorage) -> (number),
 	GetResource: (self: DevHeatStorage) -> (string | "nil"),
 }
-export type Laser = {
+export type Laser = PilotObject & {
 	ClassName: "Laser",
 	Loop: Event<"Loop", (deltaTime: number) -> ()>,
 	Configure: (self: Laser, configuration: LaserConfiguration) -> (),
 	DamageOnlyPlayers: boolean,
 }
-export type Stick = {
+export type Stick = PilotObject & {
 	ClassName: "Stick",
 }
-export type Water = {
+export type Water = PilotObject & {
 	ClassName: "Water",
 }
-export type Teleporter = {
+export type Teleporter = PilotObject & {
 	TeleporterID: number,
 	ForceLocalTeleport: boolean,
 	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
@@ -1876,7 +1877,7 @@ export type Teleporter = {
 	Configure: (self: Teleporter, configuration: TeleporterConfiguration) -> (),
 	Coordinates: Coordinates,
 }
-export type ARController = {
+export type ARController = PilotObject & {
 	ClearElements: (self: ARController, context: CanvasContext) -> (),
 	CreateElement3D: (self: ARController, shape: "Ball" | "Block" | "Cylinder" | "Wedge" | "CornerWedge", properties: {
 		[string]: any,
@@ -1890,7 +1891,7 @@ export type ARController = {
 	CursorMoved: Event<"CursorMoved", (cursor: ARCursor) -> ()>,
 	GetCursor: (self: ARController) -> (ARCursor),
 	KeyPressed: Event<"KeyPressed", (key: Enum.KeyCode, keyName: string, userId: number) -> ()>,
-	GetCanvas: (self: ARController) -> (),
+	GetCanvas: ((self: ARController, context: "2D"?) -> (Folder)) & ((self: ARController, context: "3D") -> (WorldModel)),
 	Transparency: number,
 	GetCursors: (self: ARController) -> ({
 		[string]: ARCursor,
@@ -1901,47 +1902,50 @@ export type ARController = {
 	UserInput: Event<"UserInput", (inputObject: UserInputObject, userId: number) -> ()>,
 	CursorPressed: Event<"CursorPressed", (cursor: ARCursor) -> ()>,
 }
-export type Instrument = {
+export type ARGlasses = Tool & Router & Antenna & Microcontroller & ARController & {
+	ClassName: "ARGlasses",
+}
+export type Instrument = PilotObject & {
 	Type: InstrumentType,
 	ClassName: "Instrument",
 	GetReading: (self: Instrument, type: (InstrumentType | number)?) -> (number | Vector3 | string),
 	Configure: (self: Instrument, configuration: InstrumentConfiguration) -> (),
 	Loop: Event<"Loop", (deltaTime: number) -> ()>,
 }
-export type Antenna = {
+export type Antenna = PilotObject & {
 	AntennaID: string,
 	Configure: (self: Antenna, configuration: AntennaConfiguration) -> (),
 	ClassName: "Antenna",
 }
-export type Filter = {
+export type Filter = PilotObject & {
 	ClassName: "Filter",
 	Configure: (self: Filter, configuration: FilterConfiguration) -> (),
 	Invert: boolean,
 	Filter: string,
 }
-export type HeatPipe = {
+export type HeatPipe = PilotObject & {
 	ClassName: "HeatPipe",
 }
-export type BlastingCap = {
+export type BlastingCap = PilotObject & {
 	ClassName: "BlastingCap",
 }
-export type Lead = {
+export type Lead = PilotObject & {
 	ClassName: "Lead",
 }
-export type Food = {
+export type Food = PilotObject & {
 	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
 	ClassName: "Food",
 }
-export type CloningBay = {
+export type CloningBay = PilotObject & {
 	Configure: (self: CloningBay, configuration: CloningBayConfiguration) -> (),
 	Configured: Event<"Configured", (configurerId: number) -> ()>,
 	Name: string,
 	ClassName: "CloningBay",
 }
-export type Cooler = {
+export type Cooler = PilotObject & {
 	ClassName: "Cooler",
 }
-export type Apparel = {
+export type Apparel = PilotObject & {
 	Transparency: number,
 	ClassName: "Apparel",
 	Limb: PlayerLimb,
@@ -1949,19 +1953,19 @@ export type Apparel = {
 	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
 	Configure: (self: Apparel, configuration: ApparelConfiguration) -> (),
 }
-export type BurstLaser = {
+export type BurstLaser = PilotObject & {
 	ClassName: "BurstLaser",
 }
-export type DevGenerator = {
+export type DevGenerator = PilotObject & {
 	ClassName: "DevGenerator",
 }
-export type Extractor = {
+export type Extractor = PilotObject & {
 	Configure: (self: Extractor, configuration: ExtractorConfiguration) -> (),
 	Loop: Event<"Loop", (deltaTime: number) -> ()>,
 	MaterialToExtract: string,
 	ClassName: "Extractor",
 }
-export type Screen = {
+export type Screen = PilotObject & {
 	GetCanvas: (self: Screen) -> (Frame),
 	VideoID: number,
 	CreateElement: (self: Screen, className: string, properties: {
@@ -1973,19 +1977,19 @@ export type Screen = {
 	Configure: (self: Screen, configuration: ScreenConfiguration) -> (),
 	GetDimensions: (self: Screen) -> (Vector2),
 }
-export type Hatch = {
+export type Hatch = PilotObject & {
 	Configure: (self: Hatch, configuration: HatchConfiguration) -> (),
 	ClassName: "Hatch",
 	SwitchValue: boolean,
 	Configured: Event<"Configured", (configurerId: number) -> ()>,
 	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
 }
-export type DelayWire = {
+export type DelayWire = PilotObject & {
 	Configure: (self: DelayWire, configuration: DelayWireConfiguration) -> (),
 	ClassName: "DelayWire",
 	DelayTime: number,
 }
-export type Wood = {
+export type Wood = PilotObject & {
 	ClassName: "Wood",
 }
 export type HyperspaceRadarConfiguration = {
@@ -1993,35 +1997,35 @@ export type HyperspaceRadarConfiguration = {
 	ViewCoordinates: Coordinates?,
 }
 export type HeatPumpConfiguration = {
-	TransferRate: number?,
 	[string]: any,
+	TransferRate: number?,
 }
 export type TriggerRelayConfiguration = {
-	SwitchValue: boolean?,
 	[string]: any,
+	SwitchValue: boolean?,
 }
 export type LightConfiguration = {
 	Shadows: boolean?,
-	Brightness: number?,
 	[string]: any,
 	LightRange: number?,
+	Brightness: number?,
 }
 export type PortConfiguration = {
-	PortID: number?,
 	[string]: any,
+	PortID: number?,
 }
 export type SolenoidConfiguration = {
-	Inverted: boolean?,
-	PowerRange: Range?,
 	[string]: any,
+	PowerRange: Range?,
+	Inverted: boolean?,
 }
 export type BallastTankConfiguration = {
 	[string]: any,
 	Buoyancy: number?,
 }
 export type ValveConfiguration = {
-	SwitchValue: boolean?,
 	[string]: any,
+	SwitchValue: boolean?,
 }
 export type TemperatureGateConfiguration = {
 	SwitchValue: boolean?,
@@ -2030,18 +2034,18 @@ export type TemperatureGateConfiguration = {
 	Inverted: boolean?,
 }
 export type HandleConfiguration = {
-	ToolName: string?,
 	Swing: HandleSwingMode?,
-	TriggerMode: HandleTriggerMode?,
 	[string]: any,
+	TriggerMode: HandleTriggerMode?,
+	ToolName: string?,
 }
 export type ExtractorConfiguration = {
 	MaterialToExtract: string?,
 	[string]: any,
 }
 export type MotorConfiguration = {
-	[string]: any,
 	Ratio: number?,
+	[string]: any,
 	Power: number?,
 }
 export type TriggerSwitchConfiguration = {
@@ -2049,22 +2053,22 @@ export type TriggerSwitchConfiguration = {
 	SwitchValue: boolean?,
 }
 export type DevTeleporterConfiguration = {
-	TeleporterID: string?,
 	[string]: any,
+	TeleporterID: string?,
 }
 export type PumpConfiguration = {
-	LiquidToPump: string?,
 	[string]: any,
+	LiquidToPump: string?,
 }
 export type PolysiliconConfiguration = {
-	[string]: any,
 	PolysiliconMode: PolysiliconMode?,
 	Frequency: number?,
+	[string]: any,
 }
 export type ObjectDetectorConfiguration = {
 	TriggerAtDistance: Vector2?,
-	[string]: any,
 	MaxDistance: number?,
+	[string]: any,
 }
 export type DevSourceConfiguration = {
 	Resource: ResourceString?,
@@ -2079,8 +2083,8 @@ export type CameraConfiguration = {
 	[string]: any,
 }
 export type BalloonConfiguration = {
-	Buoyancy: number?,
 	[string]: any,
+	Buoyancy: number?,
 }
 export type ThrusterConfiguration = {
 	Propulsion: number?,
@@ -2108,22 +2112,22 @@ export type TransistorConfiguration = {
 	Inverted: boolean?,
 }
 export type CloningBayConfiguration = {
-	Name: string?,
 	[string]: any,
+	Name: string?,
 }
 export type TeleporterConfiguration = {
-	Coordinates: Coordinates?,
-	[string]: any,
-	TeleporterID: number?,
 	ForceLocalTeleport: boolean?,
+	Coordinates: Coordinates?,
+	TeleporterID: number?,
+	[string]: any,
 }
 export type TelescopeConfiguration = {
-	ViewCoordinates: Coordinates?,
 	[string]: any,
+	ViewCoordinates: Coordinates?,
 }
 export type ProstheticConfiguration = {
-	[string]: any,
 	Limb: PlayerLimb?,
+	[string]: any,
 }
 export type HydroponicConfiguration = {
 	[string]: any,
@@ -2143,8 +2147,8 @@ export type TurbofanConfiguration = {
 export type VehicleSeatConfiguration = {
 	Speed: number?,
 	Mode: VehicleSeatMode?,
-	[string]: any,
 	Enabled: boolean?,
+	[string]: any,
 }
 export type ConveyorBeltConfiguration = {
 	[string]: any,
@@ -2153,8 +2157,8 @@ export type ConveyorBeltConfiguration = {
 export type EnergyShieldConfiguration = {
 	ShieldRadius: number?,
 	ShieldStrength: number?,
-	[string]: any,
 	RegenerationSpeed: number?,
+	[string]: any,
 }
 export type CouplerConfiguration = {
 	CouplerID: string?,
@@ -2162,8 +2166,8 @@ export type CouplerConfiguration = {
 	AutoTrigger: boolean?,
 }
 export type InstrumentConfiguration = {
-	[string]: any,
 	Type: InstrumentType?,
+	[string]: any,
 }
 export type FilterConfiguration = {
 	[string]: any,
@@ -2171,12 +2175,12 @@ export type FilterConfiguration = {
 	Filter: string?,
 }
 export type ModemConfiguration = {
-	[string]: any,
 	NetworkID: string?,
+	[string]: any,
 }
 export type HyperDriveConfiguration = {
-	[string]: any,
 	Coordinates: Coordinates?,
+	[string]: any,
 }
 export type FluidProjectorConfiguration = {
 	Fluid: string?,
@@ -2205,33 +2209,33 @@ export type WinchConfiguration = {
 	MaxLength: number?,
 }
 export type TransporterConfiguration = {
-	[string]: any,
 	TransporterID: string?,
+	[string]: any,
 }
 export type GravityGeneratorConfiguration = {
-	[string]: any,
 	Gravity: number?,
+	[string]: any,
 }
 export type RelayConfiguration = {
 	LinkerID: number?,
-	[string]: any,
 	Mode: RelayMode?,
+	[string]: any,
 }
 export type HologramConfiguration = {
-	UserId: number?,
 	[string]: any,
+	UserId: number?,
 }
 export type SignConfiguration = {
 	TextFont: string?,
 	SignText: string?,
-	TextColor: Color3?,
 	[string]: any,
+	TextColor: Color3?,
 }
 export type PistonConfiguration = {
 	Position1: number?,
-	[string]: any,
-	Speed: number?,
 	Position2: number?,
+	Speed: number?,
+	[string]: any,
 }
 export type ReactorConfiguration = {
 	Alarm: boolean?,
@@ -2241,47 +2245,47 @@ export type ReactorConfiguration = {
 export type ProximityButtonConfiguration = {
 	KeyboardKeyCode: string?,
 	GamepadKeyCode: string?,
-	[string]: any,
 	HoldDuration: number?,
 	ObjectText: string?,
+	[string]: any,
 	RequiresLineOfSight: boolean?,
 	MaxActivationDistance: number?,
 }
 export type GyroConfiguration = {
 	DisableWhenUnpowered: boolean?,
 	TriggerWhenSeeked: boolean?,
-	Seek: string?,
-	MaxTorque: number?,
 	[string]: any,
+	MaxTorque: number?,
+	Seek: string?,
 }
 export type AssemblerConfiguration = {
-	Assemble: string?,
 	[string]: any,
+	Assemble: string?,
 }
 export type RemoteControlConfiguration = {
 	RemoteControlRange: number?,
-	RemoteControlMode: RemoteControlMode?,
 	[string]: any,
+	RemoteControlMode: RemoteControlMode?,
 }
 export type SteamEngineConfiguration = {
 	EngineSpeed: number?,
 	[string]: any,
 }
 export type StorageSensorConfiguration = {
-	[string]: any,
 	QuantityRange: Range?,
+	[string]: any,
 }
 export type HeatValveConfiguration = {
-	SwitchValue: boolean?,
 	[string]: any,
+	SwitchValue: boolean?,
 }
 export type EngineConfiguration = {
 	[string]: any,
 	EngineSpeed: number?,
 }
 export type HatchConfiguration = {
-	SwitchValue: boolean?,
 	[string]: any,
+	SwitchValue: boolean?,
 }
 export type DispenserConfiguration = {
 	[string]: any,
@@ -2296,8 +2300,8 @@ export type RouterConfiguration = {
 	[string]: any,
 }
 export type ARControllerConfiguration = {
-	[string]: any,
 	Transparency: number?,
+	[string]: any,
 }
 export type IonRocketConfiguration = {
 	Propulsion: number?,
@@ -2313,12 +2317,12 @@ export type ScreenConfiguration = {
 	VideoID: number?,
 }
 export type AnchorConfiguration = {
-	[string]: any,
 	Anchored: boolean?,
+	[string]: any,
 }
 export type SwitchConfiguration = {
-	[string]: any,
 	SwitchValue: boolean?,
+	[string]: any,
 }
 export type DevGravityGeneratorConfiguration = {
 	Enabled: boolean?,
@@ -2331,13 +2335,13 @@ export type BoomboxConfiguration = {
 	Audio: number?,
 }
 export type DelayWireConfiguration = {
-	DelayTime: number?,
 	[string]: any,
+	DelayTime: number?,
 }
 export type DriveBoxConfiguration = {
 	Reversal: boolean?,
-	Ratio: number?,
 	[string]: any,
+	Ratio: number?,
 }
 export type BladeConfiguration = {
 	Shape: BladeShape?,
@@ -2345,8 +2349,8 @@ export type BladeConfiguration = {
 }
 export type BeaconConfiguration = {
 	ShowOnMap: boolean?,
-	BeaconName: string?,
 	[string]: any,
+	BeaconName: string?,
 }
 export type AntennaConfiguration = {
 	AntennaID: string?,
@@ -2358,9 +2362,9 @@ export type TimeSensorConfiguration = {
 }
 export type SpeakerConfiguration = {
 	Pitch: number?,
-	[string]: any,
-	Audio: string?,
 	Volume: number?,
+	Audio: string?,
+	[string]: any,
 }
 export type RocketConfiguration = {
 	Propulsion: number?,
@@ -2368,8 +2372,8 @@ export type RocketConfiguration = {
 }
 export type ApparelConfiguration = {
 	Limb: PlayerLimb?,
-	[string]: any,
 	Transparency: number?,
+	[string]: any,
 }
 export type MiningLaserConfiguration = {
 	MaterialToExtract: string?,
@@ -2384,8 +2388,8 @@ export type SorterConfiguration = {
 export type RailConfiguration = {
 	Position1: number?,
 	Position2: number?,
-	[string]: any,
 	TweenTime: number?,
+	[string]: any,
 }
 export type ScannerConfiguration = {
 	[string]: any,
