@@ -134,9 +134,10 @@ function ExtractedUtil.AverageVector3s(v3s)
 	return sum / #v3s
 end
 
-function ExtractedUtil.CheckMalleabilityValue(Part, Value)
+type MalleabilityValue = number|Vector3|{MalleabilityValue}
+function ExtractedUtil.CheckMalleabilityValue(Part: BasePart, Value: MalleabilityValue)
 	if typeof(Value) == "number" then
-		return (math.ceil(Part.Size.X) * math.ceil(Part.Size.Y) * math.ceil(Part.Size.Z)) <= Value
+		return Part.Size.X * Part.Size.Y * Part.Size.Z <= Value
 	end
 
 	if typeof(Value) == "Vector3" then
@@ -149,6 +150,7 @@ function ExtractedUtil.CheckMalleabilityValue(Part, Value)
 		end
 		return false
 	end
+	error(`Invalid malleability value type: {typeof(Value)}`)
 end
 
 function ExtractedUtil.MatchQueryToList(Query, List)
