@@ -6,6 +6,7 @@ local TweenService = game:GetService("TweenService")
 local CustomModules = script.Parent.Modules
 local PseudoInstance = require(script.Parent.MBEPackages.PseudoInstance)
 local Branding = require(script.Parent.Modules.Branding)
+local PluginSettings = require(script.Parent.Modules.PluginSettings)
 local Widgets = require(script.Parent.Widgets)
 local ExtractedUtil = require(CustomModules.ExtractedUtil)
 local Constants = require(CustomModules.Constants)
@@ -172,7 +173,7 @@ UITemplates.ConnectBoxToAutocomplete(SearchBox, AllParts).Event:Connect(function
 		end
 
 		if SearchBox.Text:lower() == "templates" then
-			local TemplateMaterial = ExtractedUtil.MatchQueryToList(TemplateMaterial.Box.Text, AllParts)[1]
+			local TemplateMaterial = ExtractedUtil.MatchQueryToList(PluginSettings.Get("TemplateMaterial"), AllParts)[1]
 			if TemplateMaterial then
 				CategoryItems[tostring(TemplateMaterial)] = true
 			end
