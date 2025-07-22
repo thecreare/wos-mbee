@@ -95,13 +95,12 @@ local AdjustmentFunctions = {
 			Object:FindFirstChildWhichIsA('Decal').Texture = "rbxassetid://" .. string.gsub(Value:sub(4, #Value), ' ', '')
 			return
 		elseif Index == "TextColor" then
-			local Color = ExtractedUtil.StringToColor3(Value)
+			local Color = ExtractedUtil.StringToColor3_255(Value)
 			if Color then
 				-- TODO: This is a weird bug thing
 				-- because it needs to write the value in 0-1 range
 				-- but the GUI wants to have a nice fancy 0-255 range
-				-- figure out how to properly fix this
-				Object:FindFirstChild("TextColor").Value = table.concat({Color.R, Color.G, Color.B}, ", ")
+				Object:FindFirstChild("TextColor").Value = ExtractedUtil.Color3ToString_1(Color)
 				SignGui.SignLabel.TextColor3 = Color
 			end
 			return
@@ -144,7 +143,7 @@ return function(ItemIdentifier: string?, RootObject: BasePart, Value: ValueBase,
 		if not otherValue then continue end
 		otherValue.Value = ValueStatus
 
-		-- Run adjustment function fi it exists
+		-- Run adjustment function if it exists
 		if AdjustmentFunction then
 			AdjustmentFunction(object, Value.Name, ValueStatus)
 		end

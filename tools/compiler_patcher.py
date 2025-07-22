@@ -164,8 +164,25 @@ PatchOver("init.lua",
 """,
 """
 			local configurables = PartMetadata:GetConfigurables(part)
-"""
+""")
 
-)
+## Fix sign color default being in hex when the compiler doesn't actually use hex (what??)
+PatchOver(CONFIG_DATA,
+"""
+			{
+				["Name"] = "TextColor",
+				["Type"] = "Color3",
+				["Description"] = "The color of the text on the sign.",
+				["Default"] = "1,1,1",
+			},
+""",
+"""
+			{
+				["Name"] = "TextColor",
+				["Type"] = "Color3",
+				["Description"] = "The color of the text on the sign.",
+				["Default"] = "ffffff",
+			},
+""")
 
 WritebackFiles()

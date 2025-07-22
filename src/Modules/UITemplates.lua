@@ -16,20 +16,20 @@ UITemplates.ScrollingText = plugin:GetSetting("ScrollingText") or true
 
 -- MARK: Color Sync
 local Colors = {
-    MainBackground = ExtractedUtil.StringToColor3(plugin:GetSetting("MainBackgroundColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainBackground),
-    MainText = ExtractedUtil.StringToColor3(plugin:GetSetting("MainTextColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainText),
-    DimmedText = ExtractedUtil.StringToColor3(plugin:GetSetting("DimmedTextColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.DimmedText),
-    ScrollBarBackground = ExtractedUtil.StringToColor3(plugin:GetSetting("ScrollBarBackgroundColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.ScrollBarBackground),
-    ScrollBar = ExtractedUtil.StringToColor3(plugin:GetSetting("ScrollBarColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.ScrollBar),
-    InputFieldBackground = ExtractedUtil.StringToColor3(plugin:GetSetting("InputFieldBackgroundColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.InputFieldBackground),
-    Border = ExtractedUtil.StringToColor3(plugin:GetSetting("BorderColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.Border),
-    MainContrast = ExtractedUtil.StringToColor3(plugin:GetSetting("MainContrastColor")) or Color3.fromRGB(255, 150, 50),
-    ButtonHover = ExtractedUtil.StringToColor3(plugin:GetSetting("ButtonHoverColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.Button),
-    Button = ExtractedUtil.StringToColor3(plugin:GetSetting("ButtonColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainBackground),
-    ButtonText = ExtractedUtil.StringToColor3(plugin:GetSetting("ButtonTextColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.ButtonText),
-    MainButton = ExtractedUtil.StringToColor3(plugin:GetSetting("MainButtonColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainButton),
-    MalleabilityCheck = ExtractedUtil.StringToColor3(plugin:GetSetting("MalleabilityCheckColor")) or Color3.fromRGB(255, 0, 0),
-    OverlapCheck = ExtractedUtil.StringToColor3(plugin:GetSetting("OverlapCheckColor")) or Color3.fromRGB(255, 255, 0),
+    MainBackground = ExtractedUtil.StringToColor3_255(plugin:GetSetting("MainBackgroundColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainBackground),
+    MainText = ExtractedUtil.StringToColor3_255(plugin:GetSetting("MainTextColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainText),
+    DimmedText = ExtractedUtil.StringToColor3_255(plugin:GetSetting("DimmedTextColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.DimmedText),
+    ScrollBarBackground = ExtractedUtil.StringToColor3_255(plugin:GetSetting("ScrollBarBackgroundColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.ScrollBarBackground),
+    ScrollBar = ExtractedUtil.StringToColor3_255(plugin:GetSetting("ScrollBarColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.ScrollBar),
+    InputFieldBackground = ExtractedUtil.StringToColor3_255(plugin:GetSetting("InputFieldBackgroundColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.InputFieldBackground),
+    Border = ExtractedUtil.StringToColor3_255(plugin:GetSetting("BorderColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.Border),
+    MainContrast = ExtractedUtil.StringToColor3_255(plugin:GetSetting("MainContrastColor")) or Color3.fromRGB(255, 150, 50),
+    ButtonHover = ExtractedUtil.StringToColor3_255(plugin:GetSetting("ButtonHoverColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.Button),
+    Button = ExtractedUtil.StringToColor3_255(plugin:GetSetting("ButtonColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainBackground),
+    ButtonText = ExtractedUtil.StringToColor3_255(plugin:GetSetting("ButtonTextColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.ButtonText),
+    MainButton = ExtractedUtil.StringToColor3_255(plugin:GetSetting("MainButtonColor")) or settings().Studio.Theme:GetColor(Enum.StudioStyleGuideColor.MainButton),
+    MalleabilityCheck = ExtractedUtil.StringToColor3_255(plugin:GetSetting("MalleabilityCheckColor")) or Color3.fromRGB(255, 0, 0),
+    OverlapCheck = ExtractedUtil.StringToColor3_255(plugin:GetSetting("OverlapCheckColor")) or Color3.fromRGB(255, 255, 0),
 }
 
 local UIElements = {

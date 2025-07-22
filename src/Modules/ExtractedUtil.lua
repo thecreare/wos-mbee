@@ -248,7 +248,7 @@ function ExtractedUtil.SpawnPart(Part: BasePart): BasePart?
 	return SelectedPart
 end
 
-function ExtractedUtil.StringToColor3(str): Color3?
+function ExtractedUtil.StringToColor3_255(str): Color3?
 	if not str then return end
 	local channels = str:gsub("[^0-9,]", ""):split(",")
 	return if #channels == 3 then Color3.fromRGB(
@@ -258,10 +258,27 @@ function ExtractedUtil.StringToColor3(str): Color3?
 	) else nil
 end
 
-function ExtractedUtil.Color3ToString(color: Color3): string
+function ExtractedUtil.StringToColor3_1(str): Color3?
+	if not str then return end
+	local channels = str:gsub("[^0-9,.]", ""):split(",")
+	return if #channels == 3 then Color3.new(
+		tonumber(channels[1]),
+		tonumber(channels[2]),
+		tonumber(channels[3])
+	) else nil
+end
+
+function ExtractedUtil.Color3ToString_255(color: Color3): string
 	local R = math.round(color.R * 255)
 	local G = math.round(color.G * 255)
 	local B = math.round(color.B * 255)
+	return table.concat({R,G,B}, ", ")
+end
+
+function ExtractedUtil.Color3ToString_1(color: Color3): string
+	local R = color.R
+	local G = color.G
+	local B = color.B
 	return table.concat({R,G,B}, ", ")
 end
 

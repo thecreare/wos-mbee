@@ -12,6 +12,7 @@ Then merges them together based on the following rules
 -- Parts that exist in both but have been otherwise modified by MBEE
 local EXCLUDE = {
 	"GravityGenerator", -- Gravity [1 > 0.15]
+	"Sign", -- TextColor property "ffffff" -> "1,1,1"
 	"Light", -- Added `PointLight` instance to light
 
 	-- Changed size from 6x1x1 to 8x1x1 to match other logistic cable types.

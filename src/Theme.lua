@@ -95,7 +95,7 @@ for k, v in DEFAULTS do
     local value = scope:Value(color)
     Theme.COLORS[k] = value
     scope:Observer(value):onChange(function()
-        plugin:SetSetting(key, ExtractedUtil.Color3ToString(Fusion.peek(value)))
+        plugin:SetSetting(key, ExtractedUtil.Color3ToString_255(Fusion.peek(value)))
     end)
 end
 

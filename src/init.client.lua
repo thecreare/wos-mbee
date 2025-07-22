@@ -851,13 +851,13 @@ scope:Container {
 						scope:ForPairs(THEME.COLORS, function(use, scope: typeof(scope), key, value: Fusion.Value<Color3>)
 							return key, scope:TextBox {
 								Text = scope:Computed(function(use)
-									return ExtractedUtil.Color3ToString(use(value))
+									return ExtractedUtil.Color3ToString_255(use(value))
 								end),
 								BoxPlaceholderText = scope:Computed(function(use)
-									return `RGB Color ({ExtractedUtil.Color3ToString(use(value))})`
+									return `RGB Color ({ExtractedUtil.Color3ToString_255(use(value))})`
 								end),
 								onTextChange = function(text: string)
-									local new_color = ExtractedUtil.StringToColor3(text)
+									local new_color = ExtractedUtil.StringToColor3_255(text)
 									if new_color then
 										value:set(new_color)
 									end
@@ -1084,11 +1084,6 @@ local function CreateConfigElementsForInstance(
 
 			return config_data.Options[(tonumber(default_value) or 0)+1]
 		end
-		-- Convert hex based default (ffffff) into rgb default (255, 255, 255)
-		if config_type == "Color3" then
-			local c = Color3.fromHex(default_value)
-			return `{math.round(c.R*255)}, {math.round(c.G*255)}, {math.round(c.B*255)}`
-		end
 		return default_value
 	end
 
@@ -1173,10 +1168,8 @@ local function CreateConfigElementsForInstance(
 			if config_type == "string" then
 				-- Strings like sign text
 				GenericTextBox("Text [string]")
-
+			
 			-- TODO: Better parsing and handling of these in the future?
-			elseif config_type == "Color3" then
-				GenericTextBox("0,0,0 [Color3]")
 			elseif config_type == "Vector3" then
 				GenericTextBox("0,0,0 [Vector3]")
 			elseif config_type == "Vector2" then
@@ -1185,6 +1178,19 @@ local function CreateConfigElementsForInstance(
 				GenericTextBox("0:0 [NumberRange]")
 			elseif config_type == "Coordinate" then
 				GenericTextBox("0,0,0,0,bool [Coordinate]")
+			elseif config_type == "number" then
+				GenericTextBox(`{config_data.Default} [num/int]`)
+			elseif config_type == "ResourceString" then
+				GenericTextBox("Resource [ResourceString]")
+
+			-- Color3 needs special handling because its stored as 0-1 in the Value
+			-- but shown as 0-255 in GUI
+			elseif config_type == "Color3" then
+				local TextBox = GenericTextBox("0,0,0 [Color3]")
+				local color = ExtractedUtil.StringToColor3_1(config_instance.Value)
+				if color then
+					TextBox.Box.Text = ExtractedUtil.Color3ToString_255(color)
+				end
 
 			elseif config_type == "boolean" then
 				-- Booleans like SwitchValue
@@ -1201,15 +1207,9 @@ local function CreateConfigElementsForInstance(
 				toSync = {Labels = {Check.Label}, Toggles = {Check.Toggle}}
 				Check.Holder.Parent = output_container
 
-			elseif config_type == "number" then
-				-- Numbers/Ints like Gravity or Hologram user id
-				local TextBox = GenericTextBox(`{config_data.Default} [num/int]`)
-				toSync = {Labels = {TextBox.Label}, Boxes = {TextBox.Box}}
 			elseif config_type == "Selection" then
 				-- Dropdowns like apparel limb
 				local TextBox = GenericTextBox("Option [string]")
-
-				TextBox.Box.Text = config_instance.Value
 				UITemplates.CreateTipBoxes(TextBox.Box, GetOptions(config_data))
 			else
 				Logger.warn(`Missing handler for type {config_type} @{config_location}/{instance_key}`)

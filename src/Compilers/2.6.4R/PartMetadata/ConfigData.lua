@@ -970,14 +970,21 @@ return {
 					["MaxLength"] = 256,
 				},
 				["Name"] = "SignText",
+			},--[[PB]]
+			{
+				["Name"] = "TextColor",
+				["Type"] = "Color3",
+				["Description"] = "The color of the text on the sign.",
+				["Default"] = "1,1,1",
 			},
+--[[PE]]--[[RM;
 			{
 				["Name"] = "TextColor",
 				["Type"] = "Color3",
 				["Description"] = "The color of the text on the sign.",
 				["Default"] = "ffffff",
 			},
-			{
+;RM]]			{
 				["Type"] = "Selection",
 				["Default"] = {
 					["Kind"] = "EnumItem",
