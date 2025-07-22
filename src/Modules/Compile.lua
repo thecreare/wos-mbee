@@ -9,6 +9,7 @@ local ExtractedUtil = require(script.Parent.ExtractedUtil)
 local Logger = require(script.Parent.Logger)
 local Fusion = require(script.Parent.Parent.Packages.fusion)
 local PluginSettings = require(script.Parent.PluginSettings)
+local PrettyFormatByteCount = require(script.Parent.PrettyFormatByteCount)
 local CompileUploader = require(script.Parent.Uploader)
 
 local peek = Fusion.peek
@@ -157,7 +158,7 @@ return function()
 
 		local elapsed = string.format("%.3f", os.clock() - startCompile)
 		Logger.print(`COMPILE FINISHED IN: {elapsed} s.`)
-		Logger.print(`COMPILE SIZE: {COMPILE_LEN} CHARACTERS (~{string.format("%.1f", COMPILE_LEN/1024)}KB)`)
+		Logger.print(`COMPILE SIZE: {COMPILE_LEN} CHARACTERS ({PrettyFormatByteCount(COMPILE_LEN)})`)
 
 		local compile_host = peek(PluginSettings.Values.CompileHost)
 

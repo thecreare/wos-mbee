@@ -5,6 +5,7 @@ local ScriptEditorService = game:GetService("ScriptEditorService")
 local Branding = require(script.Parent.Branding)
 local Logger = require(script.Parent.Logger)
 local PluginSettings = require(script.Parent.PluginSettings)
+local PrettyFormatByteCount = require(script.Parent.PrettyFormatByteCount)
 
 local URL = "https://github.com/ArvidSilverlock/Pilot.lua-Luau-LSP/releases/latest/download/vanilla-types.luau"
 local SCRIPT_NAME = "PilotLua"
@@ -92,7 +93,7 @@ local function UpdatePilotTypes(): string
         return DetermineRequire(output_script)
     end
 
-    Logger.print(`Successfully got type checking file, ~{math.round(#response/1024)}KB`)
+    Logger.print(`Successfully got type checking file, {PrettyFormatByteCount(#response)}`)
 
     -- Update PilotLua types module to latest
     ScriptEditorService:UpdateSourceAsync(output_script, function()
