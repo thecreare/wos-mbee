@@ -12,16 +12,30 @@ local SCRIPT_PARENT = ReplicatedStorage
 local DEFAULT_PILOT_LUA = script.DefaultPilotLua
 local EDITED_BY_USER_ATTRIBUTE = "EditedByUser"
 local HEAD = "-- PilotLua Globals: "
-local HEADER_TAG = "--[[MBEE_HEADER__DO_NO_EDIT]]"
-local ESCAPED_HEADER_TAG = HEADER_TAG:gsub("%[", "%%["):gsub("%]", "%%]")
+local LEGACY_HEADER_TAGS = {"--[[MBEE_HEADER__DO_NO_EDIT]]"}
+local HEADER_TAG = "--[[MBEE_HEADER__DO_NOT_EDIT]]"
 local cached_response: string?
+
+local function replace(str: string, match)
+    assert(cached_response)
+    -- Escape comment brackets
+    match = match:gsub("%[", "%%["):gsub("%]", "%%]")
+    -- Replace text between comments
+    return str:gsub(`{match}.*{match}`, cached_response, 1)
+end
 
 local function UpdateHeaderInString(str: string)
     assert(cached_response)
     if str == "" then
         return cached_response
     else
-        local replaced = str:gsub(`{ESCAPED_HEADER_TAG}.*{ESCAPED_HEADER_TAG}`, cached_response, 1)
+        local replaced, replace_count = replace(str, HEADER_TAG)
+        for _, tag in LEGACY_HEADER_TAGS do
+            if replace_count >= 1 then
+                break
+            end
+            replaced, replace_count = replace(str, tag)
+        end
         return replaced
     end
 end
