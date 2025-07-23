@@ -5,13 +5,12 @@ local TweenService = game:GetService("TweenService")
 -- Dependencies
 local CustomModules = script.Parent.Modules
 local PseudoInstance = require(script.Parent.MBEPackages.PseudoInstance)
+local AllParts = require(script.Parent.Modules.AllParts)
 local Branding = require(script.Parent.Modules.Branding)
 local PluginSettings = require(script.Parent.Modules.PluginSettings)
 local Widgets = require(script.Parent.Widgets)
 local ExtractedUtil = require(CustomModules.ExtractedUtil)
-local Constants = require(CustomModules.Constants)
 local CustomMaterialsModule = require(CustomModules.CustomMaterials)
-local CompilersModule = require(CustomModules.Compilers)
 local Logger = require(CustomModules.Logger)
 local InfoConstants = require(CustomModules.Settings)
 local UITemplates, UIElements, Colors; do
@@ -20,10 +19,6 @@ local UITemplates, UIElements, Colors; do
 	UIElements = m.UIElements
 	Colors = m.Colors
 end
-
--- vals
-local PartsFolder = script.Parent.Parts
-local AllParts = {} :: {BasePart}
 
 -- gathered and returned to be put in thing as a list of fusion children
 local children = {}
@@ -87,60 +82,10 @@ AddMaterialButton.Parent = SearchBoxHolder
 table.insert(UIElements.Buttons, AddMaterialButton)
 
 -- MARK: Logic
-do -- Create object buttons for normal wos parts
-	local found_map = {}
-	for _, Part in PartsFolder:GetChildren() do
-		UITemplates.CreateObjectButton({Part = Part, Parent = ResultsFrame})
-        table.insert(AllParts, Part)
-		found_map[Part.Name] = true
-	end
-
-	if Constants.IS_LOCAL then
-		for part_name, _ in CompilersModule:GetAllMalleability() do
-            if found_map[part_name] then continue end
-            Logger.warn(`Missing model for part {part_name}. Inserting placeholder.`)
-            local Part = Instance.new("Part")
-            Part.Color = BrickColor.Random().Color
-            Part.Size = Vector3.one*2
-            Part.Name = part_name
-            Part.Anchored = true
-            Part:AddTag("Placeholder")
-            Part.Parent = PartsFolder
-            table.insert(AllParts, Part)
-            UITemplates.CreateObjectButton({Part = Part, Parent = ResultsFrame})
-		end
-	end
+-- Create object buttons for each part
+for _, part in AllParts:GetPartsHash() do
+	UITemplates.CreateObjectButton({Part = part.Instance, Deletable = part.IsTemplate, Parent = ResultsFrame})
 end
-
--- Create part button for each custom material
-local MaterialsLoaded = pcall(function()
-	for Name, Properties in CustomMaterialsModule.CustomMaterials do
-		local NewMaterial = Instance.new("Part")
-		NewMaterial.Anchored = true
-		NewMaterial.Name = Name
-		for Property, PropertyValue in Properties do
-			if Property == "Color" then NewMaterial.Color = Color3.fromRGB(PropertyValue[1], PropertyValue[2], PropertyValue[3]); continue end
-			if Property == "Size" then NewMaterial.Size = Vector3.new(PropertyValue[1], PropertyValue[2], PropertyValue[3]); continue end
-			NewMaterial[Property] = PropertyValue
-		end
-		NewMaterial.Parent = PartsFolder
-        table.insert(AllParts, NewMaterial)
-		table.insert(InfoConstants.SearchCategories.resources, Name:lower())
-		table.insert(InfoConstants.SearchCategories.templateables, Name:lower())
-		UITemplates.CreateObjectButton({Part = NewMaterial, Deletable = true, Parent = ResultsFrame})
-	end
-end)
-
-if not MaterialsLoaded then
-	CustomMaterialsModule.Clear()
-end
-
--------------
--------------
--------------
--------------
--------------
--------------
 
 do
     local info = TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
@@ -162,21 +107,20 @@ FocusSearch.Triggered:Connect(function()
 	SearchBox:CaptureFocus()
 end)
 
-UITemplates.ConnectBoxToAutocomplete(SearchBox, AllParts).Event:Connect(function(MatchedParts)
-	if InfoConstants.SearchCategories[SearchBox.Text:lower()] then
+UITemplates.ConnectBoxToAutocomplete(SearchBox, AllParts:GetBasePartList()).Event:Connect(function(MatchedParts)
+	local search_text = SearchBox.Text:lower()
+
+	if InfoConstants.SearchCategories[search_text] then
 		local CategoryItems = {}
-		for _, Part in AllParts do
-			for _, CategoryItem in InfoConstants.SearchCategories[SearchBox.Text:lower()] do
-				if Part.Name:lower() ~= CategoryItem:lower() then continue end
-				CategoryItems[Part.Name] = true
+		for _, part in AllParts:GetBasePartList() do
+			for _, CategoryItem in InfoConstants.SearchCategories[search_text] do
+				if part.Name:lower() ~= CategoryItem:lower() then continue end
+				CategoryItems[part.Name] = true
 			end
 		end
 
-		if SearchBox.Text:lower() == "templates" then
-			local TemplateMaterial = ExtractedUtil.MatchQueryToList(PluginSettings.Get("TemplateMaterial"), AllParts)[1]
-			if TemplateMaterial then
-				CategoryItems[tostring(TemplateMaterial)] = true
-			end
+		if search_text == "templates" then
+			CategoryItems[PluginSettings.Get("TemplateMaterial")] = true
 		end
 
 		for _, SearchButton in ResultsFrame:GetChildren() do
@@ -192,7 +136,7 @@ UITemplates.ConnectBoxToAutocomplete(SearchBox, AllParts).Event:Connect(function
 		return
 	end
 
-    if SearchBox.Text == "" then
+    if search_text == "" then
 		ListLayout.SortOrder = Enum.SortOrder.Name
 		for _, SearchButton in ResultsFrame:GetChildren() do
 			if not SearchButton:IsA("TextButton") then continue end
@@ -224,7 +168,7 @@ SearchBox.FocusLost:Connect(function(EnterPressed)
 
 	local MatchTo = SearchMatches.Visible and string.lower(SearchMatches.Text) or string.lower(SearchBox.Text)
 	local Part
-	for _, _Part in AllParts do
+	for _, _Part in AllParts:GetBasePartList() do
 		if string.lower(_Part.Name) ~= MatchTo then continue end
 		Part = _Part
 	end
@@ -248,31 +192,26 @@ AddMaterialButton.OnPressed:Connect(function()
         return
     end
 	if typeof(Selection:Get()[1]) ~= "Instance" then return end
-	local Material = Selection:Get()[1]
-	if not Material:IsA("BasePart") then return end
+	local selected_part = Selection:Get()[1]
+	if not selected_part:IsA("BasePart") then return end
 
 	for _, Resource in pairs(InfoConstants.SearchCategories.resources) do
-		if Resource == Material.Name:lower() then
-			Logger.warn(Material.Name:upper(), 'ALREADY EXISTS')
+		if Resource == selected_part.Name:lower() then
+			Logger.warn(selected_part.Name:upper(), 'ALREADY EXISTS')
 			return
 		end
 	end
 
-	local NewMaterial = Material:Clone()
-	NewMaterial.Parent = PartsFolder
-
-	CustomMaterialsModule.Add(NewMaterial.Name, {
-		Material = NewMaterial.Material.Name,
-		Transparency = NewMaterial.Transparency,
-		Reflectance = NewMaterial.Reflectance,
-		Color = {math.floor(NewMaterial.Color.R * 255), math.floor(NewMaterial.Color.G * 255), math.floor(NewMaterial.Color.B * 255)},
-		Size = {NewMaterial.Size.X, NewMaterial.Size.Y, NewMaterial.Size.Z}
+	local part = CustomMaterialsModule.Add(selected_part.Name, {
+		Material = selected_part.Material.Name,
+		Transparency = selected_part.Transparency,
+		Reflectance = selected_part.Reflectance,
+		Color = {math.floor(selected_part.Color.R * 255), math.floor(selected_part.Color.G * 255), math.floor(selected_part.Color.B * 255)},
+		Size = {selected_part.Size.X, selected_part.Size.Y, selected_part.Size.Z}
 	})
 
-	UITemplates.CreateObjectButton({Part = NewMaterial, Deletable = true, Parent = ResultsFrame})
-	table.insert(InfoConstants.SearchCategories.resources, NewMaterial.Name:lower())
-	table.insert(InfoConstants.SearchCategories.templateables, NewMaterial.Name:lower())
-	warn('[MB:E:E] ' .. NewMaterial.Name:upper() .. ' WAS SUCCESSFULLY TURNED INTO A MATERIAL')
+	UITemplates.CreateObjectButton({Part = part, Deletable = true, Parent = ResultsFrame})
+	Logger.print('[MB:E:E] ' .. selected_part.Name:upper() .. ' WAS SUCCESSFULLY TURNED INTO A MATERIAL')
 end)
 
 return children

@@ -157,6 +157,13 @@ local SettingInfo: {SparseSetting} = {
         Type = "boolean",
         Default = true,
     },
+    {
+        Key = "IgnoreNonWosParts",
+        Name = "Ignore Non WoS Parts",
+        Categories = {"advanced"},
+        Type = "boolean",
+        Default = true,
+    },
 }
 -- Convert setting key to setting info
 local SettingsInfoHash: {[string]: Setting} = {}

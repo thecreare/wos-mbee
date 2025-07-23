@@ -11,6 +11,7 @@ local Fusion = require(script.Parent.Parent.Packages.fusion)
 local PluginSettings = require(script.Parent.PluginSettings)
 local PrettyFormatByteCount = require(script.Parent.PrettyFormatByteCount)
 local CompileUploader = require(script.Parent.Uploader)
+local WosSelection = require(script.Parent.WosSelection)
 
 local peek = Fusion.peek
 
@@ -49,25 +50,15 @@ local function generateRandId()
 end
 
 local function GetSelection()
-	local SelectionParts = {}
-	local SelectionVectors = {}
-	local SelectionCFrames = {}
-	--add selection descendants to table
-	for _,s in pairs(Selection:Get()) do
-		if s:IsA("BasePart") then --parts
-			SelectionParts[#SelectionParts+1] = s
-			SelectionVectors[#SelectionVectors+1] = s.Position
-			table.insert(SelectionCFrames, s.CFrame)
-		else --models
-			for _,p in pairs(s:GetDescendants()) do
-				if p:IsA("BasePart") then
-					SelectionParts[#SelectionParts+1] = p
-					SelectionVectors[#SelectionVectors+1] = p.Position
-					table.insert(SelectionCFrames, p.CFrame)
-				end
-			end
-		end
+	local SelectionParts = WosSelection()
+	local SelectionVectors = table.create(#SelectionParts)
+	local SelectionCFrames = table.create(#SelectionParts)
+
+	for i, part in SelectionParts do
+		SelectionVectors[i] = part.Position
+		SelectionCFrames[i] = part.CFrame
 	end
+
 	return SelectionParts, SelectionVectors, SelectionCFrames
 end
 

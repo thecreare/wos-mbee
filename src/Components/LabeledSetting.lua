@@ -1,5 +1,6 @@
 local Selection = game:GetService("Selection")
 
+local AllParts = require(script.Parent.Parent.Modules.AllParts)
 local ExtractedUtil = require(script.Parent.Parent.Modules.ExtractedUtil)
 local PluginSettings = require(script.Parent.Parent.Modules.PluginSettings)
 local UITemplates = require(script.Parent.Parent.Modules.UITemplates).UITemplates
@@ -58,8 +59,7 @@ local function Divider(
         -- This should probably be moved into a thing somewhere else, like in the place
         -- where settings are defined
         if setting.Type == "Resource" then
-            -- TODO: This is supposed to use the AllParts table
-            UITemplates.ConnectBoxToAutocomplete((box :: any):FindFirstChildOfClass("TextBox"), script.Parent.Parent.Parts:GetChildren()).Event:Connect(function(Matched)
+            UITemplates.ConnectBoxToAutocomplete((box :: any):FindFirstChildOfClass("TextBox"), AllParts:GetBasePartList()).Event:Connect(function(Matched)
                 if #Matched > 16 then return end
                 if Matched[1] == nil then return end
                 ExtractedUtil.ApplyTemplates(Selection:Get(), Matched[1])
