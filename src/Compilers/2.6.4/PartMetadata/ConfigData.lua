@@ -642,10 +642,19 @@ return {
 				["Options"] = {
 					0,
 					90,
-				},
+				},--[[PB]]
 				["Name"] = "Responsiveness",
 			},
-		},
+            {
+				["Type"] = "number",
+				["Default"] = 0,
+				["Description"] = "Determines the angle the servo will attempt to rotate to when spawned.",
+				["Name"] = "Angle",
+			},
+--[[PE]]--[[RM;
+				["Name"] = "Responsiveness",
+			},
+;RM]]		},
 		["DriveBox"] = {
 			{
 				["Name"] = "Reversal",

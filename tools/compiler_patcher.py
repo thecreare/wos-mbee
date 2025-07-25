@@ -185,4 +185,21 @@ PatchOver(CONFIG_DATA,
 			},
 """)
 
+## Fix servos missing Angle config
+PatchOver(CONFIG_DATA,
+"""
+				["Name"] = "Responsiveness",
+			},
+            {
+				["Type"] = "number",
+				["Default"] = 0,
+				["Description"] = "Determines the angle the servo will attempt to rotate to when spawned.",
+				["Name"] = "Angle",
+			},
+""",
+"""
+				["Name"] = "Responsiveness",
+			},
+""")
+
 WritebackFiles()
