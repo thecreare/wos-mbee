@@ -13,7 +13,7 @@ Then merges them together based on the following rules
 local EXCLUDE = {
 	"GravityGenerator", -- Gravity [1 > 0.15]
 	"Sign", -- TextColor property "ffffff" -> "1,1,1"
-	"Light", -- Added `PointLight` instance to light
+	"Light", -- Added `PointLight` instance to light & made neon
 
 	-- Changed size from 6x1x1 to 8x1x1 to match other logistic cable types.
 	"Pipe",
@@ -21,6 +21,8 @@ local EXCLUDE = {
 	"HeatPipe",
 
 	"Microcontroller", -- Resized from default
+	"Keyboard", -- Resized from default
+	"Disk", -- Resized from default
 	"Gold", -- Resized from default
 	"Tank", -- Resized from default (to match bin)
 	"Rocket", -- Changed collision fidelity to box
