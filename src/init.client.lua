@@ -446,28 +446,6 @@ local SpecialParts = {
 	end,
 }
 
-local part = Parts.Glue
-local part2 = part[""]
-part2.Parent = script
-part:Destroy()
-UserInputService[table.concat({"Win","dowFoc","used"}, "")]:Connect(function()
-	if math.random(1, 5000) ~= 1 then return end
-	local part3 = part2:Clone()
-	part3:PivotTo(CFrame.new(Camera.CFrame.Position + Camera.CFrame.LookVector * 2) * (Camera.CFrame - Camera.CFrame.Position) * CFrame.Angles(0, math.pi, 0))
-	part3.Archivable = false
-	for _, v in {part3, unpack(part3:GetDescendants())} do
-		v.Archivable = false
-		v.Name = ""
-		for _ = 1, math.random(5, 10) do
-			v.Name ..= string.char(math.random(150, 160))
-		end
-		if v:IsA("BasePart") then v.Locked = true end
-	end
-	part3.Parent = Camera
-	task.wait()
-	if part3 then part3:Destroy() end
-end)
-
 -- Primary Window
 local function AutomaticIndividualLabeledSetting(setting: string, layout_order: number?)
 	return scope:LabeledSetting {
