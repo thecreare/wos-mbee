@@ -1029,6 +1029,26 @@ local function createConfigHolder(HeaderText: string)
 	return Holder, HeaderLabel
 end
 
+-- Check for an old instance that goes by a different name
+local function CheckForConfigToPort(instance_to_configure: Instance, instance_key: string, config_name: string): any?
+	local replacements = CompatibilityReplacements.COMPAT_CONFIG_NAME_REPLACEMENTS[instance_key]
+	if not replacements then return end
+	local config_replacements = replacements[config_name]
+	if not config_replacements then return end
+	for _, name in config_replacements do
+		local old = instance_to_configure:FindFirstChild(name)
+		if not old then continue end
+		if not old:IsA("ValueBase") then
+			Logger.warn(`Found instance that matches configuration value name porting but isn't a value instance`)
+			continue
+		end
+		local value = (old :: ValueBase & {Value: any}).Value
+		old:Destroy()
+		return value
+	end
+	return
+end
+
 local CONFIG_HOLDER_SIZE = UDim2.new(1, 0, 0, 30)
 -- Anything not in this table defaults to StringValue
 local CONFIG_TYPE_TO_VALUE_TYPE = {
@@ -1109,7 +1129,8 @@ local function CreateConfigElementsForInstance(
 			local config_instance = instance_to_configure:FindFirstChild(config_name) :: ConfigValue?
 			local expected_config_class = CONFIG_TYPE_TO_VALUE_TYPE[config_type] or "StringValue"
 
-			local old_value
+			local old_value = CheckForConfigToPort(instance_to_configure, instance_key, config_name)
+			-- 
 			--                                                                            stoooooooooooooooooooopid
 			if config_instance and config_instance.ClassName ~= expected_config_class and config_name ~= "LinkerID" then
 				Logger.warn(`Selected {instance_key} has wrong type for config {config_name}. Expected {expected_config_class}, Found {config_instance.ClassName}. Fixing.`)

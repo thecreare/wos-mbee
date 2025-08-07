@@ -46,4 +46,10 @@ module.COMPAT_CONFIG_REPLACEMENTS = {
     }
 }
 
+module.COMPAT_CONFIG_NAME_REPLACEMENTS = {
+    Solenoid = {
+        Range = {"PowerRange"},
+    },
+} :: {[string]: {[string]: {string}}}
+
 return module
