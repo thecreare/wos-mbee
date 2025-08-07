@@ -31,8 +31,6 @@ local GetEnumNames = require(script.Modules.GetEnumNames)
 local UpdatePilotTypes = require(script.Modules.UpdatePilotTypes)
 local WosSelection = require(script.Modules.WosSelection)
 
-UpdatePilotTypes.UpdatePilotTypes()
-
 local CustomModules = script.Modules
 local Components = script.Components
 
@@ -960,6 +958,7 @@ local SpecialMaterialValues =
 
 			-- Insert/update type checking if the setting is enabled
 			if peek(PluginSettings.InsertPilotTypeChecker) and peek(PluginSettings.OpenMicrocontrollerScripts) then
+				UpdatePilotTypes.UpdatePilotTypesIfNotDoneThisSession()
 				ConfigValue.Value = UpdatePilotTypes.UpdateHeaderInString(ConfigValue.Value)
 			end
 			

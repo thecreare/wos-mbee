@@ -4,6 +4,7 @@ local ScriptEditorService = game:GetService("ScriptEditorService")
 
 local Branding = require(script.Parent.Branding)
 local Logger = require(script.Parent.Logger)
+local Mutex = require(script.Parent.Mutex)
 local PluginSettings = require(script.Parent.PluginSettings)
 local PrettyFormatByteCount = require(script.Parent.PrettyFormatByteCount)
 
@@ -78,7 +79,9 @@ local function VersionFromIsoDate(date: string)
     return DateTime.fromIsoDate(date).UnixTimestamp
 end
 
-local function UpdatePilotTypes(): string
+--- Updates types, performing web requests
+--- Yields
+local UpdatePilotTypes: () -> string = Mutex.new():Wrap(function(): string
     local STORED_VERSION = VersionFromIsoDate(DEFAULT_PILOT_LUA_VERSION.Value)
     local output_script = SCRIPT_PARENT:FindFirstChild(SCRIPT_NAME)
 
@@ -164,9 +167,15 @@ local function UpdatePilotTypes(): string
     output_script:SetAttribute(VERSION_ATTRIBUTE, latest_online_version)
 
     return GetHeaderFromFile(output_script)
+end)
+
+local function UpdatePilotTypesIfNotDoneThisSession()
+    if cached_response then return cached_response end
+    return UpdatePilotTypes()
 end
 
 return {
+    UpdatePilotTypesIfNotDoneThisSession = UpdatePilotTypesIfNotDoneThisSession,
     UpdatePilotTypes = UpdatePilotTypes,
     UpdateHeaderInString = UpdateHeaderInString,
 }
