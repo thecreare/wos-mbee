@@ -1241,7 +1241,7 @@ local function CreateResourceConfigElement(
 
 	local TextBox = UITemplates.UITemplatesCreateTextBox({
 		HolderSize = CONFIG_HOLDER_SIZE,
-		LabelText = "Resource",
+		LabelText = "Type",
 		BoxPlaceholderText = "Resource [string]",
 		BoxText = instance_key,
 	})
