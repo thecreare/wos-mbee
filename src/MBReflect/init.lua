@@ -358,7 +358,7 @@ function ReflectPartRelativeInstancesRecursive(instance: Instance, axis: CFrame,
 		local joint = instance
 		local part0 = joint.Part0
 		local part1 = joint.Part1
-		if part0 and part1 then
+		if part0 and part1 and oldCFrameMap[part0] and oldCFrameMap[part1] then
 			local c0World = oldCFrameMap[part0]:ToWorldSpace(joint.C0)
 			joint.C0 = part0.CFrame:ToObjectSpace(ReflectCFrame(c0World, axis, false, false))
 			--
