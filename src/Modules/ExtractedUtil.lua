@@ -1,4 +1,5 @@
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
+local Selection = game:GetService("Selection")
 
 local Branding = require(script.Parent.Branding)
 local Logger = require(script.Parent.Logger)
@@ -223,29 +224,33 @@ function ExtractedUtil.GetInsertPoint(distance: number, shift_up: number?)
 end
 
 function ExtractedUtil.SpawnPart(Part: BasePart): BasePart?
-	local SelectedPart
+	local new_part
 
 	ExtractedUtil.HistoricEvent("InsertPart", "Insert Part", function()
-		SelectedPart = Part:Clone()
-		local distance = (SelectedPart.Size.X + SelectedPart.Size.Y + SelectedPart.Size.Z) / 3 * 1.5 + 10
-		SelectedPart.Position = ExtractedUtil.GetInsertPoint(distance, SelectedPart.Size.Y / 2)
-		ExtractedUtil.RoundPos(SelectedPart)
+		new_part = Part:Clone()
+		local distance = (new_part.Size.X + new_part.Size.Y + new_part.Size.Z) / 3 * 1.5 + 10
+		new_part.Position = ExtractedUtil.GetInsertPoint(distance, new_part.Size.Y / 2)
+		ExtractedUtil.RoundPos(new_part)
 
-		SelectedPart.Parent = workspace
+		new_part.Parent = workspace
 
-		if ExtractedUtil.IsSpecialTemplate(SelectedPart) then
+		if PluginSettings.Get("SelectSpawnedPart") then
+			Selection:Set({new_part})
+		end
+
+		if ExtractedUtil.IsSpecialTemplate(new_part) then
 			local query = peek(PluginSettings.Values.TemplateMaterial)
-			if query == "" or query == nil then return SelectedPart end
+			if query == "" or query == nil then return new_part end
 			local Matched = ExtractedUtil.MatchQueryToList(query, PARTS:GetChildren())
-			if not Matched then return SelectedPart end
-			if not Matched[1] then return SelectedPart end
-			if #Matched > 32 then return SelectedPart end
-			ExtractedUtil.ApplyTemplates({SelectedPart}, Matched[1])
-			SelectedPart.Color = Matched[1].Color
+			if not Matched then return new_part end
+			if not Matched[1] then return new_part end
+			if #Matched > 32 then return new_part end
+			ExtractedUtil.ApplyTemplates({new_part}, Matched[1])
+			new_part.Color = Matched[1].Color
 		end
 	end)
 
-	return SelectedPart
+	return new_part
 end
 
 function ExtractedUtil.StringToColor3_255(str): Color3?

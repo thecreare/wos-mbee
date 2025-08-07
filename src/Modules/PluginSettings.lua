@@ -164,6 +164,13 @@ local SettingInfo: {SparseSetting} = {
         Type = "boolean",
         Default = true,
     },
+    {
+        Key = "SelectSpawnedPart",
+        Name = "Select Spawned Parts",
+        Categories = {"advanced"},
+        Type = "boolean",
+        Default = true,
+    },
 }
 -- Convert setting key to setting info
 local SettingsInfoHash: {[string]: Setting} = {}
