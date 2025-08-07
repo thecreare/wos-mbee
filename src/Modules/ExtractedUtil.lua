@@ -317,7 +317,10 @@ end
 -- Returns if given part should have a Resource config (note: the IsResource() call is to allow you to change the resource of Blocks)
 function ExtractedUtil.IsTemplate(part: BasePart): boolean
 	local shape = CompilersModule:GetPartMetadata():GetShape(part)
-	return shape or ExtractedUtil.IsResource(part)
+	return shape
+		or ExtractedUtil.IsResource(part)
+		-- Edge case for the literal "Block" template part
+		or part.Name == "Block"
 end
 
 return ExtractedUtil
