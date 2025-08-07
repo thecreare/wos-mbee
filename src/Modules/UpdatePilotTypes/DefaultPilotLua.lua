@@ -543,11 +543,11 @@ export type HyperspaceRadar = PilotObject & {
 }
 export type Asphalt = PilotObject & {
 	ClassName: "Asphalt",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Boiler = PilotObject & {
 	ClassName: "Boiler",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type SMG = PilotObject & {
 	ClassName: "SMG",
@@ -557,7 +557,7 @@ export type Plasma = PilotObject & {
 }
 export type Kiln = PilotObject & {
 	ClassName: "Kiln",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Copper = PilotObject & {
 	ClassName: "Copper",
@@ -567,7 +567,7 @@ export type CornerWedge = PilotObject & {
 }
 export type Propeller = PilotObject & {
 	ClassName: "Propeller",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Bin = PilotObject & {
 	ContainerChanged: Event<"ContainerChanged", (resourceType: "Power" | "Solid" | "Fluid", resourceAmount: number) -> ()>,
@@ -582,11 +582,11 @@ export type Bin = PilotObject & {
 }
 export type Refinery = PilotObject & {
 	ClassName: "Refinery",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type SolarScoop = PilotObject & {
 	ClassName: "SolarScoop",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Handle = PilotObject & {
 	TriggerMode: HandleTriggerMode,
@@ -648,7 +648,7 @@ export type Egg = PilotObject & {
 }
 export type Plastic = PilotObject & {
 	ClassName: "Plastic",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type ConveyorBelt = PilotObject & {
 	ConveyorBeltSpeed: number,
@@ -674,13 +674,13 @@ export type EnergySword = PilotObject & {
 }
 export type WindTurbine = PilotObject & {
 	ClassName: "WindTurbine",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Gyro = PilotObject & {
 	Configure: (self: Gyro, configuration: GyroConfiguration) -> (),
 	DisableWhenUnpowered: boolean,
 	MaxTorque: number,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	TriggerWhenSeeked: boolean,
 	ClassName: "Gyro",
 	PointAlong: (self: Gyro, direction: Vector3, up: Vector3?) -> (),
@@ -693,7 +693,7 @@ export type Flashlight = PilotObject & {
 }
 export type GravityGenerator = PilotObject & {
 	Gravity: number,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	Configure: (self: GravityGenerator, configuration: GravityGeneratorConfiguration) -> (),
 	ClassName: "GravityGenerator",
 }
@@ -702,7 +702,7 @@ export type FloatDevice = PilotObject & {
 }
 export type Hydroponic = PilotObject & {
 	Grow: string,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	Configure: (self: Hydroponic, configuration: HydroponicConfiguration) -> (),
 	ClassName: "Hydroponic",
 }
@@ -713,7 +713,7 @@ export type Goo = PilotObject & {
 	ClassName: "Goo",
 }
 export type Sorter = PilotObject & {
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	Sort: (self: Sorter, amount: number?) -> (),
 	ClassName: "Sorter",
 	Configure: (self: Sorter, configuration: SorterConfiguration) -> (),
@@ -760,7 +760,7 @@ export type Beaker = PilotObject & {
 }
 export type StorageSensor = PilotObject & {
 	Configure: (self: StorageSensor, configuration: StorageSensorConfiguration) -> (),
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	QuantityRange: Range,
 	ClassName: "StorageSensor",
 }
@@ -778,7 +778,7 @@ export type EnergyShield = PilotObject & {
 	Configure: (self: EnergyShield, configuration: EnergyShieldConfiguration) -> (),
 	GetShieldHealth: (self: EnergyShield) -> (number),
 	ShieldStrength: number,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	CalculateCost: (self: EnergyShield, radius: number?) -> (number),
 	ClassName: "EnergyShield",
 	ShieldRadius: number,
@@ -814,7 +814,7 @@ export type Primer = PilotObject & {
 }
 export type tinnitus = PilotObject & {
 	ClassName: "tinnitus",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Constructor = PilotObject & {
 	CalculateModelRecipe: (self: Constructor, modelCode: string) -> ({
@@ -876,7 +876,7 @@ export type Wire = PilotObject & {
 }
 export type Wing = PilotObject & {
 	ClassName: "Wing",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type ZapWire = PilotObject & {
 	ClassName: "ZapWire",
@@ -885,7 +885,7 @@ export type RustedMetal = PilotObject & {
 	ClassName: "RustedMetal",
 }
 export type Dispenser = PilotObject & {
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	Filter: string,
 	ClassName: "Dispenser",
 	Configured: Event<"Configured", (configurerId: number) -> ()>,
@@ -894,7 +894,7 @@ export type Dispenser = PilotObject & {
 }
 export type Railgun = PilotObject & {
 	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	Damaged: Event<"Damaged", (damage: number, damageType: "Kinetic" | "Energy", damageSource: PilotObject?) -> ()>,
 	ClassName: "Railgun",
 }
@@ -915,14 +915,14 @@ export type Coal = PilotObject & {
 }
 export type Melter = PilotObject & {
 	ClassName: "Melter",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type DarkMatter = PilotObject & {
 	ClassName: "DarkMatter",
 }
 export type Freezer = PilotObject & {
 	ClassName: "Freezer",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Diamond = PilotObject & {
 	ClassName: "Diamond",
@@ -955,7 +955,7 @@ export type ImpulseCannon = PilotObject & {
 	ClassName: "ImpulseCannon",
 }
 export type Seat = PilotObject & {
-	OccupantChanged: Event<"OccupantChanged", () -> ()>,
+	OccupantChanged: Event<"OccupantChanged", (newOccupant: number?) -> ()>,
 	EjectOccupant: (self: Seat) -> (),
 	GetOccupant: (self: Seat) -> (number?),
 	ClassName: "Seat",
@@ -1020,7 +1020,7 @@ export type NitrogenOxide = PilotObject & {
 }
 export type Turbofan = PilotObject & {
 	TurboFanSpeed: number,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	Configure: (self: Turbofan, configuration: TurbofanConfiguration) -> (),
 	ClassName: "Turbofan",
 }
@@ -1085,7 +1085,7 @@ export type Petroleum = PilotObject & {
 }
 export type BallastTank = PilotObject & {
 	ClassName: "BallastTank",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	Configure: (self: BallastTank, configuration: BallastTankConfiguration) -> (),
 	Buoyancy: number,
 }
@@ -1115,7 +1115,7 @@ export type Sulfur = PilotObject & {
 }
 export type MiningLaser = PilotObject & {
 	Configure: (self: MiningLaser, configuration: MiningLaserConfiguration) -> (),
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	MaterialToExtract: string,
 	ClassName: "MiningLaser",
 }
@@ -1124,7 +1124,7 @@ export type Chute = PilotObject & {
 }
 export type RepairPlate = PilotObject & {
 	ClassName: "RepairPlate",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type AdminTool = PilotObject & {
 	ClassName: "AdminTool",
@@ -1134,7 +1134,7 @@ export type FireWood = PilotObject & {
 }
 export type Radar = PilotObject & {
 	ClassName: "Radar",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type ImpactPlate = PilotObject & {
 	ClassName: "ImpactPlate",
@@ -1149,7 +1149,7 @@ export type StanSword = PilotObject & {
 	ClassName: "StanSword",
 }
 export type TemperatureSensor = PilotObject & {
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	GetTemp: (self: TemperatureSensor) -> (number),
 	ClassName: "TemperatureSensor",
 	Configure: (self: TemperatureSensor, configuration: TemperatureSensorConfiguration) -> (),
@@ -1163,7 +1163,7 @@ export type Modem = PilotObject & {
 	PostAsync: (self: Modem, url: string, data: string, contentType: Enum.HttpContentType?, compress: boolean?, headers: {
 		[string]: any,
 	}?) -> (string),
-	SendLocalMessage: (self: Modem, ...any) -> (),
+	SendLocalMessage: (self: Modem, data: any, id: string?) -> (),
 	PostRequest: (self: Modem, domain: string, data: string) -> (),
 	UrlEncode: (self: Modem, input: string) -> (string),
 	GetRequest: (self: Modem, domain: string) -> (string),
@@ -1173,12 +1173,12 @@ export type Modem = PilotObject & {
 		success: boolean,
 		response: string,
 	}),
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	ClassName: "Modem",
 	NetworkID: string,
-	SendMessage: (self: Modem, data: string, id: string?) -> (),
+	SendMessage: (self: Modem, data: JSON, id: string?) -> (),
 	RequestAsync: (self: Modem, options: ModemRequest) -> (ModemRequestResponse),
-	MessageSent: Event<"MessageSent", () -> ()>,
+	MessageSent: Event<"MessageSent", (data: any) -> ()>,
 }
 export type SubspaceTripmine = PilotObject & {
 	ClassName: "SubspaceTripmine",
@@ -1204,7 +1204,7 @@ export type GeigerCounter = PilotObject & {
 }
 export type CombustionTurbine = PilotObject & {
 	ClassName: "CombustionTurbine",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Billboardium = PilotObject & {
 	ClassName: "Billboardium",
@@ -1219,7 +1219,7 @@ export type NightVisionGoggles = PilotObject & {
 	ClassName: "NightVisionGoggles",
 }
 export type Faucet = PilotObject & {
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	Filter: string,
 	ClassName: "Faucet",
 	Configured: Event<"Configured", (configurerId: number) -> ()>,
@@ -1228,7 +1228,7 @@ export type Faucet = PilotObject & {
 }
 export type AutomaticLaser = PilotObject & {
 	ClassName: "AutomaticLaser",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type EthernetCable = PilotObject & {
 	ClassName: "EthernetCable",
@@ -1255,7 +1255,7 @@ export type Cannon = PilotObject & {
 }
 export type Furnace = PilotObject & {
 	ClassName: "Furnace",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Gear = PilotObject & {
 	ClassName: "Gear",
@@ -1281,7 +1281,7 @@ export type Polysilicon = PilotObject & {
 }
 export type RepairLaser = PilotObject & {
 	ClassName: "RepairLaser",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Rail = PilotObject & {
 	SetPosition: (self: Rail, depth: number) -> (),
@@ -1293,14 +1293,14 @@ export type Rail = PilotObject & {
 }
 export type Sail = PilotObject & {
 	ClassName: "Sail",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Extinguisher = PilotObject & {
 	ClassName: "Extinguisher",
 }
 export type DarkReactor = PilotObject & {
 	ClassName: "DarkReactor",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type BeamRifle = PilotObject & {
 	ClassName: "BeamRifle",
@@ -1325,7 +1325,7 @@ export type Light = PilotObject & {
 }
 export type Flamethrower = PilotObject & {
 	ClassName: "Flamethrower",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type RemoteControl = PilotObject & {
 	ClassName: "RemoteControl",
@@ -1346,10 +1346,10 @@ export type TemperatureGate = PilotObject & {
 }
 export type Scrapper = PilotObject & {
 	ClassName: "Scrapper",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Rocket = PilotObject & {
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	ClassName: "Rocket",
 	Configured: Event<"Configured", (configurerId: number) -> ()>,
 	Configure: (self: Rocket, configuration: RocketConfiguration) -> (),
@@ -1360,7 +1360,7 @@ export type SpawnPoint = PilotObject & {
 }
 export type Electromagnet = PilotObject & {
 	ClassName: "Electromagnet",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type DeleteSwitch = PilotObject & {
 	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
@@ -1378,13 +1378,13 @@ export type RepairKit = PilotObject & {
 }
 export type Boombox = PilotObject & {
 	Configure: (self: Boombox, configuration: BoomboxConfiguration) -> (),
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	Audio: number,
 	ClassName: "Boombox",
 }
 export type SolarPanel = PilotObject & {
 	ClassName: "SolarPanel",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type TriggerSwitch = PilotObject & {
 	Configure: (self: TriggerSwitch, configuration: TriggerSwitchConfiguration) -> (),
@@ -1439,7 +1439,7 @@ export type Prosthetic = PilotObject & {
 }
 export type Reactor = PilotObject & {
 	ClassName: "Reactor",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	GetFuel: (self: Reactor) -> ({ number }),
 	GetTemp: (self: Reactor) -> (number),
 	GetEfficiency: (self: Reactor) -> (number),
@@ -1449,7 +1449,7 @@ export type Reactor = PilotObject & {
 }
 export type BlackBox = PilotObject & {
 	GetLogs: (self: BlackBox) -> ({ RegionLog }),
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
 	ClassName: "BlackBox",
 }
@@ -1474,16 +1474,16 @@ export type Motor = PilotObject & {
 }
 export type Obelisk = PilotObject & {
 	ClassName: "Obelisk",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Controller = PilotObject & {
 	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	ClassName: "Controller",
 }
 export type Rotor = PilotObject & {
 	ClassName: "Rotor",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type RTG = PilotObject & {
 	ClassName: "RTG",
@@ -1506,7 +1506,7 @@ export type RoundWedge = PilotObject & {
 export type VehicleSeat = PilotObject & {
 	Enabled: boolean,
 	Configure: (self: VehicleSeat, configuration: VehicleSeatConfiguration) -> (),
-	OccupantChanged: Event<"OccupantChanged", () -> ()>,
+	OccupantChanged: Event<"OccupantChanged", (newOccupant: number?) -> ()>,
 	GetOccupant: (self: VehicleSeat) -> (number?),
 	ClassName: "VehicleSeat",
 	EjectOccupant: (self: VehicleSeat) -> (),
@@ -1542,7 +1542,7 @@ export type Speaker = PilotObject & {
 }
 export type HeatPump = PilotObject & {
 	Configure: (self: HeatPump, configuration: HeatPumpConfiguration) -> (),
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	TransferRate: number,
 	ClassName: "HeatPump",
 }
@@ -1554,7 +1554,7 @@ export type Microcontroller = PilotObject & {
 	Configure: (self: Microcontroller, configuration: MicrocontrollerConfiguration) -> (),
 	Code: string,
 	StartOnSpawn: boolean,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	Shutdown: (self: Microcontroller) -> (),
 	ClassName: "Microcontroller",
 	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
@@ -1571,14 +1571,14 @@ export type Quartz = PilotObject & {
 }
 export type CrudeWing = PilotObject & {
 	ClassName: "CrudeWing",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Marble = PilotObject & {
 	ClassName: "Marble",
 }
 export type Treads = PilotObject & {
 	ClassName: "Treads",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Piston = PilotObject & {
 	SetPosition: (self: Piston) -> (),
@@ -1630,7 +1630,7 @@ export type Transformer = PilotObject & {
 	Configure: (self: Transformer, configuration: TransformerConfiguration) -> (),
 	ClassName: "Transformer",
 	Triggered: Event<"Triggered", (otherPart: PilotObject) -> ()>,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	LoopTime: number,
 }
 export type AdBoard = PilotObject & {
@@ -1643,7 +1643,7 @@ export type Warhead = PilotObject & {
 }
 export type Brick = PilotObject & {
 	ClassName: "Brick",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Component = PilotObject & {
 	ComponentsUpdated: Event<"ComponentsUpdated", (...any) -> ()>,
@@ -1651,7 +1651,7 @@ export type Component = PilotObject & {
 }
 export type SteamTurbine = PilotObject & {
 	GetEfficiency: (self: SteamTurbine) -> (number),
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	GetProductionRate: (self: SteamTurbine) -> (number),
 	ClassName: "SteamTurbine",
 }
@@ -1682,7 +1682,7 @@ export type Disk = PilotObject & {
 	Read: (self: Disk, key: any) -> (any),
 	Decompress: (self: Disk) -> (),
 	ClassName: "Disk",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	ReadEntireDisk: (self: Disk) -> ({
 		[any]: any,
 	}),
@@ -1690,7 +1690,7 @@ export type Disk = PilotObject & {
 }
 export type DarkConverter = PilotObject & {
 	ClassName: "DarkConverter",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type WirelessButton = PilotObject & {
 	OnClick: Event<"OnClick", (clickerId: number) -> ()>,
@@ -1718,7 +1718,7 @@ export type Ball = PilotObject & {
 	ClassName: "Ball",
 }
 export type LightBridge = PilotObject & {
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	ClassName: "LightBridge",
 	BeamColor: Color3,
 	Configure: (self: LightBridge, configuration: LightBridgeConfiguration) -> (),
@@ -1729,7 +1729,7 @@ export type EnergyGun = PilotObject & {
 }
 export type StasisField = PilotObject & {
 	ClassName: "StasisField",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Cement = PilotObject & {
 	ClassName: "Cement",
@@ -1762,7 +1762,7 @@ export type Assembler = PilotObject & {
 	}) -> (),
 	Craft: (self: Assembler, itemName: string) -> (boolean),
 	GetCraftCooldown: (self: Assembler) -> (number),
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	GetRecipe: (self: Assembler, itemName: string) -> ({
 		[string]: number,
 	}),
@@ -1777,7 +1777,7 @@ export type Torch = PilotObject & {
 	ClassName: "Torch",
 }
 export type Pump = PilotObject & {
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	ClassName: "Pump",
 	Configured: Event<"Configured", (configurerId: number) -> ()>,
 	Configure: (self: Pump, configuration: PumpConfiguration) -> (),
@@ -1785,7 +1785,7 @@ export type Pump = PilotObject & {
 }
 export type ElectricFence = PilotObject & {
 	ClassName: "ElectricFence",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type TimeSensor = PilotObject & {
 	Configure: (self: TimeSensor, configuration: TimeSensorConfiguration) -> (),
@@ -1799,7 +1799,7 @@ export type ScubaMask = PilotObject & {
 	ClassName: "ScubaMask",
 }
 export type FluidProjector = PilotObject & {
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	ClassName: "FluidProjector",
 	Fluid: string,
 	Configured: Event<"Configured", (configurerId: number) -> ()>,
@@ -1811,7 +1811,7 @@ export type DriveBox = PilotObject & {
 	ClassName: "DriveBox",
 	Reversal: boolean,
 	Ratio: number,
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Servo = PilotObject & {
 	SetAngle: (self: Servo, angle: number) -> (),
@@ -1832,14 +1832,14 @@ export type DevGravityGenerator = PilotObject & {
 	ClassName: "DevGravityGenerator",
 	Gravity: number,
 	Configure: (self: DevGravityGenerator, configuration: DevGravityGeneratorConfiguration) -> (),
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type TestStarMap = PilotObject & {
 	ClassName: "TestStarMap",
 }
 export type BurnerGenerator = PilotObject & {
 	ClassName: "BurnerGenerator",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type ReinforcedGlass = PilotObject & {
 	ClassName: "ReinforcedGlass",
@@ -1859,7 +1859,7 @@ export type DevHeatStorage = PilotObject & {
 }
 export type Laser = PilotObject & {
 	ClassName: "Laser",
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	Configure: (self: Laser, configuration: LaserConfiguration) -> (),
 	DamageOnlyPlayers: boolean,
 }
@@ -1894,7 +1894,7 @@ export type ARController = PilotObject & {
 	GetCanvas: ((self: ARController, context: "2D"?) -> (Folder)) & ((self: ARController, context: "3D") -> (WorldModel)),
 	Transparency: number,
 	GetCursors: (self: ARController) -> ({
-		[string]: ARCursor,
+		[number]: ARCursor,
 	}),
 	ClearElements3D: (self: ARController) -> (),
 	ClassName: "ARController",
@@ -1910,7 +1910,7 @@ export type Instrument = PilotObject & {
 	ClassName: "Instrument",
 	GetReading: (self: Instrument, type: (InstrumentType | number)?) -> (number | Vector3 | string),
 	Configure: (self: Instrument, configuration: InstrumentConfiguration) -> (),
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 }
 export type Antenna = PilotObject & {
 	AntennaID: string,
@@ -1961,7 +1961,7 @@ export type DevGenerator = PilotObject & {
 }
 export type Extractor = PilotObject & {
 	Configure: (self: Extractor, configuration: ExtractorConfiguration) -> (),
-	Loop: Event<"Loop", (deltaTime: number) -> ()>,
+	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	MaterialToExtract: string,
 	ClassName: "Extractor",
 }
@@ -1993,16 +1993,16 @@ export type Wood = PilotObject & {
 	ClassName: "Wood",
 }
 export type HyperspaceRadarConfiguration = {
-	[string]: any,
 	ViewCoordinates: Coordinates?,
+	[string]: any,
 }
 export type HeatPumpConfiguration = {
-	[string]: any,
 	TransferRate: number?,
+	[string]: any,
 }
 export type TriggerRelayConfiguration = {
-	[string]: any,
 	SwitchValue: boolean?,
+	[string]: any,
 }
 export type LightConfiguration = {
 	Shadows: boolean?,
@@ -2011,8 +2011,8 @@ export type LightConfiguration = {
 	Brightness: number?,
 }
 export type PortConfiguration = {
-	[string]: any,
 	PortID: number?,
+	[string]: any,
 }
 export type SolenoidConfiguration = {
 	[string]: any,
@@ -2020,8 +2020,8 @@ export type SolenoidConfiguration = {
 	Inverted: boolean?,
 }
 export type BallastTankConfiguration = {
-	[string]: any,
 	Buoyancy: number?,
+	[string]: any,
 }
 export type ValveConfiguration = {
 	[string]: any,
@@ -2034,10 +2034,10 @@ export type TemperatureGateConfiguration = {
 	Inverted: boolean?,
 }
 export type HandleConfiguration = {
-	Swing: HandleSwingMode?,
-	[string]: any,
-	TriggerMode: HandleTriggerMode?,
 	ToolName: string?,
+	Swing: HandleSwingMode?,
+	TriggerMode: HandleTriggerMode?,
+	[string]: any,
 }
 export type ExtractorConfiguration = {
 	MaterialToExtract: string?,
@@ -2045,12 +2045,12 @@ export type ExtractorConfiguration = {
 }
 export type MotorConfiguration = {
 	Ratio: number?,
-	[string]: any,
 	Power: number?,
+	[string]: any,
 }
 export type TriggerSwitchConfiguration = {
-	[string]: any,
 	SwitchValue: boolean?,
+	[string]: any,
 }
 export type DevTeleporterConfiguration = {
 	[string]: any,
@@ -2061,18 +2061,18 @@ export type PumpConfiguration = {
 	LiquidToPump: string?,
 }
 export type PolysiliconConfiguration = {
+	[string]: any,
 	PolysiliconMode: PolysiliconMode?,
 	Frequency: number?,
-	[string]: any,
 }
 export type ObjectDetectorConfiguration = {
 	TriggerAtDistance: Vector2?,
-	MaxDistance: number?,
 	[string]: any,
+	MaxDistance: number?,
 }
 export type DevSourceConfiguration = {
-	Resource: ResourceString?,
 	[string]: any,
+	Resource: ResourceString?,
 }
 export type DevSinkConfiguration = {
 	[string]: any,
@@ -2083,12 +2083,12 @@ export type CameraConfiguration = {
 	[string]: any,
 }
 export type BalloonConfiguration = {
-	[string]: any,
 	Buoyancy: number?,
+	[string]: any,
 }
 export type ThrusterConfiguration = {
-	Propulsion: number?,
 	[string]: any,
+	Propulsion: number?,
 }
 export type TransformerConfiguration = {
 	LoopTime: number?,
@@ -2108,8 +2108,8 @@ export type FaucetConfiguration = {
 	Filter: string?,
 }
 export type TransistorConfiguration = {
-	[string]: any,
 	Inverted: boolean?,
+	[string]: any,
 }
 export type CloningBayConfiguration = {
 	[string]: any,
@@ -2130,14 +2130,14 @@ export type ProstheticConfiguration = {
 	[string]: any,
 }
 export type HydroponicConfiguration = {
-	[string]: any,
 	Grow: string?,
+	[string]: any,
 }
 export type ServoConfiguration = {
 	ServoSpeed: number?,
-	[string]: any,
 	Responsiveness: number?,
 	Angle: number?,
+	[string]: any,
 	AngleStep: number?,
 }
 export type TurbofanConfiguration = {
@@ -2151,18 +2151,18 @@ export type VehicleSeatConfiguration = {
 	[string]: any,
 }
 export type ConveyorBeltConfiguration = {
-	[string]: any,
 	ConveyorBeltSpeed: number?,
+	[string]: any,
 }
 export type EnergyShieldConfiguration = {
 	ShieldRadius: number?,
 	ShieldStrength: number?,
-	RegenerationSpeed: number?,
 	[string]: any,
+	RegenerationSpeed: number?,
 }
 export type CouplerConfiguration = {
-	CouplerID: string?,
 	[string]: any,
+	CouplerID: string?,
 	AutoTrigger: boolean?,
 }
 export type InstrumentConfiguration = {
@@ -2197,16 +2197,16 @@ export type TankConfiguration = {
 	CanBeCraftedFrom: boolean?,
 }
 export type ConstructorConfiguration = {
-	RelativeToConstructor: boolean?,
 	ModelCode: string?,
-	Autolock: boolean?,
 	[string]: any,
+	Autolock: boolean?,
+	RelativeToConstructor: boolean?,
 }
 export type WinchConfiguration = {
 	DeltaLength: number?,
 	MinLength: number?,
-	[string]: any,
 	MaxLength: number?,
+	[string]: any,
 }
 export type TransporterConfiguration = {
 	TransporterID: string?,
@@ -2217,13 +2217,13 @@ export type GravityGeneratorConfiguration = {
 	[string]: any,
 }
 export type RelayConfiguration = {
-	LinkerID: number?,
-	Mode: RelayMode?,
 	[string]: any,
+	Mode: RelayMode?,
+	LinkerID: number?,
 }
 export type HologramConfiguration = {
-	[string]: any,
 	UserId: number?,
+	[string]: any,
 }
 export type SignConfiguration = {
 	TextFont: string?,
@@ -2233,34 +2233,34 @@ export type SignConfiguration = {
 }
 export type PistonConfiguration = {
 	Position1: number?,
-	Position2: number?,
-	Speed: number?,
 	[string]: any,
+	Speed: number?,
+	Position2: number?,
 }
 export type ReactorConfiguration = {
 	Alarm: boolean?,
-	[string]: any,
 	TriggerWhenEmpty: boolean?,
+	[string]: any,
 }
 export type ProximityButtonConfiguration = {
 	KeyboardKeyCode: string?,
 	GamepadKeyCode: string?,
 	HoldDuration: number?,
-	ObjectText: string?,
 	[string]: any,
+	ObjectText: string?,
 	RequiresLineOfSight: boolean?,
 	MaxActivationDistance: number?,
 }
 export type GyroConfiguration = {
+	[string]: any,
 	DisableWhenUnpowered: boolean?,
 	TriggerWhenSeeked: boolean?,
-	[string]: any,
-	MaxTorque: number?,
 	Seek: string?,
+	MaxTorque: number?,
 }
 export type AssemblerConfiguration = {
-	[string]: any,
 	Assemble: string?,
+	[string]: any,
 }
 export type RemoteControlConfiguration = {
 	RemoteControlRange: number?,
@@ -2268,32 +2268,32 @@ export type RemoteControlConfiguration = {
 	RemoteControlMode: RemoteControlMode?,
 }
 export type SteamEngineConfiguration = {
-	EngineSpeed: number?,
 	[string]: any,
+	EngineSpeed: number?,
 }
 export type StorageSensorConfiguration = {
-	QuantityRange: Range?,
 	[string]: any,
+	QuantityRange: Range?,
 }
 export type HeatValveConfiguration = {
 	[string]: any,
 	SwitchValue: boolean?,
 }
 export type EngineConfiguration = {
-	[string]: any,
 	EngineSpeed: number?,
+	[string]: any,
 }
 export type HatchConfiguration = {
-	[string]: any,
 	SwitchValue: boolean?,
+	[string]: any,
 }
 export type DispenserConfiguration = {
 	[string]: any,
 	Filter: string?,
 }
 export type TractorBeamConfiguration = {
-	[string]: any,
 	PowerPercent: number?,
+	[string]: any,
 }
 export type RouterConfiguration = {
 	RouterID: string?,
@@ -2313,26 +2313,26 @@ export type MicrocontrollerConfiguration = {
 	Code: string?,
 }
 export type ScreenConfiguration = {
-	[string]: any,
 	VideoID: number?,
+	[string]: any,
 }
 export type AnchorConfiguration = {
-	Anchored: boolean?,
 	[string]: any,
+	Anchored: boolean?,
 }
 export type SwitchConfiguration = {
-	SwitchValue: boolean?,
 	[string]: any,
+	SwitchValue: boolean?,
 }
 export type DevGravityGeneratorConfiguration = {
 	Enabled: boolean?,
 	Gravity: number?,
-	Radius: number?,
 	[string]: any,
+	Radius: number?,
 }
 export type BoomboxConfiguration = {
-	[string]: any,
 	Audio: number?,
+	[string]: any,
 }
 export type DelayWireConfiguration = {
 	[string]: any,
@@ -2340,21 +2340,21 @@ export type DelayWireConfiguration = {
 }
 export type DriveBoxConfiguration = {
 	Reversal: boolean?,
-	[string]: any,
 	Ratio: number?,
+	[string]: any,
 }
 export type BladeConfiguration = {
 	Shape: BladeShape?,
 	[string]: any,
 }
 export type BeaconConfiguration = {
-	ShowOnMap: boolean?,
 	[string]: any,
+	ShowOnMap: boolean?,
 	BeaconName: string?,
 }
 export type AntennaConfiguration = {
-	AntennaID: string?,
 	[string]: any,
+	AntennaID: string?,
 }
 export type TimeSensorConfiguration = {
 	[string]: any,
@@ -2362,9 +2362,9 @@ export type TimeSensorConfiguration = {
 }
 export type SpeakerConfiguration = {
 	Pitch: number?,
-	Volume: number?,
-	Audio: string?,
 	[string]: any,
+	Audio: string?,
+	Volume: number?,
 }
 export type RocketConfiguration = {
 	Propulsion: number?,
@@ -2372,12 +2372,12 @@ export type RocketConfiguration = {
 }
 export type ApparelConfiguration = {
 	Limb: PlayerLimb?,
-	Transparency: number?,
 	[string]: any,
+	Transparency: number?,
 }
 export type MiningLaserConfiguration = {
-	MaterialToExtract: string?,
 	[string]: any,
+	MaterialToExtract: string?,
 }
 export type SorterConfiguration = {
 	Rate: number?,
@@ -2388,12 +2388,12 @@ export type SorterConfiguration = {
 export type RailConfiguration = {
 	Position1: number?,
 	Position2: number?,
-	TweenTime: number?,
 	[string]: any,
+	TweenTime: number?,
 }
 export type ScannerConfiguration = {
-	[string]: any,
 	Range: number?,
+	[string]: any,
 }
 export type LaserConfiguration = {
 	DamageOnlyPlayers: boolean?,
