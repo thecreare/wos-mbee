@@ -202,4 +202,35 @@ PatchOver(CONFIG_DATA,
 			},
 """)
 
+## Fix Solenoid missing Resource config & having wrong Range config
+PatchOver(CONFIG_DATA,
+"""
+			{
+				["Name"] = "Range",
+				["Type"] = "NumberRange",
+				["Description"] = "The resource range the state will be active for.",
+				["Default"] = {
+					0,
+					"inf",
+				},
+			},
+			{
+				["Name"] = "Resource",
+				["Type"] = "string",
+				["Description"] = "The kind of resource to check for.",
+				["Default"] = "Power",
+			},
+""",
+"""
+			{
+				["Name"] = "PowerRange",
+				["Type"] = "NumberRange",
+				["Description"] = "The power range the state will be active for.",
+				["Default"] = {
+					0,
+					"inf",
+				},
+			},
+""")
+
 WritebackFiles()

@@ -1514,7 +1514,23 @@ return {
 				["Type"] = "boolean",
 				["Description"] = "Whether or not the state will be inverted.",
 				["Default"] = false,
+			},--[[PB]]
+			{
+				["Name"] = "Range",
+				["Type"] = "NumberRange",
+				["Description"] = "The resource range the state will be active for.",
+				["Default"] = {
+					0,
+					"inf",
+				},
 			},
+			{
+				["Name"] = "Resource",
+				["Type"] = "string",
+				["Description"] = "The kind of resource to check for.",
+				["Default"] = "Power",
+			},
+--[[PE]]--[[RM;
 			{
 				["Name"] = "PowerRange",
 				["Type"] = "NumberRange",
@@ -1524,7 +1540,7 @@ return {
 					"inf",
 				},
 			},
-		},
+;RM]]		},
 		["ObjectDetector"] = {
 			{
 				["Type"] = "number",

@@ -1065,6 +1065,9 @@ local function CreateConfigElementsForInstance(
 
 			return config_data.Options[(tonumber(default_value) or 0)+1]
 		end
+		if config_type == "NumberRange" then
+			return `{default_value[1]}:{default_value[2]}`
+		end
 		return default_value
 	end
 
