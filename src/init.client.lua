@@ -1716,7 +1716,7 @@ end)
 local function Adjust(Object)
 	if Object:IsA("BasePart") then AddConfigItem(Object) end
 	if peek(PluginSettings.VisualizeSpecial) and SpecialParts[Object.Name] then SpecialParts[Object.Name](Object) end
-	if Object:FindFirstChild("ColorCopy") then
+	if Object:FindFirstChild("ColorCopy") or Object:HasTag("ColorTexture") then
 		ApplyColorCopy(Object)
 		table.insert(TemporaryConnections, Object:GetPropertyChangedSignal("Color"):Connect(function()
 			ApplyColorCopy(Object)
