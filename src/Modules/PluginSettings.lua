@@ -10,6 +10,7 @@ type SparseSetting = {
     Type: string,
     Default: any,
     Options: {string}?,
+    Visible: boolean?,
 }
 
 export type Setting = {
@@ -19,6 +20,7 @@ export type Setting = {
     Type: string,
     Default: any,
     Options: {string}?,
+    Visible: boolean,
     Index: number,
 }
 
@@ -149,6 +151,7 @@ local SettingInfo: {SparseSetting} = {
         Categories = {"advanced"},
         Type = "boolean",
         Default = false,
+        Visible = false,
     },
     {
         Key = "OpenMicrocontrollerScripts",
@@ -177,6 +180,7 @@ local SettingsInfoHash: {[string]: Setting} = {}
 for i, sparse_setting in SettingInfo do
     local setting = sparse_setting :: Setting
     setting.Index = i
+    setting.Visible = if sparse_setting.Visible ~= nil then sparse_setting.Visible else true
     SettingsInfoHash[setting.Key] = setting
 end
 

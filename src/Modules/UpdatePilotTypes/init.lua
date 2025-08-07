@@ -79,8 +79,7 @@ local function VersionFromIsoDate(date: string)
     return DateTime.fromIsoDate(date).UnixTimestamp
 end
 
---- Updates types, performing web requests
---- Yields
+--- DISABLED for tos reasons, doesn't make web requests anymore and only uses the builtin typechecking file
 local UpdatePilotTypes: () -> string = Mutex.new():Wrap(function(): string
     local STORED_VERSION = VersionFromIsoDate(DEFAULT_PILOT_LUA_VERSION.Value)
     local output_script = SCRIPT_PARENT:FindFirstChild(SCRIPT_NAME)
@@ -101,7 +100,11 @@ local UpdatePilotTypes: () -> string = Mutex.new():Wrap(function(): string
     end
     assert(output_script)
 
-    if not PluginSettings.Get("AutomaticPilotTypeUpdates") then
+
+    -- Querying the typechecking file from github breaks TOS so it has unfortunately been disabled
+    -- This statement will now cause the plugin to always return the typechecking module thats bundled with the plugin itself
+    -- if not PluginSettings.Get("AutomaticPilotTypeUpdates") then
+    if true then
         return GetHeaderFromFile(output_script)
     end
 

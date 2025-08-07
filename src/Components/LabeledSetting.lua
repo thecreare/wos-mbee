@@ -22,13 +22,16 @@ local function Divider(
             AutomaticSize: UsedAs<Enum.AutomaticSize>?,
         }?,
     }
-): Fusion.Child
+): Fusion.Child?
+    local setting = PluginSettings.Info[props.Setting]
+    local value = PluginSettings.Values[props.Setting]
+    if setting.Visible == false then
+        return
+    end
     local scope = scope:innerScope({
         CheckBox = require(script.Parent.Checkbox),
         TextBox = require(script.Parent.TextBox),
     })
-    local setting = PluginSettings.Info[props.Setting]
-    local value = PluginSettings.Values[props.Setting]
     if setting.Type == "boolean" then
         return scope:CheckBox {
             Label = setting.Name,
