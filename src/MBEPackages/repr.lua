@@ -4,7 +4,7 @@
 -- https://devforum.roblox.com/t/repr-function-for-printing-tables/276575
 --[[
  
-local repr = require(3148021300)
+local repr = require(...)
 
 local myTable = {
 	hello = "world",
