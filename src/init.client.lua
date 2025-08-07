@@ -1718,6 +1718,11 @@ function RefreshSelection()
 
 	table.clear(ConfigValues)
 
+	-- Do not do update stuff if plugin not open
+	if not (ConfigWidget.Enabled or PrimaryWidget.Enabled) then
+		return
+	end
+
 	local SelectedParts = WosSelection()
 
 	CheckTableMalleability(SelectedParts)
