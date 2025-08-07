@@ -233,4 +233,29 @@ PatchOver(CONFIG_DATA,
 			},
 """)
 
+## Fix Solenoid missing Resource config & having wrong Range config
+PatchOver(CONFIG_DATA,
+"""
+			{
+				["Name"] = "Anchored",
+				["Type"] = "boolean",
+				["Description"] = "Determines whether the anchor is active or not.",
+				["Default"] = false,
+			},
+            {
+				["Name"] = "AnchorOnWarp",
+				["Type"] = "boolean",
+				["Description"] = "Determines whether the anchor will automatically activate after warp. Helps prevent runaway ships.",
+				["Default"] = true,
+			},
+""",
+"""
+			{
+				["Name"] = "Anchored",
+				["Type"] = "boolean",
+				["Description"] = "Determines whether the anchor is active or not.",
+				["Default"] = false,
+			},
+""")
+
 WritebackFiles()

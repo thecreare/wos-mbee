@@ -1206,14 +1206,27 @@ return {
 				["Name"] = "Speed",
 			},
 		},
-		["Anchor"] = {
+		["Anchor"] = {--[[PB]]
 			{
 				["Name"] = "Anchored",
 				["Type"] = "boolean",
 				["Description"] = "Determines whether the anchor is active or not.",
 				["Default"] = false,
 			},
-		},
+            {
+				["Name"] = "AnchorOnWarp",
+				["Type"] = "boolean",
+				["Description"] = "Determines whether the anchor will automatically activate after warp. Helps prevent runaway ships.",
+				["Default"] = true,
+			},
+--[[PE]]--[[RM;
+			{
+				["Name"] = "Anchored",
+				["Type"] = "boolean",
+				["Description"] = "Determines whether the anchor is active or not.",
+				["Default"] = false,
+			},
+;RM]]		},
 		["Sorter"] = {
 			{
 				["Type"] = "string",
