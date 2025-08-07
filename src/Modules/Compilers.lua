@@ -25,6 +25,10 @@ function CompilersModule.GetComponents(self: CompilersModule): {Configuration}
     return self._SelectedCompiler.Components
 end
 
+function CompilersModule.GetShapes(self: CompilersModule): {BasePart}
+    return self._SelectedCompiler.Shapes
+end
+
 function CompilersModule.GetPartMetadata(self: CompilersModule)
     return self._SelectedCompiler.PartMetadata
 end
@@ -38,7 +42,8 @@ function CompilersModule.GetAllMalleability(self: CompilersModule)
 end
 
 type CompilerModuleScript = ModuleScript & {
-    Components: Instance,
+    Components: Folder,
+    Shapes: Folder,
     PartMetadata: ModuleScript & {
         Malleability: ModuleScript,
         ConfigData: ModuleScript
@@ -53,6 +58,7 @@ function CompilersModule.new(compilers_path: Folder)
         Compilers[i] = c
     
         c.Components = comp.Components:GetChildren()
+        c.Shapes = comp.Shapes:GetChildren()
         c.PartMetadata = (require)(comp.PartMetadata)
         c.Malleability = (require)(comp.PartMetadata.Malleability)
         c.ConfigData = (require)(comp.PartMetadata.ConfigData)

@@ -15,7 +15,7 @@ local function AddCustomMaterialToAllPartsData(name, data)
         part[property] = value
     end
     part.Parent = script.Parent.Parent.Parts
-    AllParts:AddPart(part, true)
+    AllParts:AddPart(part)
     table.insert(Settings.SearchCategories.resources, name:lower())
     table.insert(Settings.SearchCategories.templateables, name:lower())
     return part

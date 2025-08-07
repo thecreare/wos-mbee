@@ -21,8 +21,13 @@ function module.IsValid(self, part_name: string)
     return full_part_hash[part_name] ~= nil
 end
 
-function module.AddPart(self, instance: BasePart, is_template: boolean)
-    full_part_hash[instance.Name] = {
+function module.AddPart(self, instance: BasePart)
+    local part_name = instance.Name
+    if full_part_hash[part_name] then
+        Logger.warn(`"{part_name}" Already in part list`)
+        return
+    end
+    full_part_hash[part_name] = {
         Instance = instance,
         IsTemplate = false
     }
@@ -36,7 +41,12 @@ end
 
 -- Add parts from the parts folder
 for _, part in PartsFolder:GetChildren() :: {Instance} do
-    module:AddPart(part :: BasePart, false)
+    module:AddPart(part :: BasePart)
+end
+
+-- Add parts from the latest compiler's template shapes
+for _, part in Compilers:GetShapes() do
+    module:AddPart(part)
 end
 
 -- Add parts that only exist as data
@@ -56,7 +66,7 @@ if Constants.IS_LOCAL then
         Part.Anchored = true
         Part:AddTag("Placeholder")
         Part.Parent = PartsFolder
-        module:AddPart(Part, false)
+        module:AddPart(Part)
     end
 end
 
