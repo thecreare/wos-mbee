@@ -14,6 +14,7 @@ local EXCLUDE = {
 	"GravityGenerator", -- Gravity [1 > 0.15]
 	"Sign", -- TextColor property "ffffff" -> "1,1,1"
 	"Light", -- Added `PointLight` instance to light & made neon
+	"EnergyShield", -- Fixed top decal missing "ColorTexture" tag
 
 	-- Changed size from 6x1x1 to 8x1x1 to match other logistic cable types.
 	"Pipe",
