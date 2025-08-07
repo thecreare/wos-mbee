@@ -41,7 +41,7 @@ end
 function Table.Lock(Tab, __call)
 	-- Returns interface proxy which can read from table Tab but cannot modify it
 
-	local ModuleName = getfenv(2).script.Name
+	local ModuleName = "RemovedForRobloxReasons"
 
 	local Userdata = newproxy(true)
 	local Metatable = getmetatable(Userdata)
