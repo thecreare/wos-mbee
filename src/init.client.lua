@@ -96,20 +96,23 @@ local TemporaryConnections = {} :: {any}
 
 --[[ Make sure `Camera` always points to the newest camera ]]--
 --- Returns current camera, will yield until it exists
-local function GetCamera()
-	local Camera
-	while not Camera do
-		Camera = workspace.CurrentCamera
-		task.wait()
+local Camera
+do
+	local function GetCamera()
+		local Camera
+		while not Camera do
+			Camera = workspace.CurrentCamera
+			task.wait()
+		end
+		return Camera
 	end
-	return Camera
-end
-local Camera = GetCamera()
-local function OnCameraDestroy()
 	Camera = GetCamera()
+	local function OnCameraDestroy()
+		Camera = GetCamera()
+		Camera.Destroying:Once(OnCameraDestroy)
+	end
 	Camera.Destroying:Once(OnCameraDestroy)
 end
-Camera.Destroying:Once(OnCameraDestroy)
 
 local function CheckCompat(name: string): string?
 	for i, v in CompatibilityReplacements.COMPAT_NAME_REPLACEMENTS do
