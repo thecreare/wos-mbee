@@ -1703,13 +1703,16 @@ end
 
 function RefreshSelection()
 
-	for i,v in pairs(TemporaryConnections) do
-		if typeof(v) == "Instance" then v:Destroy() continue end
+	for i, v in pairs(TemporaryConnections) do
+		if typeof(v) == "Instance" then
+			v:Destroy()
+			continue
+		end
 		v:Disconnect()
 	end
 	TemporaryConnections = {}
 
-	for i,v in Configs do
+	for i, v in Configs do
 		v:Destroy()
 	end
 
