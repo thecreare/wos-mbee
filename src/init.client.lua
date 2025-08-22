@@ -114,8 +114,8 @@ end
 
 local function CheckCompat(name: string): string?
 	for i, v in CompatibilityReplacements.COMPAT_NAME_REPLACEMENTS do
-		if v:lower() == name:lower() then
-			return i
+		if i:lower() == name:lower() then
+			return v
 		end
 	end
 	return nil
@@ -644,24 +644,21 @@ end
 local function MigrateSelectionButton()
 	local Compiler = CompilersModule:GetSelectedCompiler()
 
+	-- Try to migrate templates for the instance
 	PerformGenericMigration("MigrateTemplates", function(part: BasePart)
-		-- Try to migrate templates for the instance
 		Compiler:TryMigrateTemplates(part)
 	end)
 
+	-- Try to migrate configurables for the instance
+	PerformGenericMigration("MigrateConfigurables", function(part: BasePart)
+		Compiler:MigrateConfigurables(part)
+	end)
+
 	PerformGenericMigration("CompatibilityMigration", function(part: BasePart)
-		local replacement = CompatibilityReplacements.COMPAT_NAME_REPLACEMENTS[part.Name]
+		local replacement = CheckCompat(part.Name)
 		if replacement then
 			part.Name = replacement
 		end
-	end)
-end
-
-local function MigrateConfigurablesButton()
-	local Compiler = CompilersModule:GetSelectedCompiler()
-	PerformGenericMigration("MigrateConfigurables", function(part: BasePart)
-		-- Try to migrate templates for the instance
-		Compiler:MigrateConfigurables(part)
 	end)
 end
 
@@ -788,11 +785,6 @@ scope:Container {
 							Label = "Migrate Selection",
 							Style = "Outlined",
 							OnPressed = MigrateSelectionButton,
-						},
-						scope:RippleButton {
-							Label = "Migrate Configurables",
-							Style = "Outlined",
-							OnPressed = MigrateConfigurablesButton,
 						},
 					}
 				}),
@@ -1061,7 +1053,7 @@ local function CreateConfigElementsForInstance(
 	instance_to_configure: BasePart|Configuration,
 	config_location: "Components"|"Parts"
 )
-	local instance_key = CompatibilityReplacements.COMPAT_NAME_REPLACEMENTS[instance_to_configure.Name] or instance_to_configure.Name
+	local instance_key = CheckCompat(instance_to_configure.Name) or instance_to_configure.Name
 
 	local function GetDefaultConfigValue(config_data)
 		local default_value = config_data.Default :: any
