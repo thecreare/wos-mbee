@@ -84,7 +84,11 @@ table.insert(UIElements.Buttons, AddMaterialButton)
 -- MARK: Logic
 -- Create object buttons for each part
 for _, part in AllParts:GetPartsHash() do
-	UITemplates.CreateObjectButton({Part = part.Instance, Deletable = part.IsCustom, Parent = ResultsFrame})
+	UITemplates.CreateObjectButton({
+		Part = part.Instance,
+		Deletable = part.IsCustom,
+		Parent = ResultsFrame
+	})
 end
 
 do
@@ -220,7 +224,11 @@ AddMaterialButton.OnPressed:Connect(function()
 
 	local part = CustomMaterialsModule.Add(selected_part.Name, properties)
 
-	UITemplates.CreateObjectButton({Part = part, Deletable = true, Parent = ResultsFrame})
+	UITemplates.CreateObjectButton({
+		Part = part,
+		Deletable = true,
+		Parent = ResultsFrame
+	})
 	Logger.print('[MB:E:E] ' .. selected_part.Name:upper() .. ' WAS SUCCESSFULLY TURNED INTO A MATERIAL')
 end)
 

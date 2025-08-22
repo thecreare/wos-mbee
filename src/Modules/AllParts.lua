@@ -23,6 +23,10 @@ function module.IsCustom(self, part_name: string)
     return full_part_hash[part_name].IsCustom
 end
 
+function module.GetData(self, part_name: string)
+    return PartData.Parts[part_name]
+end
+
 function module.IsValid(self, part_name: string)
     return full_part_hash[part_name] ~= nil
 end

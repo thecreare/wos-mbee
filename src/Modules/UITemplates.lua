@@ -1,12 +1,14 @@
 local plugin = _G.plugin
 local TweenService = game:GetService("TweenService")
 
+local AllParts = require(script.Parent.AllParts)
 local PseudoInstance = require(script.Parent.Parent.MBEPackages.PseudoInstance)
 local InfoConstants = require(script.Parent.Settings)
 local ExtractedUtil = require(script.Parent.ExtractedUtil)
 local CustomMaterials = require(script.Parent.CustomMaterials)
 local Logger = require(script.Parent.Logger)
 local Fusion = require(script.Parent.Parent.Packages.fusion)
+local Settings = require(script.Parent.Settings)
 local THEME = require(script.Parent.Parent.Theme)
 
 local UITemplates = {}
@@ -312,9 +314,14 @@ function UITemplates.CreateCheckBox(Settings: {[string]: any})
 	return {Holder = Holder, Label = Label, Toggle = Toggle}
 end
 
-function UITemplates.CreateObjectButton(Settings: {[string]: any})
-	if not Settings then Logger.error(`OBJECTBUTTON SETTINGS MISSING`) end
-	if not Settings.Part then Logger.error(`OBJECTBUTTON PART MISSING`) end
+type ObjectButtonSettings = {
+	Part: BasePart,
+	Deletable: boolean,
+	Parent: Instance,
+}
+function UITemplates.CreateObjectButton(button_settings: ObjectButtonSettings)
+	if not button_settings then Logger.error(`OBJECTBUTTON SETTINGS MISSING`) end
+	if not button_settings.Part then Logger.error(`OBJECTBUTTON PART MISSING`) end
 
 	local ResultHolder = Instance.new("TextButton")
 	ResultHolder.BorderSizePixel = 0
@@ -323,20 +330,20 @@ function UITemplates.CreateObjectButton(Settings: {[string]: any})
 	ResultHolder.Position = UDim2.new(0, 0, 0.5, 0)
 	ResultHolder.Text = ""
 	ResultHolder.AutoButtonColor = false
-	ResultHolder.Name = Settings.Part.Name
-	ResultHolder.Parent = Settings.Parent
+	ResultHolder.Name = button_settings.Part.Name
+	ResultHolder.Parent = button_settings.Parent
 	table.insert(UIElements.TextButtons, ResultHolder)
 
-	local Image = Settings.Part:FindFirstChildWhichIsA("Texture") or Settings.Part:FindFirstChildWhichIsA("Decal")
+	local Image = button_settings.Part:FindFirstChildWhichIsA("Texture") or button_settings.Part:FindFirstChildWhichIsA("Decal")
 	local Icon = Instance.new("ImageLabel")
 	Icon.BorderSizePixel = 0
 	Icon.Size = UDim2.new(0, 15, 0, 15)
 	Icon.AnchorPoint = Vector2.new(0, 0.5)
 	Icon.Position = UDim2.new(0, 5, 0.5, 0)
-	Icon.BackgroundColor3 = Settings.Part.Color
-	Icon.Image = Image and Image.Texture or InfoConstants.MaterialDecals[tostring(Settings.Part.Material.Name)] or ''
+	Icon.BackgroundColor3 = button_settings.Part.Color
+	Icon.Image = Image and Image.Texture or InfoConstants.MaterialDecals[tostring(button_settings.Part.Material.Name)] or ''
 	Icon.ImageColor3 = Image and Image.Color3 or Color3.new(1, 1, 1)
-	Icon.ImageTransparency = Image and Image.Transparency or InfoConstants.MaterialDecals[tostring(Settings.Part.Material.Name)] and 0.25 or 1
+	Icon.ImageTransparency = Image and Image.Transparency or InfoConstants.MaterialDecals[tostring(button_settings.Part.Material.Name)] and 0.25 or 1
 	Icon.Parent = ResultHolder
 
 	local ResultLabel = Instance.new("TextLabel")
@@ -344,7 +351,7 @@ function UITemplates.CreateObjectButton(Settings: {[string]: any})
 	ResultLabel.BorderSizePixel = 0
 	ResultLabel.Size = UDim2.new(1, 0, 1, 0)
 	ResultLabel.Position = UDim2.new(0, 25, 0, 0)
-	ResultLabel.Text = Settings.Part.Name
+	ResultLabel.Text = button_settings.Part.Name
 	ResultLabel.Font = Enum.Font.SourceSans
 	ResultLabel.TextXAlignment = Enum.TextXAlignment.Left
 	ResultLabel.TextSize = 16
@@ -352,12 +359,12 @@ function UITemplates.CreateObjectButton(Settings: {[string]: any})
 	table.insert(UIElements.Labels, ResultLabel)
 
 	ResultHolder.Activated:Connect(function()
-		ExtractedUtil.SpawnPart(Settings.Part)
+		ExtractedUtil.SpawnPart(button_settings.Part)
 	end)
 
 	UITemplates.SyncColors({TextButtons = {ResultHolder}, Labels = {ResultLabel}})
 
-	if Settings.Deletable then
+	if button_settings.Deletable then
 		local DeleteButton = PseudoInstance.new("RippleButton")
 		DeleteButton.PrimaryColor3 = Colors.MainContrast
 		DeleteButton.AnchorPoint = Vector2.new(1, 0.5)
@@ -373,11 +380,46 @@ function UITemplates.CreateObjectButton(Settings: {[string]: any})
 		UITemplates.SyncColors({Buttons = {DeleteButton}})
 
 		DeleteButton.OnPressed:Connect(function()
-            CustomMaterials.Remove(Settings.Part.Name)
-			Settings.Part:Destroy()
+            CustomMaterials.Remove(button_settings.Part.Name)
+			button_settings.Part:Destroy()
 			DeleteButton:Destroy()
 			ResultHolder:Destroy()
 		end)
+	end
+
+	local part_data = AllParts:GetData(button_settings.Part.Name)
+	local craftable = part_data
+		and part_data.ClassType ~= "Unused"
+		and (
+			part_data.Craftable
+			or table.find(Settings.SearchCategories.resources, part_data.ClassName) ~= nil
+		)
+	if part_data and not (craftable and part_data.Spawnable) then
+		
+		local function GetWarning()
+			-- Craftable and not spawnable
+			if craftable then
+				return Color3.new(0, 0, 1), "This part can't be spawned in testing zone"
+
+			-- Spawnable and not craftable
+			elseif part_data.Spawnable then
+				return Color3.new(1, 0.5, 0), "This part can only be spawned in the testing zone"
+
+			-- Not craftable or spawnable
+			else
+				return Color3.new(1, 0, 0), "This part can't exist ingame"
+			end
+		end
+		local warning_color, warning_message = GetWarning()
+		
+		local warning_image = Instance.new("ImageLabel")
+		warning_image.Image = "rbxassetid://18576886056"
+		warning_image.ImageColor3 = warning_color
+		warning_image.AnchorPoint = Vector2.new(1, 0.5)
+		warning_image.Position = UDim2.new(1, -12, 0.5, 0)
+		warning_image.Size = UDim2.fromOffset(16, 16)
+		warning_image.BackgroundTransparency = 1
+		warning_image.Parent = ResultHolder
 	end
 end
 
