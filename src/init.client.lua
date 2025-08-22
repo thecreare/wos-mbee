@@ -663,72 +663,59 @@ local function MigrateSelectionButton()
 end
 
 local function GetRequiredMaterialsButton()
-	local Required = {
-		['Raw Materials'] = {},
-		['All Parts'] = {}
-	}
-	local PartAmount = 0
+	local raw_materials = {}
+	local all_parts = {}
+	local total_part_count = 0
 
-	local function AddAmount(Part: string|BasePart, Amount, Category)
-		if not Part then return end
-		if not(typeof(Part) == 'string' or Part:IsA("BasePart")) then return end
-		if not Required[Category] then return end
-		local PartIdentifier = if typeof(Part) == 'string' then Part else Part.Name
-		if not Required[Category][PartIdentifier] then Required[Category][PartIdentifier] = 0 end
-		Required[Category][PartIdentifier] += Amount
+	-- Increment the value of a key, defaults to 0 if the key doesn't exist
+	local function Increment(t: {[string]: number}, name: string, amount: number)
+		t[name] = (t[name] or 0) + amount
 	end
 
-	local function Loop(Table, Offset: string, Multiplier: number)
-		if not Table or not Table.Recipe then return end
-		for Ingredient, Amount in Table.Recipe do
-			if PartData[Ingredient] and PartData[Ingredient].Recipe then
-				Loop(PartData[Ingredient], Offset .. ' ', Amount * Multiplier)
+	-- Gets part data from a part name
+	local function GetData(part_name: string)
+		return PartData["Parts"][part_name]
+	end
+
+	-- Gets the recipe for a part, returning nil if the part isn't craftable ingame
+	local function GetRecipe(part_name: string): {[string]: number}?
+		local part_data = GetData(part_name)
+		if part_data.Craftable == false then
+			return nil
+		end
+		return part_data.Recipe
+	end
+
+	local ingredient_stack = {}
+
+	-- Count every selected part, inserting ones with recipes into `ingredient_stack`
+	for _, part in WosSelection() do
+		local name = part.Name
+		Increment(all_parts, name, 1)
+		total_part_count += 1
+		if GetRecipe(name) then
+			table.insert(ingredient_stack, name)	
+		end
+	end
+
+	-- Perform a breadth first search to recursively find and count every raw ingredient
+	while true do
+		local pop = table.remove(ingredient_stack)
+		if not pop then break end
+		local part_data = PartData["Parts"][pop]
+			
+		for ingredient: string, amount: number in part_data.Recipe do
+			if GetRecipe(ingredient) then
+				table.insert(ingredient_stack, ingredient)
 			else
-				AddAmount(Ingredient, Amount * Multiplier, 'Raw Materials')
+				Increment(raw_materials, ingredient, amount)
 			end
 		end
 	end
 
-	for _, v in pairs(Selection:Get()) do
-		if v:IsA('BasePart') and Parts:FindFirstChild(v.Name) then
-			if v:FindFirstChild("TempType") then
-				AddAmount(v.TempType.Value, 1, 'All Parts')
-				AddAmount(v.TempType.Value, 1, 'Raw Materials')
-			elseif PartData[v.Name] and PartData[v.Name].Recipe then
-				AddAmount(v.Name, 1, 'All Parts')
-				Loop(PartData[v.Name], ' ', 1)
-			elseif not PartData[v.Name] or PartData[v.Name] and not PartData[v.Name].Recipe then
-				AddAmount(v, 1, 'All Parts')
-				AddAmount(v, 1, 'Raw Materials')
-			else
-				AddAmount(v, 1, 'All Parts')
-			end
-			PartAmount += 1
-		end
-
-		if typeof(v) ~= 'Instance' then continue end
-
-		for _, v in v:GetDescendants() do
-			if v:IsA('BasePart') and Parts:FindFirstChild(v.Name) then
-				local Compat = CheckCompat(v.Name)
-				local temp_type_instance = v:FindFirstChild("TempType") :: StringValue?
-				if not temp_type_instance and PartData[v.Name] and PartData[v.Name].Recipe or Compat then
-					AddAmount(v, 1, 'All Parts')
-					Loop(Compat and PartData[Compat] or PartData[v.Name], ' ', 1)
-				elseif temp_type_instance then
-					AddAmount(temp_type_instance.Value, 1, 'All Parts')
-					AddAmount(temp_type_instance.Value, 1, 'Raw Materials')
-				elseif not PartData[v.Name] or PartData[v.Name] and not PartData[v.Name].Recipe then
-					AddAmount(v, 1, 'All Parts')
-					AddAmount(v, 1, 'Raw Materials')
-				end
-				PartAmount += 1
-			end
-		end
-	end
-
-	Logger.print("Part Amount:", PartAmount)
-	Logger.print("Calculated Creation Requirements:\n", repr(Required :: any, {pretty=true} :: any))
+	Logger.print(`Calculated ingredients for {total_part_count} parts`)
+	Logger.print("Raw Materials:\n", repr(raw_materials :: any, {pretty=true} :: any))
+	Logger.print("All Parts:\n", repr(all_parts :: any, {pretty=true} :: any))
 end
 
 -- Eventually this will be removed when fusion is more pervasive
