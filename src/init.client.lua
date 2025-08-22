@@ -694,7 +694,7 @@ local function GetRequiredMaterialsButton()
 		Increment(all_parts, name, 1)
 		total_part_count += 1
 		if GetRecipe(name) then
-			table.insert(ingredient_stack, name)	
+			table.insert(ingredient_stack, name)
 		end
 	end
 
@@ -702,7 +702,7 @@ local function GetRequiredMaterialsButton()
 	while true do
 		local pop = table.remove(ingredient_stack)
 		if not pop then break end
-		local part_data = PartData["Parts"][pop]
+		local part_data = GetData(pop)
 			
 		for ingredient: string, amount: number in part_data.Recipe do
 			if GetRecipe(ingredient) then
