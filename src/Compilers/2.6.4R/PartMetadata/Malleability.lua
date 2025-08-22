@@ -34,7 +34,7 @@ return {
 	MustardGas = Vector3.new(3, 3, 3),
 	TimeSensor = 64,
 	ElectricFence = 3000,
-	EnergyBomb = Vector3.new(3, 6, 3),
+	--[[PB]]EnergyBomb = Vector3.new(2, 4, 2),--[[PE]]--[[RM;EnergyBomb = Vector3.new(3, 6, 3),;RM]]
 	Pump = Vector3.new(6, 15, 6),
 	Assembler = Vector3.new(8, 8, 8),
 	Diode = Vector3.new(1, 1, 2),
@@ -194,7 +194,7 @@ return {
 	Flint = Vector3.new(4, 1, 2),
 	Relay = Vector3.new(3, 6, 3),
 	Jade = 121,
-	Transporter = Vector3.new(3, 5, 3),
+	--[[PB]]Transporter = Vector3.new(3, 4, 3),--[[PE]]--[[RM;Transporter = Vector3.new(3, 5, 3),;RM]]
 	Tire = 200,
 	AdminTool = Vector3.new(1, 1, 1),
 	StudAligner = Vector3.new(2, 2, 2),

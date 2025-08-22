@@ -79,6 +79,7 @@ def PatchOver(path, patch, find):
 ### Request: https://discord.com/channels/616089055532417036/1047587493693886547/1324649555526025278
 PART_METADATA = "PartMetadata/init.lua"
 CONFIG_DATA = "PartMetadata/ConfigData.lua"
+MALLEABILITY_DATA = "PartMetadata/Malleability.lua"
 GET_SHAPE_ROOT = 'elseif part:IsA("Part") then'
 # Things that use MeshType
 # for mesh, return_value in {"Brick": "nil", "Wedge": "Wedge", "Cylinder": "Cylinder"}.items():
@@ -257,5 +258,9 @@ PatchOver(CONFIG_DATA,
 				["Default"] = false,
 			},
 """)
+
+## Hack in new malleability data because MB still hasn't updated
+PatchOver(MALLEABILITY_DATA, "EnergyBomb = Vector3.new(2, 4, 2),", "EnergyBomb = Vector3.new(3, 6, 3),")
+PatchOver(MALLEABILITY_DATA, "Transporter = Vector3.new(3, 4, 3),", "Transporter = Vector3.new(3, 5, 3),")
 
 WritebackFiles()
