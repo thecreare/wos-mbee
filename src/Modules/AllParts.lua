@@ -17,11 +17,16 @@ function module.GetBasePartList(self)
     return list_of_base_parts
 end
 
+--- Returns true if `part_name` is a user-created custom part
+function module.IsCustom(self, part_name: string)
+    return full_part_hash[part_name].IsCustom
+end
+
 function module.IsValid(self, part_name: string)
     return full_part_hash[part_name] ~= nil
 end
 
-function module.AddPart(self, instance: BasePart)
+function module.AddPart(self, instance: BasePart, is_custom: boolean?)
     local part_name = instance.Name
     if full_part_hash[part_name] then
         Logger.warn(`"{part_name}" Already in part list`)
@@ -29,7 +34,7 @@ function module.AddPart(self, instance: BasePart)
     end
     full_part_hash[part_name] = {
         Instance = instance,
-        IsTemplate = false
+        IsCustom = if is_custom == nil then false else is_custom,
     }
     table.insert(list_of_base_parts, instance)
 end

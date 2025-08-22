@@ -1,8 +1,5 @@
 local Selection = game:GetService("Selection")
-local UserInputService = game:GetService("UserInputService")
 local ScriptEditorService = game:GetService("ScriptEditorService")
-
-local Parts = script:WaitForChild("Parts")
 
 local MalleabilityConnections = {}
 local Adornees = {}
@@ -14,6 +11,7 @@ _G.plugin = plugin
 -- Load the MBReflect plugin that is now bundled with MBEE
 require(script.MBReflect)
 
+local AllParts = require(script.Modules.AllParts)
 local ConfigValues = require(script.ConfigValues_G)
 local createSharedToolbar = require(script.createSharedToolbar)
 local PartData = require(script.PartData)
@@ -77,7 +75,7 @@ local PluginSettings = PluginSettingsModule.Values
 -- Fix constants having wrong case
 do
 	local LOWER_TO_CORRECT = {}
-	for _, v in Parts:GetChildren() do
+	for _, v in AllParts:GetBasePartList() do
 		LOWER_TO_CORRECT[v.Name:lower()] = v.Name
 	end
 	for _, cat_parts in InfoConstants.SearchCategories do
@@ -921,7 +919,7 @@ createSharedToolbar(plugin, ConfigureSettings)
 local function ConvertTextBoxInputToResource(TextBox, ConfigValue)
 	TextBox.Box.Text = ConfigValue.Value
 	TextBox.Box.PlaceholderText = "Resource/Part"
-	UITemplates.ConnectBoxToAutocomplete(TextBox.Box, script.Parts:GetChildren())
+	UITemplates.ConnectBoxToAutocomplete(TextBox.Box, AllParts:GetBasePartList())
 end
 
 local MICROCONTROLLER_SCRIPT_NAME = "MicrocontrollerCode"
@@ -1257,7 +1255,7 @@ local function CreateResourceConfigElement(
 		BoxText = instance_key,
 	})
 
-	UITemplates.ConnectBoxToAutocomplete(TextBox.Box, script.Parts:GetChildren())
+	UITemplates.ConnectBoxToAutocomplete(TextBox.Box, AllParts:GetBasePartList())
 
 	-- On Resource config changed
 	ExtractedUtil.BindToEventWithUndo(TextBox.Box:GetPropertyChangedSignal("Text"), "Configure", nil, function()

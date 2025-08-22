@@ -1,6 +1,7 @@
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 local Selection = game:GetService("Selection")
 
+local AllParts = require(script.Parent.AllParts)
 local Branding = require(script.Parent.Branding)
 local Logger = require(script.Parent.Logger)
 local CompilersModule = require(script.Parent.Compilers)
@@ -308,6 +309,8 @@ end
 function ExtractedUtil.IsResource(part: BasePart): boolean
 	-- As far as I'm aware every part that can be resized can be used as a template shape
 	return typeof(CompilersModule:GetSelectedCompiler():GetMalleability(part.Name)) == "number"
+	-- And until custom parts have malleability support they need to be manually OK-ed here
+		or AllParts:IsCustom(part.Name)
 end
 
 -- Returns if a given part is a shaped part like wedge (returns false for block)

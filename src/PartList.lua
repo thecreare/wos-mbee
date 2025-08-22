@@ -84,7 +84,7 @@ table.insert(UIElements.Buttons, AddMaterialButton)
 -- MARK: Logic
 -- Create object buttons for each part
 for _, part in AllParts:GetPartsHash() do
-	UITemplates.CreateObjectButton({Part = part.Instance, Deletable = part.IsTemplate, Parent = ResultsFrame})
+	UITemplates.CreateObjectButton({Part = part.Instance, Deletable = part.IsCustom, Parent = ResultsFrame})
 end
 
 do
