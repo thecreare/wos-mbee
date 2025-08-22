@@ -1993,8 +1993,8 @@ export type Wood = PilotObject & {
 	ClassName: "Wood",
 }
 export type HyperspaceRadarConfiguration = {
-	ViewCoordinates: Coordinates?,
 	[string]: any,
+	ViewCoordinates: Coordinates?,
 }
 export type HeatPumpConfiguration = {
 	TransferRate: number?,
@@ -2006,13 +2006,13 @@ export type TriggerRelayConfiguration = {
 }
 export type LightConfiguration = {
 	Shadows: boolean?,
-	[string]: any,
-	LightRange: number?,
 	Brightness: number?,
+	LightRange: number?,
+	[string]: any,
 }
 export type PortConfiguration = {
-	PortID: number?,
 	[string]: any,
+	PortID: number?,
 }
 export type SolenoidConfiguration = {
 	[string]: any,
@@ -2030,14 +2030,14 @@ export type ValveConfiguration = {
 export type TemperatureGateConfiguration = {
 	SwitchValue: boolean?,
 	TemperatureRange: Range?,
-	[string]: any,
 	Inverted: boolean?,
+	[string]: any,
 }
 export type HandleConfiguration = {
-	ToolName: string?,
+	[string]: any,
 	Swing: HandleSwingMode?,
 	TriggerMode: HandleTriggerMode?,
-	[string]: any,
+	ToolName: string?,
 }
 export type ExtractorConfiguration = {
 	MaterialToExtract: string?,
@@ -2045,20 +2045,20 @@ export type ExtractorConfiguration = {
 }
 export type MotorConfiguration = {
 	Ratio: number?,
-	Power: number?,
 	[string]: any,
+	Power: number?,
 }
 export type TriggerSwitchConfiguration = {
-	SwitchValue: boolean?,
 	[string]: any,
+	SwitchValue: boolean?,
 }
 export type DevTeleporterConfiguration = {
 	[string]: any,
 	TeleporterID: string?,
 }
 export type PumpConfiguration = {
-	[string]: any,
 	LiquidToPump: string?,
+	[string]: any,
 }
 export type PolysiliconConfiguration = {
 	[string]: any,
@@ -2067,8 +2067,8 @@ export type PolysiliconConfiguration = {
 }
 export type ObjectDetectorConfiguration = {
 	TriggerAtDistance: Vector2?,
-	[string]: any,
 	MaxDistance: number?,
+	[string]: any,
 }
 export type DevSourceConfiguration = {
 	[string]: any,
@@ -2079,16 +2079,16 @@ export type DevSinkConfiguration = {
 	Resource: ResourceString?,
 }
 export type CameraConfiguration = {
-	VideoID: number?,
 	[string]: any,
+	VideoID: number?,
 }
 export type BalloonConfiguration = {
-	Buoyancy: number?,
 	[string]: any,
+	Buoyancy: number?,
 }
 export type ThrusterConfiguration = {
-	[string]: any,
 	Propulsion: number?,
+	[string]: any,
 }
 export type TransformerConfiguration = {
 	LoopTime: number?,
@@ -2104,8 +2104,8 @@ export type LightBridgeConfiguration = {
 	BeamColor: Color3?,
 }
 export type FaucetConfiguration = {
-	[string]: any,
 	Filter: string?,
+	[string]: any,
 }
 export type TransistorConfiguration = {
 	Inverted: boolean?,
@@ -2116,14 +2116,14 @@ export type CloningBayConfiguration = {
 	Name: string?,
 }
 export type TeleporterConfiguration = {
-	ForceLocalTeleport: boolean?,
 	Coordinates: Coordinates?,
-	TeleporterID: number?,
 	[string]: any,
+	TeleporterID: number?,
+	ForceLocalTeleport: boolean?,
 }
 export type TelescopeConfiguration = {
-	[string]: any,
 	ViewCoordinates: Coordinates?,
+	[string]: any,
 }
 export type ProstheticConfiguration = {
 	Limb: PlayerLimb?,
@@ -2134,10 +2134,10 @@ export type HydroponicConfiguration = {
 	[string]: any,
 }
 export type ServoConfiguration = {
+	[string]: any,
 	ServoSpeed: number?,
 	Responsiveness: number?,
 	Angle: number?,
-	[string]: any,
 	AngleStep: number?,
 }
 export type TurbofanConfiguration = {
@@ -2146,13 +2146,13 @@ export type TurbofanConfiguration = {
 }
 export type VehicleSeatConfiguration = {
 	Speed: number?,
-	Mode: VehicleSeatMode?,
-	Enabled: boolean?,
 	[string]: any,
+	Enabled: boolean?,
+	Mode: VehicleSeatMode?,
 }
 export type ConveyorBeltConfiguration = {
-	ConveyorBeltSpeed: number?,
 	[string]: any,
+	ConveyorBeltSpeed: number?,
 }
 export type EnergyShieldConfiguration = {
 	ShieldRadius: number?,
@@ -2170,17 +2170,17 @@ export type InstrumentConfiguration = {
 	[string]: any,
 }
 export type FilterConfiguration = {
-	[string]: any,
-	Invert: boolean?,
 	Filter: string?,
+	Invert: boolean?,
+	[string]: any,
 }
 export type ModemConfiguration = {
 	NetworkID: string?,
 	[string]: any,
 }
 export type HyperDriveConfiguration = {
-	Coordinates: Coordinates?,
 	[string]: any,
+	Coordinates: Coordinates?,
 }
 export type FluidProjectorConfiguration = {
 	Fluid: string?,
@@ -2192,13 +2192,13 @@ export type TemperatureSensorConfiguration = {
 	[string]: any,
 }
 export type TankConfiguration = {
-	[string]: any,
-	Resource: string?,
 	CanBeCraftedFrom: boolean?,
+	Resource: string?,
+	[string]: any,
 }
 export type ConstructorConfiguration = {
-	ModelCode: string?,
 	[string]: any,
+	ModelCode: string?,
 	Autolock: boolean?,
 	RelativeToConstructor: boolean?,
 }
@@ -2222,33 +2222,33 @@ export type RelayConfiguration = {
 	LinkerID: number?,
 }
 export type HologramConfiguration = {
-	UserId: number?,
 	[string]: any,
+	UserId: number?,
 }
 export type SignConfiguration = {
 	TextFont: string?,
-	SignText: string?,
 	[string]: any,
+	SignText: string?,
 	TextColor: Color3?,
 }
 export type PistonConfiguration = {
 	Position1: number?,
-	[string]: any,
 	Speed: number?,
+	[string]: any,
 	Position2: number?,
 }
 export type ReactorConfiguration = {
 	Alarm: boolean?,
-	TriggerWhenEmpty: boolean?,
 	[string]: any,
+	TriggerWhenEmpty: boolean?,
 }
 export type ProximityButtonConfiguration = {
 	KeyboardKeyCode: string?,
 	GamepadKeyCode: string?,
 	HoldDuration: number?,
-	[string]: any,
 	ObjectText: string?,
 	RequiresLineOfSight: boolean?,
+	[string]: any,
 	MaxActivationDistance: number?,
 }
 export type GyroConfiguration = {
@@ -2263,13 +2263,13 @@ export type AssemblerConfiguration = {
 	[string]: any,
 }
 export type RemoteControlConfiguration = {
-	RemoteControlRange: number?,
 	[string]: any,
+	RemoteControlRange: number?,
 	RemoteControlMode: RemoteControlMode?,
 }
 export type SteamEngineConfiguration = {
-	[string]: any,
 	EngineSpeed: number?,
+	[string]: any,
 }
 export type StorageSensorConfiguration = {
 	[string]: any,
@@ -2280,8 +2280,8 @@ export type HeatValveConfiguration = {
 	SwitchValue: boolean?,
 }
 export type EngineConfiguration = {
-	EngineSpeed: number?,
 	[string]: any,
+	EngineSpeed: number?,
 }
 export type HatchConfiguration = {
 	SwitchValue: boolean?,
@@ -2296,16 +2296,16 @@ export type TractorBeamConfiguration = {
 	[string]: any,
 }
 export type RouterConfiguration = {
-	RouterID: string?,
 	[string]: any,
+	RouterID: string?,
 }
 export type ARControllerConfiguration = {
 	Transparency: number?,
 	[string]: any,
 }
 export type IonRocketConfiguration = {
-	Propulsion: number?,
 	[string]: any,
+	Propulsion: number?,
 }
 export type MicrocontrollerConfiguration = {
 	StartOnSpawn: boolean?,
@@ -2313,16 +2313,16 @@ export type MicrocontrollerConfiguration = {
 	Code: string?,
 }
 export type ScreenConfiguration = {
-	VideoID: number?,
 	[string]: any,
+	VideoID: number?,
 }
 export type AnchorConfiguration = {
-	[string]: any,
 	Anchored: boolean?,
+	[string]: any,
 }
 export type SwitchConfiguration = {
-	[string]: any,
 	SwitchValue: boolean?,
+	[string]: any,
 }
 export type DevGravityGeneratorConfiguration = {
 	Enabled: boolean?,
@@ -2331,8 +2331,8 @@ export type DevGravityGeneratorConfiguration = {
 	Radius: number?,
 }
 export type BoomboxConfiguration = {
-	Audio: number?,
 	[string]: any,
+	Audio: number?,
 }
 export type DelayWireConfiguration = {
 	[string]: any,
@@ -2344,8 +2344,8 @@ export type DriveBoxConfiguration = {
 	[string]: any,
 }
 export type BladeConfiguration = {
-	Shape: BladeShape?,
 	[string]: any,
+	Shape: BladeShape?,
 }
 export type BeaconConfiguration = {
 	[string]: any,
@@ -2357,8 +2357,8 @@ export type AntennaConfiguration = {
 	AntennaID: string?,
 }
 export type TimeSensorConfiguration = {
-	[string]: any,
 	Time: string?,
+	[string]: any,
 }
 export type SpeakerConfiguration = {
 	Pitch: number?,
@@ -2367,13 +2367,13 @@ export type SpeakerConfiguration = {
 	Volume: number?,
 }
 export type RocketConfiguration = {
-	Propulsion: number?,
 	[string]: any,
+	Propulsion: number?,
 }
 export type ApparelConfiguration = {
 	Limb: PlayerLimb?,
-	[string]: any,
 	Transparency: number?,
+	[string]: any,
 }
 export type MiningLaserConfiguration = {
 	[string]: any,
@@ -2392,12 +2392,12 @@ export type RailConfiguration = {
 	TweenTime: number?,
 }
 export type ScannerConfiguration = {
-	Range: number?,
 	[string]: any,
+	Range: number?,
 }
 export type LaserConfiguration = {
-	DamageOnlyPlayers: boolean?,
 	[string]: any,
+	DamageOnlyPlayers: boolean?,
 }
 return setmetatable(
 	{
