@@ -1,7 +1,7 @@
 --[[
     This script is intended for Microcontrollers
     Export ingame partdata to a webhook
-    Place acquired json in `src/PartData.json`
+    Place acquired json in `src/PartData/RawData.json`
 ]]--
 
 -- Replace this with your own https://webhook.site webhook
