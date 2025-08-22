@@ -40,7 +40,13 @@ function module.RemovePart(self, name: string)
 end
 
 -- Add parts from the parts folder
-for _, part in PartsFolder:GetChildren() :: {Instance} do
+for _, part in PartsFolder:GetChildren() :: {BasePart} do
+    -- Force correct malleability size (if applicable)
+    local malleability = Compilers:GetAllMalleability()[part.Name]
+    if typeof(malleability) == "Vector3" then
+        part.Size = malleability
+    end
+
     module:AddPart(part :: BasePart)
 end
 
