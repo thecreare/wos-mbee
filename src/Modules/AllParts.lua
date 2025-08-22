@@ -1,3 +1,4 @@
+local PartData = require(script.Parent.Parent.PartData)
 local Compilers = require(script.Parent.Compilers)
 local Constants = require(script.Parent.Constants)
 local Logger = require(script.Parent.Logger)
@@ -63,11 +64,13 @@ end
 -- Add parts that only exist as data
 -- This is kidna buggy and only exists for debugging
 if Constants.IS_LOCAL then
-    for part_name, malleability in Compilers:GetAllMalleability() do
+    local all_malleability = Compilers:GetAllMalleability()
+    for part_name, part_data in PartData.Parts do
         if full_part_hash[part_name] then continue end
         Logger.warn(`Missing model for part {part_name}. Inserting placeholder.`)
         local Part = Instance.new("Part")
         Part.Color = BrickColor.Random().Color
+        local malleability = all_malleability[part_name]
         if typeof(malleability) == "Vector3" then
             Part.Size = malleability
         else
