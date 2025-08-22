@@ -30,6 +30,7 @@ module.COMPAT_NAME_REPLACEMENTS = {
     PsiSwitch = "WirelessButton",
 
     Container = "Tank",
+    LightTube = "Light",
 } :: {[string]: string}
 
 module.COMPAT_CONFIG_REPLACEMENTS = {
