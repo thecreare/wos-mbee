@@ -713,9 +713,41 @@ local function GetRequiredMaterialsButton()
 		end
 	end
 
+	local FORMAT_MODE = PluginSettingsModule.Get("GetRequiredMaterialsForSelectionOutputMode"):lower()
+
+	local function PrettyFormat(title: string, part_list: {[string]: number})
+		-- Sort by largest key's value first
+		local sorted_keys = {}
+		for part, _ in part_list do
+			table.insert(sorted_keys, part)
+		end
+		table.sort(sorted_keys, function(a, b)
+			return part_list[a] > part_list[b]
+		end)
+
+		-- Format output
+		local out = {}
+		if FORMAT_MODE == "pretty" then
+			for _, part in sorted_keys do
+				table.insert(out, `    {part_list[part]}x {part}`)
+			end
+			return `{title}\n{table.concat(out, "\n")}`
+		elseif FORMAT_MODE == "lua" then
+			for _, part in sorted_keys do
+				table.insert(out, `    ["{part}"] = {part_list[part]},`)
+			end
+		elseif FORMAT_MODE == "json" then
+			for _, part in sorted_keys do
+				table.insert(out, `    '{part}': {part_list[part]},`)
+			end
+		end
+
+		return title .. " {\n" .. table.concat(out, "\n") .. "\n}"
+	end
+
 	Logger.print(`Calculated ingredients for {total_part_count} parts`)
-	Logger.print("Raw Materials:\n", repr(raw_materials :: any, {pretty=true} :: any))
-	Logger.print("All Parts:\n", repr(all_parts :: any, {pretty=true} :: any))
+	Logger.print(PrettyFormat("Raw Materials:", raw_materials))
+	Logger.print(PrettyFormat("All Parts:", all_parts))
 end
 
 -- Eventually this will be removed when fusion is more pervasive

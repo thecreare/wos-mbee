@@ -174,6 +174,14 @@ local SettingInfo: {SparseSetting} = {
         Type = "boolean",
         Default = true,
     },
+    {
+        Key = "GetRequiredMaterialsForSelectionOutputMode",
+        Name = "Material List Output Mode",
+        Categories = {"advanced"},
+        Type = "string",
+        Options = {"Pretty", "LUA", "JSON"},
+        Default = "Pretty",
+    },
 }
 -- Convert setting key to setting info
 local SettingsInfoHash: {[string]: Setting} = {}
