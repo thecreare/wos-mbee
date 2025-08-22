@@ -186,6 +186,8 @@ SearchBox.FocusLost:Connect(function(EnterPressed)
 	ExtractedUtil.SpawnPart(Part)
 end)
 
+local FACES = {"Top", "Bottom", "Left", "Right", "Front", "Back"}
+
 AddMaterialButton.OnPressed:Connect(function()
 	if #Selection:Get() <= 0 then
         Logger.warn('SELECT A PART TO TURN INTO A MATERIAL')
@@ -202,13 +204,21 @@ AddMaterialButton.OnPressed:Connect(function()
 		end
 	end
 
-	local part = CustomMaterialsModule.Add(selected_part.Name, {
+	local properties = {
 		Material = selected_part.Material.Name,
 		Transparency = selected_part.Transparency,
 		Reflectance = selected_part.Reflectance,
 		Color = {math.floor(selected_part.Color.R * 255), math.floor(selected_part.Color.G * 255), math.floor(selected_part.Color.B * 255)},
 		Size = {selected_part.Size.X, selected_part.Size.Y, selected_part.Size.Z}
-	})
+	}
+
+	-- Save surfaces
+	for _, face in FACES do
+		local surface_name = face .. "Surface"
+		properties[surface_name] = (selected_part :: any)[surface_name]
+	end
+
+	local part = CustomMaterialsModule.Add(selected_part.Name, properties)
 
 	UITemplates.CreateObjectButton({Part = part, Deletable = true, Parent = ResultsFrame})
 	Logger.print('[MB:E:E] ' .. selected_part.Name:upper() .. ' WAS SUCCESSFULLY TURNED INTO A MATERIAL')

@@ -5,14 +5,36 @@ local AllParts = require(script.Parent.AllParts)
 local Logger = require(script.Parent.Logger)
 local Settings = require(script.Parent.Settings)
 
+local FACES = {"Top", "Bottom", "Left", "Right", "Front", "Back"}
+
+local function WritePartProperty(part: Part, property: string, value: any)
+    if property == "Color" then part.Color = Color3.fromRGB(value[1], value[2], value[3]); return end
+    if property == "Size" then part.Size = Vector3.new(value[1], value[2], value[3]); return end
+    
+    -- Handle surfaces
+    for _, face in FACES do
+        local surface_name = face .. "Surface"
+        if property == surface_name then
+            -- Unsafe
+            (part :: any)[surface_name] = value
+            return
+        end
+    end
+   
+    -- Unsafe
+    (part :: any)[property] = value
+end
+
 local function AddCustomMaterialToAllPartsData(name, data)
     local part = Instance.new("Part")
     part.Anchored = true
     part.Name = name
+
     for property, value in data do
-        if property == "Color" then part.Color = Color3.fromRGB(value[1], value[2], value[3]); continue end
-        if property == "Size" then part.Size = Vector3.new(value[1], value[2], value[3]); continue end
-        part[property] = value
+        local ok, err = pcall(WritePartProperty :: any, part, property, value)
+        if not ok then
+            warn(`Failed to parse value "{value}" for property "{property}" with error: {err}`)
+        end
     end
     part.Parent = script.Parent.Parent.Parts
     AllParts:AddPart(part)
