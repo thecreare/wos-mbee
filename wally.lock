@@ -5,9 +5,9 @@ registry = "test"
 [[package]]
 name = "creare/wos-mbee"
 version = "0.1.0"
-dependencies = [["fusion", "elttob/fusion@0.3.0"]]
+dependencies = [["fusion", "thecreare/fusion@0.4.0-dev1"]]
 
 [[package]]
-name = "elttob/fusion"
-version = "0.3.0"
+name = "thecreare/fusion"
+version = "0.4.0-dev1"
 dependencies = []
