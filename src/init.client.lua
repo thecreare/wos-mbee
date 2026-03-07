@@ -1127,7 +1127,7 @@ local function CreateConfigElementsForInstance(
 	end
 
 	xpcall(function()
-		local configurations = CompilersModule:GetConfigData()[config_location][instance_key]
+		local configurations = PartData[config_location][instance_key].ConfigData
 		-- This function will often be called for parts without configs
 		if not configurations then
 			-- Logger.print(`Missing PartData for {config_location}/{instance_key}`)
