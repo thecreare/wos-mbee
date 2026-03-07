@@ -1,46 +1,92 @@
-export type Config = {
-    Type: string,
-    Description: string,
-    Default: any,
-    Options: {[string]: any} | {string},
-    Name: string,
+--[[
+    Type definition taken from https://arvidsilverlock.github.io/Pilot.lua-Luau-LSP/modules/partdata
+]]
+
+type FaceOpacities = {
+	[Enum.NormalId]: {
+		Internal: "Push" | "Pull" | "Opaque",
+		External: "Push" | "Pull" | "Opaque",
+	} | "Exit" | "Enter",
 }
 
-export type Component = {
-    ConfigData: {Config}?,
-    Events: {string}?,
-    Conflicts: {string}?,
-    Description: string?,
-    ClassName: string,
+type ClassType = "Natural" | "Craftable" | "Tool" | "Unused"
+type Category = "Logic" | "Tools" | "Weapons" | "Electrical" | "Templates" | "Propulsion" | "Resources" | string
+type ClassState = "Solid" | "Liquid" | "Gas"
+
+type ConfigValue = {
+	Name: string,
+	Description: string,
+} & ({
+	Type: string,
+	[string]: any,
+} | {
+	Type: "number",
+	Default: number,
+	Options: { number },
+} | {
+	Type: "boolean",
+	Default: boolean,
+} | {
+	Type: "string",
+	Default: string,
+} | {
+	Type: "Selection",
+	Default: number?,
+	Options: { string },
+})
+
+type ComponentInfo = {
+	-- Metadata
+	ClassName: string,
+	Description: string?,
+
+	ConfigData: { ConfigValue }?,
+
+	-- Behaviour
+	Conflicts: { string }?,
+	Events: { string }?,
 }
 
-export type Part = {
-    Categories: {string},
-    --- Malleability of the part, 0 if it has fixed size
-    Malleability: number,
-    ClassState: string,
-    Color: nil, -- TODO
-    Flammable: boolean,
-    Description: string,
-    --- If the part can be crafted via crafting menu
-    Craftable: boolean,
-    --- If the part can be spawned via commands (Disabled for things like Warhead & AdminTool)
-    Spawnable: boolean,
-    ClassName: string,
-    ClassType: string,
-    BaseHeatCapacity: number,
-    BaseSize: nil, -- TODO
-    BaseDurability: number,
-    ConfigData: {Config},
-    Events: {string}?,
-    Recipe: {[string]: number}?,
-    DefaultComponents: {string}?,
-    ResourceType: string?,
+type PartInfo = {
+	-- Metadata
+	ClassName: string,
+	Categories: { Category },
+	ClassState: ClassState,
+	ClassType: ClassType,
+	Description: string?,
+	Color: Color3?,
+
+	Recipe: { [string]: number }?,
+	ConfigData: { ConfigValue }?,
+
+	Spawnable: boolean,
+	Craftable: boolean,
+
+	-- Physical properties
+	Malleability: number,
+	BaseSize: Vector3,
+	BaseDurability: number,
+	BaseHeatCapacity: number,
+
+	-- Behaviour
+	Flammable: boolean,
+	FaceOpacity: FaceOpacities?,
+	Events: { string }?,
+	ProgrammableEvents: { string }?,
+
+	ResourceType: string?,
+	ResourceAmount: number?,
+
+	GeneratorType: string?,
+	GeneratorAmount: number?,
+
+	HeatPowerProduct: number?,
+	HeatGeneratorProduct: number?,
 }
 
-export type PartData = {
-    Components: {[string]: Component},
-    Parts: {[string]: Part},
+type partdata = {
+	Components: { [string]: ComponentInfo },
+	Parts: { [string]: PartInfo },
 }
 
-return require(script.RawData) :: PartData
+return require(script.RawData) :: partdata
