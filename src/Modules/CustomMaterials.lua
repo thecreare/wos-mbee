@@ -49,7 +49,7 @@ module.CustomMaterials = {} :: {[string]: {[string]: any}}
 
 function Load()
     xpcall(function()
-        module.CustomMaterials = HttpService:JSONDecode(plugin:GetSetting("SavedCustomMaterials"))
+        module.CustomMaterials = HttpService:JSONDecode(plugin:GetSetting("SavedCustomMaterials") or {})
 
         for name, data in module.CustomMaterials do
             AddCustomMaterialToAllPartsData(name, data)
