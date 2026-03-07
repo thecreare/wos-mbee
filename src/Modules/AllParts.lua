@@ -65,13 +65,19 @@ for _, part in Compilers:GetShapes() do
     module:AddPart(part)
 end
 
+local DEV_SHOULD_ADD_BLACKLIST = {"ShapeRemover", "Hull", "Rice", "Blade", "Door"}
+
 -- Add parts that only exist as data
 -- This is kidna buggy and only exists for debugging
 if Constants.IS_LOCAL then
     local all_malleability = Compilers:GetAllMalleability()
+    local dev_should_add = {}
     for part_name, part_data in PartData.Parts do
         if full_part_hash[part_name] then continue end
         Logger.warn(`Missing model for part {part_name}. Inserting placeholder.`)
+        if part_data.ClassType ~= "Tool" and (part_data.Spawnable or part_data.Craftable) and not table.find(DEV_SHOULD_ADD_BLACKLIST, part_name) then
+            table.insert(dev_should_add, part_name)
+        end
         local Part = Instance.new("Part")
         Part.Color = BrickColor.Random().Color
         local malleability = all_malleability[part_name]
@@ -85,6 +91,12 @@ if Constants.IS_LOCAL then
         Part:AddTag("Placeholder")
         Part.Parent = PartsFolder
         module:AddPart(Part)
+    end
+
+    if #dev_should_add > 0 then
+        Logger.warn("Of the missing parts, the following should probably be added:\n-", table.concat(dev_should_add, "\n- "))
+    else
+        Logger.print("None of the missing parts need to be added.")
     end
 end
 
