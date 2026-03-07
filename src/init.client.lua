@@ -25,6 +25,7 @@ local PseudoInstance = require(script.MBEPackages.PseudoInstance)
 local repr = require(script.MBEPackages.repr)
 local ApplyColorCopy = require(script.Modules.ApplyColorCopy)
 local ApplyConfigurationValues = require(script.Modules.ApplyConfigurationValues)
+local Constants = require(script.Modules.Constants)
 local GetEnumNames = require(script.Modules.GetEnumNames)
 local UpdatePilotTypes = require(script.Modules.UpdatePilotTypes)
 local WosSelection = require(script.Modules.WosSelection)
@@ -1065,6 +1066,14 @@ local CONFIG_TYPE_TO_VALUE_TYPE = {
 	number = "NumberValue",
 }
 
+local CONFIG_TYPE_GENERIC_DEFAULT_VALUE = {
+	["Vector3"] = "0, 0, 0",
+	["Vector2"] = "0, 0",
+	["Color3"] = "255, 255, 255",
+	["number"] = "0",
+	["Selection"] = "",
+}
+
 local function CreateConfigElementsForInstance(
 	output_container: GuiBase2d,
 	instance_to_configure: BasePart|Configuration,
@@ -1078,8 +1087,10 @@ local function CreateConfigElementsForInstance(
 		local config_name = config_data.Name
 
 		if default_value == nil then
-			Logger.warn(`Missing default config value for {config_location}/{instance_key}/{config_name}`)
-			return ""
+			if Constants.IS_LOCAL then
+				Logger.warn(`Missing default config value for {config_location}/{instance_key}/{config_name}`)
+			end
+			default_value = CONFIG_TYPE_GENERIC_DEFAULT_VALUE[config_type] or ""
 		end
 		-- Convert selection default (numberic index) into string value of default
 		if config_type == "Selection" then
