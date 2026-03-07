@@ -43,3 +43,20 @@ The original [MBTools](https://create.roblox.com/store/asset/6724254977) was dev
 ### Saving as a local plugin
 
 1. Right click the `MBEE` folder and in the `Save / Export` option select `Save as Local Plugin...`
+
+### Adding new parts
+
+1. Run `tools/ExportPartData.lua` in wos & paste the result into `src/PartData/RawData.json`
+2. Save the plugin locally & check the console. It will print out what parts are missing
+3. Create new models for the missing parts in studio. Give them the correct names, visuals, & sizes then save them as `.rbxmx` files in `src/Parts/`
+
+### Adding a new compiler version
+
+1. Copy the new compiler into Compilers folder
+2. Set `Default` to `false` in old compiler (and make sure its `true` in the new one)
+3. Set all Shape MeshPart's `CollisionFidelity` to `Box`
+4. Run `tools/compiler_patcher` on correct version
+
+### Updating type definition header
+
+1. Run `FetchLatestDefaultPilotLuau.py`
