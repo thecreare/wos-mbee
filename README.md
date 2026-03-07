@@ -6,13 +6,13 @@ The plugin can be found here: <https://create.roblox.com/store/asset/11707735968
 
 ## Features
 
-- Automatic dpaste.org/gist uploading
+- Automatic ~~dpaste.org~~ ([currently down](https://github.com/DarrenOfficial/dpaste/issues/274#issuecomment-3553595409)) & GitHub Gist uploading
 - Faster compile times
 - 3D Part surface type editor
 - Automatic wireless ID securing. Prefix any `Antenna`/`Router`/etc ID with % to automatically randomize its ID at compile time.
 - Builtin mirror tool (fork of stravant's, edited to work with wos parts)
 - Range and capacity visualizations for parts like `EnergyShield` & `PowerCell`
-- Microcontroller type checking (from arvid's documentation https://github.com/ArvidSilverlock/Pilot.lua-Luau-LSP)
+- Microcontroller type checking (from [arvid's documentation](https://github.com/ArvidSilverlock/Pilot.lua-Luau-LSP))
 - Part name & config autocomplete
 - Support for decompiling pre 2024 wipe model codes
 - Automatically open `Microcontroller` code as script
@@ -30,7 +30,7 @@ The original [MBTools](https://create.roblox.com/store/asset/6724254977) was dev
 
 ## Contributing
 
-[Tools](https://github.com/1-creare-1/wos-mbee/tree/main/tools) contains mostly undocumented tools used to keep mbee up to date.
+[Tools](https://github.com/1-creare-1/wos-mbee/tree/main/tools) contains partially documented tools used to keep mbee up to date.
 
 ### Setting up a local workspace
 
