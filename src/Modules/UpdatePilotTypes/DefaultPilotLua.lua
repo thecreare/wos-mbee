@@ -24,7 +24,7 @@ export type RegionLog = {
 }
 export type RegionLogType = "HyperDrive is warping to" | "Aliens were spawned from an obelisk located at" | "Spawned" | "Death" | "ExitRegion" | "Poison" | "Irradiated" | "Suffocating" | "Freezing" | "Melting"
 export type Network = {
-	GetPort: (self: Network, port: PortLike?) -> ({ Port }),
+	GetPort: (self: Network, port: PortLike?) -> (Port),
 	GetPartsFromPort: (self: Network, port: PortLike?, className: string?) -> ({ PilotObject }),
 	GetPart: (self: Network, className: string?) -> (PilotObject?),
 	GetPartFromPort: (self: Network, port: PortLike?, className: string?) -> (PilotObject?),
@@ -391,6 +391,7 @@ export type SimplePlanetRegionInfo = {
 	Gravity: number,
 	SubType: PlanetType,
 	BeaconCount: number,
+	Temperature: number,
 	Name: string,
 	Resources: { string },
 	TidallyLocked: boolean,
@@ -1531,7 +1532,7 @@ export type Speaker = PilotObject & {
 	Pitch: number,
 	ClearSounds: (self: Speaker) -> (),
 	Audio: string,
-	LoadSound: (self: Speaker, soundId: string) -> (Sound),
+	LoadSound: (self: Speaker, soundId: string) -> (Sound?),
 	Chat: (self: Speaker, message: string) -> (),
 	ClassName: "Speaker",
 	Volume: number,
@@ -1761,16 +1762,12 @@ export type Assembler = PilotObject & {
 		[string]: number,
 	}) -> (),
 	Craft: (self: Assembler, itemName: string) -> (boolean),
-	GetCraftCooldown: (self: Assembler) -> (number),
 	Loop: Event<"Loop", (tickInterval: number) -> ()>,
 	GetRecipe: (self: Assembler, itemName: string) -> ({
 		[string]: number,
 	}),
-	ClassName: "Assembler",
 	Configured: Event<"Configured", (configurerId: number) -> ()>,
-	GetInventory: (self: Assembler) -> ({
-		[string]: number,
-	}),
+	ClassName: "Assembler",
 	Assemble: string,
 }
 export type Torch = PilotObject & {
@@ -1794,6 +1791,9 @@ export type TimeSensor = PilotObject & {
 }
 export type MonsterMashPotion = PilotObject & {
 	ClassName: "MonsterMashPotion",
+}
+export type Frog = PilotObject & {
+	ClassName: "Frog",
 }
 export type ScubaMask = PilotObject & {
 	ClassName: "ScubaMask",
@@ -1997,12 +1997,12 @@ export type HyperspaceRadarConfiguration = {
 	ViewCoordinates: Coordinates?,
 }
 export type HeatPumpConfiguration = {
-	TransferRate: number?,
 	[string]: any,
+	TransferRate: number?,
 }
 export type TriggerRelayConfiguration = {
-	SwitchValue: boolean?,
 	[string]: any,
+	SwitchValue: boolean?,
 }
 export type LightConfiguration = {
 	Shadows: boolean?,
@@ -2030,39 +2030,39 @@ export type ValveConfiguration = {
 export type TemperatureGateConfiguration = {
 	SwitchValue: boolean?,
 	TemperatureRange: Range?,
-	Inverted: boolean?,
 	[string]: any,
+	Inverted: boolean?,
 }
 export type HandleConfiguration = {
-	[string]: any,
+	ToolName: string?,
 	Swing: HandleSwingMode?,
 	TriggerMode: HandleTriggerMode?,
-	ToolName: string?,
+	[string]: any,
 }
 export type ExtractorConfiguration = {
 	MaterialToExtract: string?,
 	[string]: any,
 }
 export type MotorConfiguration = {
-	Ratio: number?,
 	[string]: any,
+	Ratio: number?,
 	Power: number?,
 }
 export type TriggerSwitchConfiguration = {
-	[string]: any,
 	SwitchValue: boolean?,
+	[string]: any,
 }
 export type DevTeleporterConfiguration = {
 	[string]: any,
 	TeleporterID: string?,
 }
 export type PumpConfiguration = {
-	LiquidToPump: string?,
 	[string]: any,
+	LiquidToPump: string?,
 }
 export type PolysiliconConfiguration = {
-	[string]: any,
 	PolysiliconMode: PolysiliconMode?,
+	[string]: any,
 	Frequency: number?,
 }
 export type ObjectDetectorConfiguration = {
@@ -2071,8 +2071,8 @@ export type ObjectDetectorConfiguration = {
 	[string]: any,
 }
 export type DevSourceConfiguration = {
-	[string]: any,
 	Resource: ResourceString?,
+	[string]: any,
 }
 export type DevSinkConfiguration = {
 	[string]: any,
@@ -2083,16 +2083,16 @@ export type CameraConfiguration = {
 	VideoID: number?,
 }
 export type BalloonConfiguration = {
-	[string]: any,
 	Buoyancy: number?,
+	[string]: any,
 }
 export type ThrusterConfiguration = {
-	Propulsion: number?,
 	[string]: any,
+	Propulsion: number?,
 }
 export type TransformerConfiguration = {
-	LoopTime: number?,
 	[string]: any,
+	LoopTime: number?,
 }
 export type BinConfiguration = {
 	[string]: any,
@@ -2100,24 +2100,24 @@ export type BinConfiguration = {
 	CanBeCraftedFrom: boolean?,
 }
 export type LightBridgeConfiguration = {
-	[string]: any,
 	BeamColor: Color3?,
+	[string]: any,
 }
 export type FaucetConfiguration = {
 	Filter: string?,
 	[string]: any,
 }
 export type TransistorConfiguration = {
-	Inverted: boolean?,
 	[string]: any,
+	Inverted: boolean?,
 }
 export type CloningBayConfiguration = {
 	[string]: any,
 	Name: string?,
 }
 export type TeleporterConfiguration = {
-	Coordinates: Coordinates?,
 	[string]: any,
+	Coordinates: Coordinates?,
 	TeleporterID: number?,
 	ForceLocalTeleport: boolean?,
 }
@@ -2126,18 +2126,18 @@ export type TelescopeConfiguration = {
 	[string]: any,
 }
 export type ProstheticConfiguration = {
-	Limb: PlayerLimb?,
 	[string]: any,
+	Limb: PlayerLimb?,
 }
 export type HydroponicConfiguration = {
-	Grow: string?,
 	[string]: any,
+	Grow: string?,
 }
 export type ServoConfiguration = {
-	[string]: any,
 	ServoSpeed: number?,
 	Responsiveness: number?,
 	Angle: number?,
+	[string]: any,
 	AngleStep: number?,
 }
 export type TurbofanConfiguration = {
@@ -2146,9 +2146,9 @@ export type TurbofanConfiguration = {
 }
 export type VehicleSeatConfiguration = {
 	Speed: number?,
+	Mode: VehicleSeatMode?,
 	[string]: any,
 	Enabled: boolean?,
-	Mode: VehicleSeatMode?,
 }
 export type ConveyorBeltConfiguration = {
 	[string]: any,
@@ -2157,26 +2157,26 @@ export type ConveyorBeltConfiguration = {
 export type EnergyShieldConfiguration = {
 	ShieldRadius: number?,
 	ShieldStrength: number?,
-	[string]: any,
 	RegenerationSpeed: number?,
+	[string]: any,
 }
 export type CouplerConfiguration = {
-	[string]: any,
 	CouplerID: string?,
+	[string]: any,
 	AutoTrigger: boolean?,
 }
 export type InstrumentConfiguration = {
-	Type: InstrumentType?,
 	[string]: any,
+	Type: InstrumentType?,
 }
 export type FilterConfiguration = {
-	Filter: string?,
-	Invert: boolean?,
 	[string]: any,
+	Invert: boolean?,
+	Filter: string?,
 }
 export type ModemConfiguration = {
-	NetworkID: string?,
 	[string]: any,
+	NetworkID: string?,
 }
 export type HyperDriveConfiguration = {
 	[string]: any,
@@ -2188,8 +2188,8 @@ export type FluidProjectorConfiguration = {
 	Size: Vector3?,
 }
 export type TemperatureSensorConfiguration = {
-	TemperatureRange: Range?,
 	[string]: any,
+	TemperatureRange: Range?,
 }
 export type TankConfiguration = {
 	CanBeCraftedFrom: boolean?,
@@ -2204,13 +2204,13 @@ export type ConstructorConfiguration = {
 }
 export type WinchConfiguration = {
 	DeltaLength: number?,
+	[string]: any,
 	MinLength: number?,
 	MaxLength: number?,
-	[string]: any,
 }
 export type TransporterConfiguration = {
-	TransporterID: string?,
 	[string]: any,
+	TransporterID: string?,
 }
 export type GravityGeneratorConfiguration = {
 	Gravity: number?,
@@ -2227,40 +2227,40 @@ export type HologramConfiguration = {
 }
 export type SignConfiguration = {
 	TextFont: string?,
-	[string]: any,
 	SignText: string?,
+	[string]: any,
 	TextColor: Color3?,
 }
 export type PistonConfiguration = {
 	Position1: number?,
-	Speed: number?,
 	[string]: any,
+	Speed: number?,
 	Position2: number?,
 }
 export type ReactorConfiguration = {
 	Alarm: boolean?,
-	[string]: any,
 	TriggerWhenEmpty: boolean?,
+	[string]: any,
 }
 export type ProximityButtonConfiguration = {
 	KeyboardKeyCode: string?,
 	GamepadKeyCode: string?,
 	HoldDuration: number?,
 	ObjectText: string?,
+	MaxActivationDistance: number?,
 	RequiresLineOfSight: boolean?,
 	[string]: any,
-	MaxActivationDistance: number?,
 }
 export type GyroConfiguration = {
-	[string]: any,
 	DisableWhenUnpowered: boolean?,
 	TriggerWhenSeeked: boolean?,
+	[string]: any,
 	Seek: string?,
 	MaxTorque: number?,
 }
 export type AssemblerConfiguration = {
-	Assemble: string?,
 	[string]: any,
+	Assemble: string?,
 }
 export type RemoteControlConfiguration = {
 	[string]: any,
@@ -2276,32 +2276,32 @@ export type StorageSensorConfiguration = {
 	QuantityRange: Range?,
 }
 export type HeatValveConfiguration = {
-	[string]: any,
 	SwitchValue: boolean?,
+	[string]: any,
 }
 export type EngineConfiguration = {
 	[string]: any,
 	EngineSpeed: number?,
 }
 export type HatchConfiguration = {
-	SwitchValue: boolean?,
 	[string]: any,
+	SwitchValue: boolean?,
 }
 export type DispenserConfiguration = {
 	[string]: any,
 	Filter: string?,
 }
 export type TractorBeamConfiguration = {
-	PowerPercent: number?,
 	[string]: any,
+	PowerPercent: number?,
 }
 export type RouterConfiguration = {
 	[string]: any,
 	RouterID: string?,
 }
 export type ARControllerConfiguration = {
-	Transparency: number?,
 	[string]: any,
+	Transparency: number?,
 }
 export type IonRocketConfiguration = {
 	[string]: any,
@@ -2321,22 +2321,22 @@ export type AnchorConfiguration = {
 	[string]: any,
 }
 export type SwitchConfiguration = {
-	SwitchValue: boolean?,
 	[string]: any,
+	SwitchValue: boolean?,
 }
 export type DevGravityGeneratorConfiguration = {
 	Enabled: boolean?,
 	Gravity: number?,
-	[string]: any,
 	Radius: number?,
+	[string]: any,
 }
 export type BoomboxConfiguration = {
 	[string]: any,
 	Audio: number?,
 }
 export type DelayWireConfiguration = {
-	[string]: any,
 	DelayTime: number?,
+	[string]: any,
 }
 export type DriveBoxConfiguration = {
 	Reversal: boolean?,
@@ -2344,8 +2344,8 @@ export type DriveBoxConfiguration = {
 	[string]: any,
 }
 export type BladeConfiguration = {
-	[string]: any,
 	Shape: BladeShape?,
+	[string]: any,
 }
 export type BeaconConfiguration = {
 	[string]: any,
@@ -2367,8 +2367,8 @@ export type SpeakerConfiguration = {
 	Volume: number?,
 }
 export type RocketConfiguration = {
-	[string]: any,
 	Propulsion: number?,
+	[string]: any,
 }
 export type ApparelConfiguration = {
 	Limb: PlayerLimb?,
@@ -2376,8 +2376,8 @@ export type ApparelConfiguration = {
 	[string]: any,
 }
 export type MiningLaserConfiguration = {
-	[string]: any,
 	MaterialToExtract: string?,
+	[string]: any,
 }
 export type SorterConfiguration = {
 	Rate: number?,
@@ -2388,16 +2388,16 @@ export type SorterConfiguration = {
 export type RailConfiguration = {
 	Position1: number?,
 	Position2: number?,
-	[string]: any,
 	TweenTime: number?,
+	[string]: any,
 }
 export type ScannerConfiguration = {
 	[string]: any,
 	Range: number?,
 }
 export type LaserConfiguration = {
-	[string]: any,
 	DamageOnlyPlayers: boolean?,
+	[string]: any,
 }
 return setmetatable(
 	{
@@ -2424,10 +2424,10 @@ return setmetatable(
 		TriggerPort = ( TriggerPort :: any ) :: (port: PortLike) -> (),
 		JSONEncode = ( JSONEncode :: any ) :: (data: JSON) -> (string),
 		JSONDecode = ( JSONDecode :: any ) :: (data: string) -> (JSON),
-		GetPartFromPort = ( GetPartFromPort :: any ) :: ((port: PortLike?, class: "DelayWire") -> (DelayWire?)) & ((port: PortLike?, class: "Hatch") -> (Hatch?)) & ((port: PortLike?, class: "Screen") -> (Screen?)) & ((port: PortLike?, class: "Extractor") -> (Extractor?)) & ((port: PortLike?, class: "Apparel") -> (Apparel?)) & ((port: PortLike?, class: "CloningBay") -> (CloningBay?)) & ((port: PortLike?, class: "Food") -> (Food?)) & ((port: PortLike?, class: "Filter") -> (Filter?)) & ((port: PortLike?, class: "Antenna") -> (Antenna?)) & ((port: PortLike?, class: "Instrument") -> (Instrument?)) & ((port: PortLike?, class: "ARController") -> (ARController?)) & ((port: PortLike?, class: "Teleporter") -> (Teleporter?)) & ((port: PortLike?, class: "Laser") -> (Laser?)) & ((port: PortLike?, class: "DevHeatStorage") -> (DevHeatStorage?)) & ((port: PortLike?, class: "BurnerGenerator") -> (BurnerGenerator?)) & ((port: PortLike?, class: "DevGravityGenerator") -> (DevGravityGenerator?)) & ((port: PortLike?, class: "Servo") -> (Servo?)) & ((port: PortLike?, class: "DriveBox") -> (DriveBox?)) & ((port: PortLike?, class: "FluidProjector") -> (FluidProjector?)) & ((port: PortLike?, class: "TimeSensor") -> (TimeSensor?)) & ((port: PortLike?, class: "ElectricFence") -> (ElectricFence?)) & ((port: PortLike?, class: "Pump") -> (Pump?)) & ((port: PortLike?, class: "Assembler") -> (Assembler?)) & ((port: PortLike?, class: "Keyboard") -> (Keyboard?)) & ((port: PortLike?, class: "StasisField") -> (StasisField?)) & ((port: PortLike?, class: "LightBridge") -> (LightBridge?)) & ((port: PortLike?, class: "ProximityButton") -> (ProximityButton?)) & ((port: PortLike?, class: "WirelessButton") -> (WirelessButton?)) & ((port: PortLike?, class: "DarkConverter") -> (DarkConverter?)) & ((port: PortLike?, class: "Disk") -> (Disk?)) & ((port: PortLike?, class: "LightTube") -> (LightTube?)) & ((port: PortLike?, class: "LifeSensor") -> (LifeSensor?)) & ((port: PortLike?, class: "SteamTurbine") -> (SteamTurbine?)) & ((port: PortLike?, class: "PilotObject") -> (PilotObject?)) & ((port: PortLike?, class: "Component") -> (Component?)) & ((port: PortLike?, class: "Brick") -> (Brick?)) & ((port: PortLike?, class: "Warhead") -> (Warhead?)) & ((port: PortLike?, class: "Transformer") -> (Transformer?)) & ((port: PortLike?, class: "Fireworks") -> (Fireworks?)) & ((port: PortLike?, class: "FactionHub") -> (FactionHub?)) & ((port: PortLike?, class: "TriggerRelay") -> (TriggerRelay?)) & ((port: PortLike?, class: "PowerCell") -> (PowerCell?)) & ((port: PortLike?, class: "Transistor") -> (Transistor?)) & ((port: PortLike?, class: "Piston") -> (Piston?)) & ((port: PortLike?, class: "Treads") -> (Treads?)) & ((port: PortLike?, class: "CrudeWing") -> (CrudeWing?)) & ((port: PortLike?, class: "SteamEngine") -> (SteamEngine?)) & ((port: PortLike?, class: "Microcontroller") -> (Microcontroller?)) & ((port: PortLike?, class: "HeatPump") -> (HeatPump?)) & ((port: PortLike?, class: "Speaker") -> (Speaker?)) & ((port: PortLike?, class: "Hull") -> (Hull?)) & ((port: PortLike?, class: "VehicleSeat") -> (VehicleSeat?)) & ((port: PortLike?, class: "Winch") -> (Winch?)) & ((port: PortLike?, class: "Rotor") -> (Rotor?)) & ((port: PortLike?, class: "Controller") -> (Controller?)) & ((port: PortLike?, class: "Obelisk") -> (Obelisk?)) & ((port: PortLike?, class: "Motor") -> (Motor?)) & ((port: PortLike?, class: "Telescope") -> (Telescope?)) & ((port: PortLike?, class: "BlackBox") -> (BlackBox?)) & ((port: PortLike?, class: "Reactor") -> (Reactor?)) & ((port: PortLike?, class: "Prosthetic") -> (Prosthetic?)) & ((port: PortLike?, class: "Decoupler") -> (Decoupler?)) & ((port: PortLike?, class: "Solenoid") -> (Solenoid?)) & ((port: PortLike?, class: "DevSink") -> (DevSink?)) & ((port: PortLike?, class: "HyperDrive") -> (HyperDrive?)) & ((port: PortLike?, class: "TriggerSwitch") -> (TriggerSwitch?)) & ((port: PortLike?, class: "SolarPanel") -> (SolarPanel?)) & ((port: PortLike?, class: "Boombox") -> (Boombox?)) & ((port: PortLike?, class: "Igniter") -> (Igniter?)) & ((port: PortLike?, class: "DeleteSwitch") -> (DeleteSwitch?)) & ((port: PortLike?, class: "Electromagnet") -> (Electromagnet?)) & ((port: PortLike?, class: "Rocket") -> (Rocket?)) & ((port: PortLike?, class: "Scrapper") -> (Scrapper?)) & ((port: PortLike?, class: "TemperatureGate") -> (TemperatureGate?)) & ((port: PortLike?, class: "RemoteControl") -> (RemoteControl?)) & ((port: PortLike?, class: "Flamethrower") -> (Flamethrower?)) & ((port: PortLike?, class: "Light") -> (Light?)) & ((port: PortLike?, class: "Balloon") -> (Balloon?)) & ((port: PortLike?, class: "DarkReactor") -> (DarkReactor?)) & ((port: PortLike?, class: "Sail") -> (Sail?)) & ((port: PortLike?, class: "Rail") -> (Rail?)) & ((port: PortLike?, class: "RepairLaser") -> (RepairLaser?)) & ((port: PortLike?, class: "Polysilicon") -> (Polysilicon?)) & ((port: PortLike?, class: "Scanner") -> (Scanner?)) & ((port: PortLike?, class: "Furnace") -> (Furnace?)) & ((port: PortLike?, class: "DevSource") -> (DevSource?)) & ((port: PortLike?, class: "AutomaticLaser") -> (AutomaticLaser?)) & ((port: PortLike?, class: "Faucet") -> (Faucet?)) & ((port: PortLike?, class: "Thruster") -> (Thruster?)) & ((port: PortLike?, class: "CombustionTurbine") -> (CombustionTurbine?)) & ((port: PortLike?, class: "TouchScreen") -> (TouchScreen?)) & ((port: PortLike?, class: "HeatCell") -> (HeatCell?)) & ((port: PortLike?, class: "Camera") -> (Camera?)) & ((port: PortLike?, class: "Modem") -> (Modem?)) & ((port: PortLike?, class: "TemperatureSensor") -> (TemperatureSensor?)) & ((port: PortLike?, class: "Engine") -> (Engine?)) & ((port: PortLike?, class: "Radar") -> (Radar?)) & ((port: PortLike?, class: "RepairPlate") -> (RepairPlate?)) & ((port: PortLike?, class: "MiningLaser") -> (MiningLaser?)) & ((port: PortLike?, class: "IonRocket") -> (IonRocket?)) & ((port: PortLike?, class: "BallastTank") -> (BallastTank?)) & ((port: PortLike?, class: "Router") -> (Router?)) & ((port: PortLike?, class: "Explosive") -> (Explosive?)) & ((port: PortLike?, class: "ObjectDetector") -> (ObjectDetector?)) & ((port: PortLike?, class: "StarMap") -> (StarMap?)) & ((port: PortLike?, class: "TractorBeam") -> (TractorBeam?)) & ((port: PortLike?, class: "Turbofan") -> (Turbofan?)) & ((port: PortLike?, class: "Battery") -> (Battery?)) & ((port: PortLike?, class: "Coupler") -> (Coupler?)) & ((port: PortLike?, class: "DevTeleporter") -> (DevTeleporter?)) & ((port: PortLike?, class: "Seat") -> (Seat?)) & ((port: PortLike?, class: "Part100k") -> (Part100k?)) & ((port: PortLike?, class: "Valve") -> (Valve?)) & ((port: PortLike?, class: "Freezer") -> (Freezer?)) & ((port: PortLike?, class: "Melter") -> (Melter?)) & ((port: PortLike?, class: "Railgun") -> (Railgun?)) & ((port: PortLike?, class: "Dispenser") -> (Dispenser?)) & ((port: PortLike?, class: "Wing") -> (Wing?)) & ((port: PortLike?, class: "Anchor") -> (Anchor?)) & ((port: PortLike?, class: "HeatValve") -> (HeatValve?)) & ((port: PortLike?, class: "Constructor") -> (Constructor?)) & ((port: PortLike?, class: "tinnitus") -> (tinnitus?)) & ((port: PortLike?, class: "EnergyBomb") -> (EnergyBomb?)) & ((port: PortLike?, class: "EnergyShield") -> (EnergyShield?)) & ((port: PortLike?, class: "TouchSensor") -> (TouchSensor?)) & ((port: PortLike?, class: "StorageSensor") -> (StorageSensor?)) & ((port: PortLike?, class: "Microphone") -> (Microphone?)) & ((port: PortLike?, class: "Blade") -> (Blade?)) & ((port: PortLike?, class: "Sorter") -> (Sorter?)) & ((port: PortLike?, class: "Hydroponic") -> (Hydroponic?)) & ((port: PortLike?, class: "GravityGenerator") -> (GravityGenerator?)) & ((port: PortLike?, class: "Gyro") -> (Gyro?)) & ((port: PortLike?, class: "WindTurbine") -> (WindTurbine?)) & ((port: PortLike?, class: "Sign") -> (Sign?)) & ((port: PortLike?, class: "ConveyorBelt") -> (ConveyorBelt?)) & ((port: PortLike?, class: "Plastic") -> (Plastic?)) & ((port: PortLike?, class: "Hologram") -> (Hologram?)) & ((port: PortLike?, class: "FourthOfJuly") -> (FourthOfJuly?)) & ((port: PortLike?, class: "Relay") -> (Relay?)) & ((port: PortLike?, class: "Transporter") -> (Transporter?)) & ((port: PortLike?, class: "DevBattery") -> (DevBattery?)) & ((port: PortLike?, class: "Door") -> (Door?)) & ((port: PortLike?, class: "Handle") -> (Handle?)) & ((port: PortLike?, class: "SolarScoop") -> (SolarScoop?)) & ((port: PortLike?, class: "Refinery") -> (Refinery?)) & ((port: PortLike?, class: "Bin") -> (Bin?)) & ((port: PortLike?, class: "Propeller") -> (Propeller?)) & ((port: PortLike?, class: "Kiln") -> (Kiln?)) & ((port: PortLike?, class: "Boiler") -> (Boiler?)) & ((port: PortLike?, class: "Asphalt") -> (Asphalt?)) & ((port: PortLike?, class: "HyperspaceRadar") -> (HyperspaceRadar?)) & ((port: PortLike?, class: "Tank") -> (Tank?)) & ((port: PortLike?, class: "Switch") -> (Switch?)) & ((port: PortLike?, class: "Port") -> (Port?)) & ((port: PortLike?, class: "Beacon") -> (Beacon?)) & ((port: PortLike?, class: "Spotlight") -> (Spotlight?)) & ((port: PortLike?, class: string) -> (PilotObject)),
-		GetParts = ( GetParts :: any ) :: ((class: "DelayWire") -> ({ DelayWire })) & ((class: "Hatch") -> ({ Hatch })) & ((class: "Screen") -> ({ Screen })) & ((class: "Extractor") -> ({ Extractor })) & ((class: "Apparel") -> ({ Apparel })) & ((class: "CloningBay") -> ({ CloningBay })) & ((class: "Food") -> ({ Food })) & ((class: "Filter") -> ({ Filter })) & ((class: "Antenna") -> ({ Antenna })) & ((class: "Instrument") -> ({ Instrument })) & ((class: "ARController") -> ({ ARController })) & ((class: "Teleporter") -> ({ Teleporter })) & ((class: "Laser") -> ({ Laser })) & ((class: "DevHeatStorage") -> ({ DevHeatStorage })) & ((class: "BurnerGenerator") -> ({ BurnerGenerator })) & ((class: "DevGravityGenerator") -> ({ DevGravityGenerator })) & ((class: "Servo") -> ({ Servo })) & ((class: "DriveBox") -> ({ DriveBox })) & ((class: "FluidProjector") -> ({ FluidProjector })) & ((class: "TimeSensor") -> ({ TimeSensor })) & ((class: "ElectricFence") -> ({ ElectricFence })) & ((class: "Pump") -> ({ Pump })) & ((class: "Assembler") -> ({ Assembler })) & ((class: "Keyboard") -> ({ Keyboard })) & ((class: "StasisField") -> ({ StasisField })) & ((class: "LightBridge") -> ({ LightBridge })) & ((class: "ProximityButton") -> ({ ProximityButton })) & ((class: "WirelessButton") -> ({ WirelessButton })) & ((class: "DarkConverter") -> ({ DarkConverter })) & ((class: "Disk") -> ({ Disk })) & ((class: "LightTube") -> ({ LightTube })) & ((class: "LifeSensor") -> ({ LifeSensor })) & ((class: "SteamTurbine") -> ({ SteamTurbine })) & ((class: "PilotObject") -> ({ PilotObject })) & ((class: "Component") -> ({ Component })) & ((class: "Brick") -> ({ Brick })) & ((class: "Warhead") -> ({ Warhead })) & ((class: "Transformer") -> ({ Transformer })) & ((class: "Fireworks") -> ({ Fireworks })) & ((class: "FactionHub") -> ({ FactionHub })) & ((class: "TriggerRelay") -> ({ TriggerRelay })) & ((class: "PowerCell") -> ({ PowerCell })) & ((class: "Transistor") -> ({ Transistor })) & ((class: "Piston") -> ({ Piston })) & ((class: "Treads") -> ({ Treads })) & ((class: "CrudeWing") -> ({ CrudeWing })) & ((class: "SteamEngine") -> ({ SteamEngine })) & ((class: "Microcontroller") -> ({ Microcontroller })) & ((class: "HeatPump") -> ({ HeatPump })) & ((class: "Speaker") -> ({ Speaker })) & ((class: "Hull") -> ({ Hull })) & ((class: "VehicleSeat") -> ({ VehicleSeat })) & ((class: "Winch") -> ({ Winch })) & ((class: "Rotor") -> ({ Rotor })) & ((class: "Controller") -> ({ Controller })) & ((class: "Obelisk") -> ({ Obelisk })) & ((class: "Motor") -> ({ Motor })) & ((class: "Telescope") -> ({ Telescope })) & ((class: "BlackBox") -> ({ BlackBox })) & ((class: "Reactor") -> ({ Reactor })) & ((class: "Prosthetic") -> ({ Prosthetic })) & ((class: "Decoupler") -> ({ Decoupler })) & ((class: "Solenoid") -> ({ Solenoid })) & ((class: "DevSink") -> ({ DevSink })) & ((class: "HyperDrive") -> ({ HyperDrive })) & ((class: "TriggerSwitch") -> ({ TriggerSwitch })) & ((class: "SolarPanel") -> ({ SolarPanel })) & ((class: "Boombox") -> ({ Boombox })) & ((class: "Igniter") -> ({ Igniter })) & ((class: "DeleteSwitch") -> ({ DeleteSwitch })) & ((class: "Electromagnet") -> ({ Electromagnet })) & ((class: "Rocket") -> ({ Rocket })) & ((class: "Scrapper") -> ({ Scrapper })) & ((class: "TemperatureGate") -> ({ TemperatureGate })) & ((class: "RemoteControl") -> ({ RemoteControl })) & ((class: "Flamethrower") -> ({ Flamethrower })) & ((class: "Light") -> ({ Light })) & ((class: "Balloon") -> ({ Balloon })) & ((class: "DarkReactor") -> ({ DarkReactor })) & ((class: "Sail") -> ({ Sail })) & ((class: "Rail") -> ({ Rail })) & ((class: "RepairLaser") -> ({ RepairLaser })) & ((class: "Polysilicon") -> ({ Polysilicon })) & ((class: "Scanner") -> ({ Scanner })) & ((class: "Furnace") -> ({ Furnace })) & ((class: "DevSource") -> ({ DevSource })) & ((class: "AutomaticLaser") -> ({ AutomaticLaser })) & ((class: "Faucet") -> ({ Faucet })) & ((class: "Thruster") -> ({ Thruster })) & ((class: "CombustionTurbine") -> ({ CombustionTurbine })) & ((class: "TouchScreen") -> ({ TouchScreen })) & ((class: "HeatCell") -> ({ HeatCell })) & ((class: "Camera") -> ({ Camera })) & ((class: "Modem") -> ({ Modem })) & ((class: "TemperatureSensor") -> ({ TemperatureSensor })) & ((class: "Engine") -> ({ Engine })) & ((class: "Radar") -> ({ Radar })) & ((class: "RepairPlate") -> ({ RepairPlate })) & ((class: "MiningLaser") -> ({ MiningLaser })) & ((class: "IonRocket") -> ({ IonRocket })) & ((class: "BallastTank") -> ({ BallastTank })) & ((class: "Router") -> ({ Router })) & ((class: "Explosive") -> ({ Explosive })) & ((class: "ObjectDetector") -> ({ ObjectDetector })) & ((class: "StarMap") -> ({ StarMap })) & ((class: "TractorBeam") -> ({ TractorBeam })) & ((class: "Turbofan") -> ({ Turbofan })) & ((class: "Battery") -> ({ Battery })) & ((class: "Coupler") -> ({ Coupler })) & ((class: "DevTeleporter") -> ({ DevTeleporter })) & ((class: "Seat") -> ({ Seat })) & ((class: "Part100k") -> ({ Part100k })) & ((class: "Valve") -> ({ Valve })) & ((class: "Freezer") -> ({ Freezer })) & ((class: "Melter") -> ({ Melter })) & ((class: "Railgun") -> ({ Railgun })) & ((class: "Dispenser") -> ({ Dispenser })) & ((class: "Wing") -> ({ Wing })) & ((class: "Anchor") -> ({ Anchor })) & ((class: "HeatValve") -> ({ HeatValve })) & ((class: "Constructor") -> ({ Constructor })) & ((class: "tinnitus") -> ({ tinnitus })) & ((class: "EnergyBomb") -> ({ EnergyBomb })) & ((class: "EnergyShield") -> ({ EnergyShield })) & ((class: "TouchSensor") -> ({ TouchSensor })) & ((class: "StorageSensor") -> ({ StorageSensor })) & ((class: "Microphone") -> ({ Microphone })) & ((class: "Blade") -> ({ Blade })) & ((class: "Sorter") -> ({ Sorter })) & ((class: "Hydroponic") -> ({ Hydroponic })) & ((class: "GravityGenerator") -> ({ GravityGenerator })) & ((class: "Gyro") -> ({ Gyro })) & ((class: "WindTurbine") -> ({ WindTurbine })) & ((class: "Sign") -> ({ Sign })) & ((class: "ConveyorBelt") -> ({ ConveyorBelt })) & ((class: "Plastic") -> ({ Plastic })) & ((class: "Hologram") -> ({ Hologram })) & ((class: "FourthOfJuly") -> ({ FourthOfJuly })) & ((class: "Relay") -> ({ Relay })) & ((class: "Transporter") -> ({ Transporter })) & ((class: "DevBattery") -> ({ DevBattery })) & ((class: "Door") -> ({ Door })) & ((class: "Handle") -> ({ Handle })) & ((class: "SolarScoop") -> ({ SolarScoop })) & ((class: "Refinery") -> ({ Refinery })) & ((class: "Bin") -> ({ Bin })) & ((class: "Propeller") -> ({ Propeller })) & ((class: "Kiln") -> ({ Kiln })) & ((class: "Boiler") -> ({ Boiler })) & ((class: "Asphalt") -> ({ Asphalt })) & ((class: "HyperspaceRadar") -> ({ HyperspaceRadar })) & ((class: "Tank") -> ({ Tank })) & ((class: "Switch") -> ({ Switch })) & ((class: "Port") -> ({ Port })) & ((class: "Beacon") -> ({ Beacon })) & ((class: "Spotlight") -> ({ Spotlight })) & ((class: string) -> ({ PilotObject })),
-		GetPartsFromPort = ( GetPartsFromPort :: any ) :: ((port: PortLike?, class: "DelayWire") -> ({ DelayWire })) & ((port: PortLike?, class: "Hatch") -> ({ Hatch })) & ((port: PortLike?, class: "Screen") -> ({ Screen })) & ((port: PortLike?, class: "Extractor") -> ({ Extractor })) & ((port: PortLike?, class: "Apparel") -> ({ Apparel })) & ((port: PortLike?, class: "CloningBay") -> ({ CloningBay })) & ((port: PortLike?, class: "Food") -> ({ Food })) & ((port: PortLike?, class: "Filter") -> ({ Filter })) & ((port: PortLike?, class: "Antenna") -> ({ Antenna })) & ((port: PortLike?, class: "Instrument") -> ({ Instrument })) & ((port: PortLike?, class: "ARController") -> ({ ARController })) & ((port: PortLike?, class: "Teleporter") -> ({ Teleporter })) & ((port: PortLike?, class: "Laser") -> ({ Laser })) & ((port: PortLike?, class: "DevHeatStorage") -> ({ DevHeatStorage })) & ((port: PortLike?, class: "BurnerGenerator") -> ({ BurnerGenerator })) & ((port: PortLike?, class: "DevGravityGenerator") -> ({ DevGravityGenerator })) & ((port: PortLike?, class: "Servo") -> ({ Servo })) & ((port: PortLike?, class: "DriveBox") -> ({ DriveBox })) & ((port: PortLike?, class: "FluidProjector") -> ({ FluidProjector })) & ((port: PortLike?, class: "TimeSensor") -> ({ TimeSensor })) & ((port: PortLike?, class: "ElectricFence") -> ({ ElectricFence })) & ((port: PortLike?, class: "Pump") -> ({ Pump })) & ((port: PortLike?, class: "Assembler") -> ({ Assembler })) & ((port: PortLike?, class: "Keyboard") -> ({ Keyboard })) & ((port: PortLike?, class: "StasisField") -> ({ StasisField })) & ((port: PortLike?, class: "LightBridge") -> ({ LightBridge })) & ((port: PortLike?, class: "ProximityButton") -> ({ ProximityButton })) & ((port: PortLike?, class: "WirelessButton") -> ({ WirelessButton })) & ((port: PortLike?, class: "DarkConverter") -> ({ DarkConverter })) & ((port: PortLike?, class: "Disk") -> ({ Disk })) & ((port: PortLike?, class: "LightTube") -> ({ LightTube })) & ((port: PortLike?, class: "LifeSensor") -> ({ LifeSensor })) & ((port: PortLike?, class: "SteamTurbine") -> ({ SteamTurbine })) & ((port: PortLike?, class: "PilotObject") -> ({ PilotObject })) & ((port: PortLike?, class: "Component") -> ({ Component })) & ((port: PortLike?, class: "Brick") -> ({ Brick })) & ((port: PortLike?, class: "Warhead") -> ({ Warhead })) & ((port: PortLike?, class: "Transformer") -> ({ Transformer })) & ((port: PortLike?, class: "Fireworks") -> ({ Fireworks })) & ((port: PortLike?, class: "FactionHub") -> ({ FactionHub })) & ((port: PortLike?, class: "TriggerRelay") -> ({ TriggerRelay })) & ((port: PortLike?, class: "PowerCell") -> ({ PowerCell })) & ((port: PortLike?, class: "Transistor") -> ({ Transistor })) & ((port: PortLike?, class: "Piston") -> ({ Piston })) & ((port: PortLike?, class: "Treads") -> ({ Treads })) & ((port: PortLike?, class: "CrudeWing") -> ({ CrudeWing })) & ((port: PortLike?, class: "SteamEngine") -> ({ SteamEngine })) & ((port: PortLike?, class: "Microcontroller") -> ({ Microcontroller })) & ((port: PortLike?, class: "HeatPump") -> ({ HeatPump })) & ((port: PortLike?, class: "Speaker") -> ({ Speaker })) & ((port: PortLike?, class: "Hull") -> ({ Hull })) & ((port: PortLike?, class: "VehicleSeat") -> ({ VehicleSeat })) & ((port: PortLike?, class: "Winch") -> ({ Winch })) & ((port: PortLike?, class: "Rotor") -> ({ Rotor })) & ((port: PortLike?, class: "Controller") -> ({ Controller })) & ((port: PortLike?, class: "Obelisk") -> ({ Obelisk })) & ((port: PortLike?, class: "Motor") -> ({ Motor })) & ((port: PortLike?, class: "Telescope") -> ({ Telescope })) & ((port: PortLike?, class: "BlackBox") -> ({ BlackBox })) & ((port: PortLike?, class: "Reactor") -> ({ Reactor })) & ((port: PortLike?, class: "Prosthetic") -> ({ Prosthetic })) & ((port: PortLike?, class: "Decoupler") -> ({ Decoupler })) & ((port: PortLike?, class: "Solenoid") -> ({ Solenoid })) & ((port: PortLike?, class: "DevSink") -> ({ DevSink })) & ((port: PortLike?, class: "HyperDrive") -> ({ HyperDrive })) & ((port: PortLike?, class: "TriggerSwitch") -> ({ TriggerSwitch })) & ((port: PortLike?, class: "SolarPanel") -> ({ SolarPanel })) & ((port: PortLike?, class: "Boombox") -> ({ Boombox })) & ((port: PortLike?, class: "Igniter") -> ({ Igniter })) & ((port: PortLike?, class: "DeleteSwitch") -> ({ DeleteSwitch })) & ((port: PortLike?, class: "Electromagnet") -> ({ Electromagnet })) & ((port: PortLike?, class: "Rocket") -> ({ Rocket })) & ((port: PortLike?, class: "Scrapper") -> ({ Scrapper })) & ((port: PortLike?, class: "TemperatureGate") -> ({ TemperatureGate })) & ((port: PortLike?, class: "RemoteControl") -> ({ RemoteControl })) & ((port: PortLike?, class: "Flamethrower") -> ({ Flamethrower })) & ((port: PortLike?, class: "Light") -> ({ Light })) & ((port: PortLike?, class: "Balloon") -> ({ Balloon })) & ((port: PortLike?, class: "DarkReactor") -> ({ DarkReactor })) & ((port: PortLike?, class: "Sail") -> ({ Sail })) & ((port: PortLike?, class: "Rail") -> ({ Rail })) & ((port: PortLike?, class: "RepairLaser") -> ({ RepairLaser })) & ((port: PortLike?, class: "Polysilicon") -> ({ Polysilicon })) & ((port: PortLike?, class: "Scanner") -> ({ Scanner })) & ((port: PortLike?, class: "Furnace") -> ({ Furnace })) & ((port: PortLike?, class: "DevSource") -> ({ DevSource })) & ((port: PortLike?, class: "AutomaticLaser") -> ({ AutomaticLaser })) & ((port: PortLike?, class: "Faucet") -> ({ Faucet })) & ((port: PortLike?, class: "Thruster") -> ({ Thruster })) & ((port: PortLike?, class: "CombustionTurbine") -> ({ CombustionTurbine })) & ((port: PortLike?, class: "TouchScreen") -> ({ TouchScreen })) & ((port: PortLike?, class: "HeatCell") -> ({ HeatCell })) & ((port: PortLike?, class: "Camera") -> ({ Camera })) & ((port: PortLike?, class: "Modem") -> ({ Modem })) & ((port: PortLike?, class: "TemperatureSensor") -> ({ TemperatureSensor })) & ((port: PortLike?, class: "Engine") -> ({ Engine })) & ((port: PortLike?, class: "Radar") -> ({ Radar })) & ((port: PortLike?, class: "RepairPlate") -> ({ RepairPlate })) & ((port: PortLike?, class: "MiningLaser") -> ({ MiningLaser })) & ((port: PortLike?, class: "IonRocket") -> ({ IonRocket })) & ((port: PortLike?, class: "BallastTank") -> ({ BallastTank })) & ((port: PortLike?, class: "Router") -> ({ Router })) & ((port: PortLike?, class: "Explosive") -> ({ Explosive })) & ((port: PortLike?, class: "ObjectDetector") -> ({ ObjectDetector })) & ((port: PortLike?, class: "StarMap") -> ({ StarMap })) & ((port: PortLike?, class: "TractorBeam") -> ({ TractorBeam })) & ((port: PortLike?, class: "Turbofan") -> ({ Turbofan })) & ((port: PortLike?, class: "Battery") -> ({ Battery })) & ((port: PortLike?, class: "Coupler") -> ({ Coupler })) & ((port: PortLike?, class: "DevTeleporter") -> ({ DevTeleporter })) & ((port: PortLike?, class: "Seat") -> ({ Seat })) & ((port: PortLike?, class: "Part100k") -> ({ Part100k })) & ((port: PortLike?, class: "Valve") -> ({ Valve })) & ((port: PortLike?, class: "Freezer") -> ({ Freezer })) & ((port: PortLike?, class: "Melter") -> ({ Melter })) & ((port: PortLike?, class: "Railgun") -> ({ Railgun })) & ((port: PortLike?, class: "Dispenser") -> ({ Dispenser })) & ((port: PortLike?, class: "Wing") -> ({ Wing })) & ((port: PortLike?, class: "Anchor") -> ({ Anchor })) & ((port: PortLike?, class: "HeatValve") -> ({ HeatValve })) & ((port: PortLike?, class: "Constructor") -> ({ Constructor })) & ((port: PortLike?, class: "tinnitus") -> ({ tinnitus })) & ((port: PortLike?, class: "EnergyBomb") -> ({ EnergyBomb })) & ((port: PortLike?, class: "EnergyShield") -> ({ EnergyShield })) & ((port: PortLike?, class: "TouchSensor") -> ({ TouchSensor })) & ((port: PortLike?, class: "StorageSensor") -> ({ StorageSensor })) & ((port: PortLike?, class: "Microphone") -> ({ Microphone })) & ((port: PortLike?, class: "Blade") -> ({ Blade })) & ((port: PortLike?, class: "Sorter") -> ({ Sorter })) & ((port: PortLike?, class: "Hydroponic") -> ({ Hydroponic })) & ((port: PortLike?, class: "GravityGenerator") -> ({ GravityGenerator })) & ((port: PortLike?, class: "Gyro") -> ({ Gyro })) & ((port: PortLike?, class: "WindTurbine") -> ({ WindTurbine })) & ((port: PortLike?, class: "Sign") -> ({ Sign })) & ((port: PortLike?, class: "ConveyorBelt") -> ({ ConveyorBelt })) & ((port: PortLike?, class: "Plastic") -> ({ Plastic })) & ((port: PortLike?, class: "Hologram") -> ({ Hologram })) & ((port: PortLike?, class: "FourthOfJuly") -> ({ FourthOfJuly })) & ((port: PortLike?, class: "Relay") -> ({ Relay })) & ((port: PortLike?, class: "Transporter") -> ({ Transporter })) & ((port: PortLike?, class: "DevBattery") -> ({ DevBattery })) & ((port: PortLike?, class: "Door") -> ({ Door })) & ((port: PortLike?, class: "Handle") -> ({ Handle })) & ((port: PortLike?, class: "SolarScoop") -> ({ SolarScoop })) & ((port: PortLike?, class: "Refinery") -> ({ Refinery })) & ((port: PortLike?, class: "Bin") -> ({ Bin })) & ((port: PortLike?, class: "Propeller") -> ({ Propeller })) & ((port: PortLike?, class: "Kiln") -> ({ Kiln })) & ((port: PortLike?, class: "Boiler") -> ({ Boiler })) & ((port: PortLike?, class: "Asphalt") -> ({ Asphalt })) & ((port: PortLike?, class: "HyperspaceRadar") -> ({ HyperspaceRadar })) & ((port: PortLike?, class: "Tank") -> ({ Tank })) & ((port: PortLike?, class: "Switch") -> ({ Switch })) & ((port: PortLike?, class: "Port") -> ({ Port })) & ((port: PortLike?, class: "Beacon") -> ({ Beacon })) & ((port: PortLike?, class: "Spotlight") -> ({ Spotlight })) & ((port: PortLike?, class: string) -> ({ PilotObject })),
-		GetPart = ( GetPart :: any ) :: ((class: "DelayWire") -> (DelayWire?)) & ((class: "Hatch") -> (Hatch?)) & ((class: "Screen") -> (Screen?)) & ((class: "Extractor") -> (Extractor?)) & ((class: "Apparel") -> (Apparel?)) & ((class: "CloningBay") -> (CloningBay?)) & ((class: "Food") -> (Food?)) & ((class: "Filter") -> (Filter?)) & ((class: "Antenna") -> (Antenna?)) & ((class: "Instrument") -> (Instrument?)) & ((class: "ARController") -> (ARController?)) & ((class: "Teleporter") -> (Teleporter?)) & ((class: "Laser") -> (Laser?)) & ((class: "DevHeatStorage") -> (DevHeatStorage?)) & ((class: "BurnerGenerator") -> (BurnerGenerator?)) & ((class: "DevGravityGenerator") -> (DevGravityGenerator?)) & ((class: "Servo") -> (Servo?)) & ((class: "DriveBox") -> (DriveBox?)) & ((class: "FluidProjector") -> (FluidProjector?)) & ((class: "TimeSensor") -> (TimeSensor?)) & ((class: "ElectricFence") -> (ElectricFence?)) & ((class: "Pump") -> (Pump?)) & ((class: "Assembler") -> (Assembler?)) & ((class: "Keyboard") -> (Keyboard?)) & ((class: "StasisField") -> (StasisField?)) & ((class: "LightBridge") -> (LightBridge?)) & ((class: "ProximityButton") -> (ProximityButton?)) & ((class: "WirelessButton") -> (WirelessButton?)) & ((class: "DarkConverter") -> (DarkConverter?)) & ((class: "Disk") -> (Disk?)) & ((class: "LightTube") -> (LightTube?)) & ((class: "LifeSensor") -> (LifeSensor?)) & ((class: "SteamTurbine") -> (SteamTurbine?)) & ((class: "PilotObject") -> (PilotObject?)) & ((class: "Component") -> (Component?)) & ((class: "Brick") -> (Brick?)) & ((class: "Warhead") -> (Warhead?)) & ((class: "Transformer") -> (Transformer?)) & ((class: "Fireworks") -> (Fireworks?)) & ((class: "FactionHub") -> (FactionHub?)) & ((class: "TriggerRelay") -> (TriggerRelay?)) & ((class: "PowerCell") -> (PowerCell?)) & ((class: "Transistor") -> (Transistor?)) & ((class: "Piston") -> (Piston?)) & ((class: "Treads") -> (Treads?)) & ((class: "CrudeWing") -> (CrudeWing?)) & ((class: "SteamEngine") -> (SteamEngine?)) & ((class: "Microcontroller") -> (Microcontroller?)) & ((class: "HeatPump") -> (HeatPump?)) & ((class: "Speaker") -> (Speaker?)) & ((class: "Hull") -> (Hull?)) & ((class: "VehicleSeat") -> (VehicleSeat?)) & ((class: "Winch") -> (Winch?)) & ((class: "Rotor") -> (Rotor?)) & ((class: "Controller") -> (Controller?)) & ((class: "Obelisk") -> (Obelisk?)) & ((class: "Motor") -> (Motor?)) & ((class: "Telescope") -> (Telescope?)) & ((class: "BlackBox") -> (BlackBox?)) & ((class: "Reactor") -> (Reactor?)) & ((class: "Prosthetic") -> (Prosthetic?)) & ((class: "Decoupler") -> (Decoupler?)) & ((class: "Solenoid") -> (Solenoid?)) & ((class: "DevSink") -> (DevSink?)) & ((class: "HyperDrive") -> (HyperDrive?)) & ((class: "TriggerSwitch") -> (TriggerSwitch?)) & ((class: "SolarPanel") -> (SolarPanel?)) & ((class: "Boombox") -> (Boombox?)) & ((class: "Igniter") -> (Igniter?)) & ((class: "DeleteSwitch") -> (DeleteSwitch?)) & ((class: "Electromagnet") -> (Electromagnet?)) & ((class: "Rocket") -> (Rocket?)) & ((class: "Scrapper") -> (Scrapper?)) & ((class: "TemperatureGate") -> (TemperatureGate?)) & ((class: "RemoteControl") -> (RemoteControl?)) & ((class: "Flamethrower") -> (Flamethrower?)) & ((class: "Light") -> (Light?)) & ((class: "Balloon") -> (Balloon?)) & ((class: "DarkReactor") -> (DarkReactor?)) & ((class: "Sail") -> (Sail?)) & ((class: "Rail") -> (Rail?)) & ((class: "RepairLaser") -> (RepairLaser?)) & ((class: "Polysilicon") -> (Polysilicon?)) & ((class: "Scanner") -> (Scanner?)) & ((class: "Furnace") -> (Furnace?)) & ((class: "DevSource") -> (DevSource?)) & ((class: "AutomaticLaser") -> (AutomaticLaser?)) & ((class: "Faucet") -> (Faucet?)) & ((class: "Thruster") -> (Thruster?)) & ((class: "CombustionTurbine") -> (CombustionTurbine?)) & ((class: "TouchScreen") -> (TouchScreen?)) & ((class: "HeatCell") -> (HeatCell?)) & ((class: "Camera") -> (Camera?)) & ((class: "Modem") -> (Modem?)) & ((class: "TemperatureSensor") -> (TemperatureSensor?)) & ((class: "Engine") -> (Engine?)) & ((class: "Radar") -> (Radar?)) & ((class: "RepairPlate") -> (RepairPlate?)) & ((class: "MiningLaser") -> (MiningLaser?)) & ((class: "IonRocket") -> (IonRocket?)) & ((class: "BallastTank") -> (BallastTank?)) & ((class: "Router") -> (Router?)) & ((class: "Explosive") -> (Explosive?)) & ((class: "ObjectDetector") -> (ObjectDetector?)) & ((class: "StarMap") -> (StarMap?)) & ((class: "TractorBeam") -> (TractorBeam?)) & ((class: "Turbofan") -> (Turbofan?)) & ((class: "Battery") -> (Battery?)) & ((class: "Coupler") -> (Coupler?)) & ((class: "DevTeleporter") -> (DevTeleporter?)) & ((class: "Seat") -> (Seat?)) & ((class: "Part100k") -> (Part100k?)) & ((class: "Valve") -> (Valve?)) & ((class: "Freezer") -> (Freezer?)) & ((class: "Melter") -> (Melter?)) & ((class: "Railgun") -> (Railgun?)) & ((class: "Dispenser") -> (Dispenser?)) & ((class: "Wing") -> (Wing?)) & ((class: "Anchor") -> (Anchor?)) & ((class: "HeatValve") -> (HeatValve?)) & ((class: "Constructor") -> (Constructor?)) & ((class: "tinnitus") -> (tinnitus?)) & ((class: "EnergyBomb") -> (EnergyBomb?)) & ((class: "EnergyShield") -> (EnergyShield?)) & ((class: "TouchSensor") -> (TouchSensor?)) & ((class: "StorageSensor") -> (StorageSensor?)) & ((class: "Microphone") -> (Microphone?)) & ((class: "Blade") -> (Blade?)) & ((class: "Sorter") -> (Sorter?)) & ((class: "Hydroponic") -> (Hydroponic?)) & ((class: "GravityGenerator") -> (GravityGenerator?)) & ((class: "Gyro") -> (Gyro?)) & ((class: "WindTurbine") -> (WindTurbine?)) & ((class: "Sign") -> (Sign?)) & ((class: "ConveyorBelt") -> (ConveyorBelt?)) & ((class: "Plastic") -> (Plastic?)) & ((class: "Hologram") -> (Hologram?)) & ((class: "FourthOfJuly") -> (FourthOfJuly?)) & ((class: "Relay") -> (Relay?)) & ((class: "Transporter") -> (Transporter?)) & ((class: "DevBattery") -> (DevBattery?)) & ((class: "Door") -> (Door?)) & ((class: "Handle") -> (Handle?)) & ((class: "SolarScoop") -> (SolarScoop?)) & ((class: "Refinery") -> (Refinery?)) & ((class: "Bin") -> (Bin?)) & ((class: "Propeller") -> (Propeller?)) & ((class: "Kiln") -> (Kiln?)) & ((class: "Boiler") -> (Boiler?)) & ((class: "Asphalt") -> (Asphalt?)) & ((class: "HyperspaceRadar") -> (HyperspaceRadar?)) & ((class: "Tank") -> (Tank?)) & ((class: "Switch") -> (Switch?)) & ((class: "Port") -> (Port?)) & ((class: "Beacon") -> (Beacon?)) & ((class: "Spotlight") -> (Spotlight?)) & ((class: string) -> (PilotObject)),
+		GetPartFromPort = ( GetPartFromPort :: any ) :: ((port: PortLike?, class: "DelayWire") -> (DelayWire?)) & ((port: PortLike?, class: "Hatch") -> (Hatch?)) & ((port: PortLike?, class: "Screen") -> (Screen?)) & ((port: PortLike?, class: "Extractor") -> (Extractor?)) & ((port: PortLike?, class: "Apparel") -> (Apparel?)) & ((port: PortLike?, class: "CloningBay") -> (CloningBay?)) & ((port: PortLike?, class: "Food") -> (Food?)) & ((port: PortLike?, class: "Filter") -> (Filter?)) & ((port: PortLike?, class: "Antenna") -> (Antenna?)) & ((port: PortLike?, class: "Instrument") -> (Instrument?)) & ((port: PortLike?, class: "ARController") -> (ARController?)) & ((port: PortLike?, class: "Teleporter") -> (Teleporter?)) & ((port: PortLike?, class: "Laser") -> (Laser?)) & ((port: PortLike?, class: "DevHeatStorage") -> (DevHeatStorage?)) & ((port: PortLike?, class: "BurnerGenerator") -> (BurnerGenerator?)) & ((port: PortLike?, class: "DevGravityGenerator") -> (DevGravityGenerator?)) & ((port: PortLike?, class: "Servo") -> (Servo?)) & ((port: PortLike?, class: "DriveBox") -> (DriveBox?)) & ((port: PortLike?, class: "FluidProjector") -> (FluidProjector?)) & ((port: PortLike?, class: "TimeSensor") -> (TimeSensor?)) & ((port: PortLike?, class: "ElectricFence") -> (ElectricFence?)) & ((port: PortLike?, class: "Pump") -> (Pump?)) & ((port: PortLike?, class: "Assembler") -> (Assembler?)) & ((port: PortLike?, class: "Keyboard") -> (Keyboard?)) & ((port: PortLike?, class: "StasisField") -> (StasisField?)) & ((port: PortLike?, class: "LightBridge") -> (LightBridge?)) & ((port: PortLike?, class: "ProximityButton") -> (ProximityButton?)) & ((port: PortLike?, class: "WirelessButton") -> (WirelessButton?)) & ((port: PortLike?, class: "DarkConverter") -> (DarkConverter?)) & ((port: PortLike?, class: "Disk") -> (Disk?)) & ((port: PortLike?, class: "LightTube") -> (LightTube?)) & ((port: PortLike?, class: "LifeSensor") -> (LifeSensor?)) & ((port: PortLike?, class: "SteamTurbine") -> (SteamTurbine?)) & ((port: PortLike?, class: "PilotObject") -> (PilotObject?)) & ((port: PortLike?, class: "Component") -> (Component?)) & ((port: PortLike?, class: "Brick") -> (Brick?)) & ((port: PortLike?, class: "Warhead") -> (Warhead?)) & ((port: PortLike?, class: "Transformer") -> (Transformer?)) & ((port: PortLike?, class: "Fireworks") -> (Fireworks?)) & ((port: PortLike?, class: "FactionHub") -> (FactionHub?)) & ((port: PortLike?, class: "TriggerRelay") -> (TriggerRelay?)) & ((port: PortLike?, class: "PowerCell") -> (PowerCell?)) & ((port: PortLike?, class: "Transistor") -> (Transistor?)) & ((port: PortLike?, class: "Piston") -> (Piston?)) & ((port: PortLike?, class: "Treads") -> (Treads?)) & ((port: PortLike?, class: "CrudeWing") -> (CrudeWing?)) & ((port: PortLike?, class: "SteamEngine") -> (SteamEngine?)) & ((port: PortLike?, class: "Microcontroller") -> (Microcontroller?)) & ((port: PortLike?, class: "HeatPump") -> (HeatPump?)) & ((port: PortLike?, class: "Speaker") -> (Speaker?)) & ((port: PortLike?, class: "Hull") -> (Hull?)) & ((port: PortLike?, class: "VehicleSeat") -> (VehicleSeat?)) & ((port: PortLike?, class: "Winch") -> (Winch?)) & ((port: PortLike?, class: "Rotor") -> (Rotor?)) & ((port: PortLike?, class: "Controller") -> (Controller?)) & ((port: PortLike?, class: "Obelisk") -> (Obelisk?)) & ((port: PortLike?, class: "Motor") -> (Motor?)) & ((port: PortLike?, class: "Telescope") -> (Telescope?)) & ((port: PortLike?, class: "BlackBox") -> (BlackBox?)) & ((port: PortLike?, class: "Reactor") -> (Reactor?)) & ((port: PortLike?, class: "Prosthetic") -> (Prosthetic?)) & ((port: PortLike?, class: "Decoupler") -> (Decoupler?)) & ((port: PortLike?, class: "Solenoid") -> (Solenoid?)) & ((port: PortLike?, class: "DevSink") -> (DevSink?)) & ((port: PortLike?, class: "HyperDrive") -> (HyperDrive?)) & ((port: PortLike?, class: "TriggerSwitch") -> (TriggerSwitch?)) & ((port: PortLike?, class: "SolarPanel") -> (SolarPanel?)) & ((port: PortLike?, class: "Boombox") -> (Boombox?)) & ((port: PortLike?, class: "Igniter") -> (Igniter?)) & ((port: PortLike?, class: "DeleteSwitch") -> (DeleteSwitch?)) & ((port: PortLike?, class: "Electromagnet") -> (Electromagnet?)) & ((port: PortLike?, class: "Rocket") -> (Rocket?)) & ((port: PortLike?, class: "Scrapper") -> (Scrapper?)) & ((port: PortLike?, class: "TemperatureGate") -> (TemperatureGate?)) & ((port: PortLike?, class: "RemoteControl") -> (RemoteControl?)) & ((port: PortLike?, class: "Flamethrower") -> (Flamethrower?)) & ((port: PortLike?, class: "Light") -> (Light?)) & ((port: PortLike?, class: "Balloon") -> (Balloon?)) & ((port: PortLike?, class: "DarkReactor") -> (DarkReactor?)) & ((port: PortLike?, class: "Sail") -> (Sail?)) & ((port: PortLike?, class: "Rail") -> (Rail?)) & ((port: PortLike?, class: "RepairLaser") -> (RepairLaser?)) & ((port: PortLike?, class: "Polysilicon") -> (Polysilicon?)) & ((port: PortLike?, class: "Scanner") -> (Scanner?)) & ((port: PortLike?, class: "Furnace") -> (Furnace?)) & ((port: PortLike?, class: "DevSource") -> (DevSource?)) & ((port: PortLike?, class: "AutomaticLaser") -> (AutomaticLaser?)) & ((port: PortLike?, class: "Faucet") -> (Faucet?)) & ((port: PortLike?, class: "Thruster") -> (Thruster?)) & ((port: PortLike?, class: "CombustionTurbine") -> (CombustionTurbine?)) & ((port: PortLike?, class: "TouchScreen") -> (TouchScreen?)) & ((port: PortLike?, class: "HeatCell") -> (HeatCell?)) & ((port: PortLike?, class: "Camera") -> (Camera?)) & ((port: PortLike?, class: "Modem") -> (Modem?)) & ((port: PortLike?, class: "TemperatureSensor") -> (TemperatureSensor?)) & ((port: PortLike?, class: "Engine") -> (Engine?)) & ((port: PortLike?, class: "Radar") -> (Radar?)) & ((port: PortLike?, class: "RepairPlate") -> (RepairPlate?)) & ((port: PortLike?, class: "MiningLaser") -> (MiningLaser?)) & ((port: PortLike?, class: "IonRocket") -> (IonRocket?)) & ((port: PortLike?, class: "BallastTank") -> (BallastTank?)) & ((port: PortLike?, class: "Router") -> (Router?)) & ((port: PortLike?, class: "Explosive") -> (Explosive?)) & ((port: PortLike?, class: "ObjectDetector") -> (ObjectDetector?)) & ((port: PortLike?, class: "StarMap") -> (StarMap?)) & ((port: PortLike?, class: "TractorBeam") -> (TractorBeam?)) & ((port: PortLike?, class: "Turbofan") -> (Turbofan?)) & ((port: PortLike?, class: "Battery") -> (Battery?)) & ((port: PortLike?, class: "Coupler") -> (Coupler?)) & ((port: PortLike?, class: "DevTeleporter") -> (DevTeleporter?)) & ((port: PortLike?, class: "Seat") -> (Seat?)) & ((port: PortLike?, class: "Part100k") -> (Part100k?)) & ((port: PortLike?, class: "Valve") -> (Valve?)) & ((port: PortLike?, class: "Freezer") -> (Freezer?)) & ((port: PortLike?, class: "Melter") -> (Melter?)) & ((port: PortLike?, class: "Railgun") -> (Railgun?)) & ((port: PortLike?, class: "Dispenser") -> (Dispenser?)) & ((port: PortLike?, class: "Wing") -> (Wing?)) & ((port: PortLike?, class: "Anchor") -> (Anchor?)) & ((port: PortLike?, class: "HeatValve") -> (HeatValve?)) & ((port: PortLike?, class: "Constructor") -> (Constructor?)) & ((port: PortLike?, class: "tinnitus") -> (tinnitus?)) & ((port: PortLike?, class: "EnergyBomb") -> (EnergyBomb?)) & ((port: PortLike?, class: "EnergyShield") -> (EnergyShield?)) & ((port: PortLike?, class: "TouchSensor") -> (TouchSensor?)) & ((port: PortLike?, class: "StorageSensor") -> (StorageSensor?)) & ((port: PortLike?, class: "Microphone") -> (Microphone?)) & ((port: PortLike?, class: "Blade") -> (Blade?)) & ((port: PortLike?, class: "Sorter") -> (Sorter?)) & ((port: PortLike?, class: "Hydroponic") -> (Hydroponic?)) & ((port: PortLike?, class: "GravityGenerator") -> (GravityGenerator?)) & ((port: PortLike?, class: "Gyro") -> (Gyro?)) & ((port: PortLike?, class: "WindTurbine") -> (WindTurbine?)) & ((port: PortLike?, class: "Sign") -> (Sign?)) & ((port: PortLike?, class: "ConveyorBelt") -> (ConveyorBelt?)) & ((port: PortLike?, class: "Plastic") -> (Plastic?)) & ((port: PortLike?, class: "Hologram") -> (Hologram?)) & ((port: PortLike?, class: "FourthOfJuly") -> (FourthOfJuly?)) & ((port: PortLike?, class: "Relay") -> (Relay?)) & ((port: PortLike?, class: "Transporter") -> (Transporter?)) & ((port: PortLike?, class: "DevBattery") -> (DevBattery?)) & ((port: PortLike?, class: "Door") -> (Door?)) & ((port: PortLike?, class: "Handle") -> (Handle?)) & ((port: PortLike?, class: "SolarScoop") -> (SolarScoop?)) & ((port: PortLike?, class: "Refinery") -> (Refinery?)) & ((port: PortLike?, class: "Bin") -> (Bin?)) & ((port: PortLike?, class: "Propeller") -> (Propeller?)) & ((port: PortLike?, class: "Kiln") -> (Kiln?)) & ((port: PortLike?, class: "Boiler") -> (Boiler?)) & ((port: PortLike?, class: "Asphalt") -> (Asphalt?)) & ((port: PortLike?, class: "HyperspaceRadar") -> (HyperspaceRadar?)) & ((port: PortLike?, class: "Tank") -> (Tank?)) & ((port: PortLike?, class: "Switch") -> (Switch?)) & ((port: PortLike?, class: "Port") -> (Port?)) & ((port: PortLike?, class: "Beacon") -> (Beacon?)) & ((port: PortLike?, class: "Spotlight") -> (Spotlight?)) & ((port: PortLike?, class: string?) -> (PilotObject)),
+		GetParts = ( GetParts :: any ) :: ((class: "DelayWire") -> ({ DelayWire })) & ((class: "Hatch") -> ({ Hatch })) & ((class: "Screen") -> ({ Screen })) & ((class: "Extractor") -> ({ Extractor })) & ((class: "Apparel") -> ({ Apparel })) & ((class: "CloningBay") -> ({ CloningBay })) & ((class: "Food") -> ({ Food })) & ((class: "Filter") -> ({ Filter })) & ((class: "Antenna") -> ({ Antenna })) & ((class: "Instrument") -> ({ Instrument })) & ((class: "ARController") -> ({ ARController })) & ((class: "Teleporter") -> ({ Teleporter })) & ((class: "Laser") -> ({ Laser })) & ((class: "DevHeatStorage") -> ({ DevHeatStorage })) & ((class: "BurnerGenerator") -> ({ BurnerGenerator })) & ((class: "DevGravityGenerator") -> ({ DevGravityGenerator })) & ((class: "Servo") -> ({ Servo })) & ((class: "DriveBox") -> ({ DriveBox })) & ((class: "FluidProjector") -> ({ FluidProjector })) & ((class: "TimeSensor") -> ({ TimeSensor })) & ((class: "ElectricFence") -> ({ ElectricFence })) & ((class: "Pump") -> ({ Pump })) & ((class: "Assembler") -> ({ Assembler })) & ((class: "Keyboard") -> ({ Keyboard })) & ((class: "StasisField") -> ({ StasisField })) & ((class: "LightBridge") -> ({ LightBridge })) & ((class: "ProximityButton") -> ({ ProximityButton })) & ((class: "WirelessButton") -> ({ WirelessButton })) & ((class: "DarkConverter") -> ({ DarkConverter })) & ((class: "Disk") -> ({ Disk })) & ((class: "LightTube") -> ({ LightTube })) & ((class: "LifeSensor") -> ({ LifeSensor })) & ((class: "SteamTurbine") -> ({ SteamTurbine })) & ((class: "PilotObject") -> ({ PilotObject })) & ((class: "Component") -> ({ Component })) & ((class: "Brick") -> ({ Brick })) & ((class: "Warhead") -> ({ Warhead })) & ((class: "Transformer") -> ({ Transformer })) & ((class: "Fireworks") -> ({ Fireworks })) & ((class: "FactionHub") -> ({ FactionHub })) & ((class: "TriggerRelay") -> ({ TriggerRelay })) & ((class: "PowerCell") -> ({ PowerCell })) & ((class: "Transistor") -> ({ Transistor })) & ((class: "Piston") -> ({ Piston })) & ((class: "Treads") -> ({ Treads })) & ((class: "CrudeWing") -> ({ CrudeWing })) & ((class: "SteamEngine") -> ({ SteamEngine })) & ((class: "Microcontroller") -> ({ Microcontroller })) & ((class: "HeatPump") -> ({ HeatPump })) & ((class: "Speaker") -> ({ Speaker })) & ((class: "Hull") -> ({ Hull })) & ((class: "VehicleSeat") -> ({ VehicleSeat })) & ((class: "Winch") -> ({ Winch })) & ((class: "Rotor") -> ({ Rotor })) & ((class: "Controller") -> ({ Controller })) & ((class: "Obelisk") -> ({ Obelisk })) & ((class: "Motor") -> ({ Motor })) & ((class: "Telescope") -> ({ Telescope })) & ((class: "BlackBox") -> ({ BlackBox })) & ((class: "Reactor") -> ({ Reactor })) & ((class: "Prosthetic") -> ({ Prosthetic })) & ((class: "Decoupler") -> ({ Decoupler })) & ((class: "Solenoid") -> ({ Solenoid })) & ((class: "DevSink") -> ({ DevSink })) & ((class: "HyperDrive") -> ({ HyperDrive })) & ((class: "TriggerSwitch") -> ({ TriggerSwitch })) & ((class: "SolarPanel") -> ({ SolarPanel })) & ((class: "Boombox") -> ({ Boombox })) & ((class: "Igniter") -> ({ Igniter })) & ((class: "DeleteSwitch") -> ({ DeleteSwitch })) & ((class: "Electromagnet") -> ({ Electromagnet })) & ((class: "Rocket") -> ({ Rocket })) & ((class: "Scrapper") -> ({ Scrapper })) & ((class: "TemperatureGate") -> ({ TemperatureGate })) & ((class: "RemoteControl") -> ({ RemoteControl })) & ((class: "Flamethrower") -> ({ Flamethrower })) & ((class: "Light") -> ({ Light })) & ((class: "Balloon") -> ({ Balloon })) & ((class: "DarkReactor") -> ({ DarkReactor })) & ((class: "Sail") -> ({ Sail })) & ((class: "Rail") -> ({ Rail })) & ((class: "RepairLaser") -> ({ RepairLaser })) & ((class: "Polysilicon") -> ({ Polysilicon })) & ((class: "Scanner") -> ({ Scanner })) & ((class: "Furnace") -> ({ Furnace })) & ((class: "DevSource") -> ({ DevSource })) & ((class: "AutomaticLaser") -> ({ AutomaticLaser })) & ((class: "Faucet") -> ({ Faucet })) & ((class: "Thruster") -> ({ Thruster })) & ((class: "CombustionTurbine") -> ({ CombustionTurbine })) & ((class: "TouchScreen") -> ({ TouchScreen })) & ((class: "HeatCell") -> ({ HeatCell })) & ((class: "Camera") -> ({ Camera })) & ((class: "Modem") -> ({ Modem })) & ((class: "TemperatureSensor") -> ({ TemperatureSensor })) & ((class: "Engine") -> ({ Engine })) & ((class: "Radar") -> ({ Radar })) & ((class: "RepairPlate") -> ({ RepairPlate })) & ((class: "MiningLaser") -> ({ MiningLaser })) & ((class: "IonRocket") -> ({ IonRocket })) & ((class: "BallastTank") -> ({ BallastTank })) & ((class: "Router") -> ({ Router })) & ((class: "Explosive") -> ({ Explosive })) & ((class: "ObjectDetector") -> ({ ObjectDetector })) & ((class: "StarMap") -> ({ StarMap })) & ((class: "TractorBeam") -> ({ TractorBeam })) & ((class: "Turbofan") -> ({ Turbofan })) & ((class: "Battery") -> ({ Battery })) & ((class: "Coupler") -> ({ Coupler })) & ((class: "DevTeleporter") -> ({ DevTeleporter })) & ((class: "Seat") -> ({ Seat })) & ((class: "Part100k") -> ({ Part100k })) & ((class: "Valve") -> ({ Valve })) & ((class: "Freezer") -> ({ Freezer })) & ((class: "Melter") -> ({ Melter })) & ((class: "Railgun") -> ({ Railgun })) & ((class: "Dispenser") -> ({ Dispenser })) & ((class: "Wing") -> ({ Wing })) & ((class: "Anchor") -> ({ Anchor })) & ((class: "HeatValve") -> ({ HeatValve })) & ((class: "Constructor") -> ({ Constructor })) & ((class: "tinnitus") -> ({ tinnitus })) & ((class: "EnergyBomb") -> ({ EnergyBomb })) & ((class: "EnergyShield") -> ({ EnergyShield })) & ((class: "TouchSensor") -> ({ TouchSensor })) & ((class: "StorageSensor") -> ({ StorageSensor })) & ((class: "Microphone") -> ({ Microphone })) & ((class: "Blade") -> ({ Blade })) & ((class: "Sorter") -> ({ Sorter })) & ((class: "Hydroponic") -> ({ Hydroponic })) & ((class: "GravityGenerator") -> ({ GravityGenerator })) & ((class: "Gyro") -> ({ Gyro })) & ((class: "WindTurbine") -> ({ WindTurbine })) & ((class: "Sign") -> ({ Sign })) & ((class: "ConveyorBelt") -> ({ ConveyorBelt })) & ((class: "Plastic") -> ({ Plastic })) & ((class: "Hologram") -> ({ Hologram })) & ((class: "FourthOfJuly") -> ({ FourthOfJuly })) & ((class: "Relay") -> ({ Relay })) & ((class: "Transporter") -> ({ Transporter })) & ((class: "DevBattery") -> ({ DevBattery })) & ((class: "Door") -> ({ Door })) & ((class: "Handle") -> ({ Handle })) & ((class: "SolarScoop") -> ({ SolarScoop })) & ((class: "Refinery") -> ({ Refinery })) & ((class: "Bin") -> ({ Bin })) & ((class: "Propeller") -> ({ Propeller })) & ((class: "Kiln") -> ({ Kiln })) & ((class: "Boiler") -> ({ Boiler })) & ((class: "Asphalt") -> ({ Asphalt })) & ((class: "HyperspaceRadar") -> ({ HyperspaceRadar })) & ((class: "Tank") -> ({ Tank })) & ((class: "Switch") -> ({ Switch })) & ((class: "Port") -> ({ Port })) & ((class: "Beacon") -> ({ Beacon })) & ((class: "Spotlight") -> ({ Spotlight })) & ((class: string?) -> ({ PilotObject })),
+		GetPartsFromPort = ( GetPartsFromPort :: any ) :: ((port: PortLike?, class: "DelayWire") -> ({ DelayWire })) & ((port: PortLike?, class: "Hatch") -> ({ Hatch })) & ((port: PortLike?, class: "Screen") -> ({ Screen })) & ((port: PortLike?, class: "Extractor") -> ({ Extractor })) & ((port: PortLike?, class: "Apparel") -> ({ Apparel })) & ((port: PortLike?, class: "CloningBay") -> ({ CloningBay })) & ((port: PortLike?, class: "Food") -> ({ Food })) & ((port: PortLike?, class: "Filter") -> ({ Filter })) & ((port: PortLike?, class: "Antenna") -> ({ Antenna })) & ((port: PortLike?, class: "Instrument") -> ({ Instrument })) & ((port: PortLike?, class: "ARController") -> ({ ARController })) & ((port: PortLike?, class: "Teleporter") -> ({ Teleporter })) & ((port: PortLike?, class: "Laser") -> ({ Laser })) & ((port: PortLike?, class: "DevHeatStorage") -> ({ DevHeatStorage })) & ((port: PortLike?, class: "BurnerGenerator") -> ({ BurnerGenerator })) & ((port: PortLike?, class: "DevGravityGenerator") -> ({ DevGravityGenerator })) & ((port: PortLike?, class: "Servo") -> ({ Servo })) & ((port: PortLike?, class: "DriveBox") -> ({ DriveBox })) & ((port: PortLike?, class: "FluidProjector") -> ({ FluidProjector })) & ((port: PortLike?, class: "TimeSensor") -> ({ TimeSensor })) & ((port: PortLike?, class: "ElectricFence") -> ({ ElectricFence })) & ((port: PortLike?, class: "Pump") -> ({ Pump })) & ((port: PortLike?, class: "Assembler") -> ({ Assembler })) & ((port: PortLike?, class: "Keyboard") -> ({ Keyboard })) & ((port: PortLike?, class: "StasisField") -> ({ StasisField })) & ((port: PortLike?, class: "LightBridge") -> ({ LightBridge })) & ((port: PortLike?, class: "ProximityButton") -> ({ ProximityButton })) & ((port: PortLike?, class: "WirelessButton") -> ({ WirelessButton })) & ((port: PortLike?, class: "DarkConverter") -> ({ DarkConverter })) & ((port: PortLike?, class: "Disk") -> ({ Disk })) & ((port: PortLike?, class: "LightTube") -> ({ LightTube })) & ((port: PortLike?, class: "LifeSensor") -> ({ LifeSensor })) & ((port: PortLike?, class: "SteamTurbine") -> ({ SteamTurbine })) & ((port: PortLike?, class: "PilotObject") -> ({ PilotObject })) & ((port: PortLike?, class: "Component") -> ({ Component })) & ((port: PortLike?, class: "Brick") -> ({ Brick })) & ((port: PortLike?, class: "Warhead") -> ({ Warhead })) & ((port: PortLike?, class: "Transformer") -> ({ Transformer })) & ((port: PortLike?, class: "Fireworks") -> ({ Fireworks })) & ((port: PortLike?, class: "FactionHub") -> ({ FactionHub })) & ((port: PortLike?, class: "TriggerRelay") -> ({ TriggerRelay })) & ((port: PortLike?, class: "PowerCell") -> ({ PowerCell })) & ((port: PortLike?, class: "Transistor") -> ({ Transistor })) & ((port: PortLike?, class: "Piston") -> ({ Piston })) & ((port: PortLike?, class: "Treads") -> ({ Treads })) & ((port: PortLike?, class: "CrudeWing") -> ({ CrudeWing })) & ((port: PortLike?, class: "SteamEngine") -> ({ SteamEngine })) & ((port: PortLike?, class: "Microcontroller") -> ({ Microcontroller })) & ((port: PortLike?, class: "HeatPump") -> ({ HeatPump })) & ((port: PortLike?, class: "Speaker") -> ({ Speaker })) & ((port: PortLike?, class: "Hull") -> ({ Hull })) & ((port: PortLike?, class: "VehicleSeat") -> ({ VehicleSeat })) & ((port: PortLike?, class: "Winch") -> ({ Winch })) & ((port: PortLike?, class: "Rotor") -> ({ Rotor })) & ((port: PortLike?, class: "Controller") -> ({ Controller })) & ((port: PortLike?, class: "Obelisk") -> ({ Obelisk })) & ((port: PortLike?, class: "Motor") -> ({ Motor })) & ((port: PortLike?, class: "Telescope") -> ({ Telescope })) & ((port: PortLike?, class: "BlackBox") -> ({ BlackBox })) & ((port: PortLike?, class: "Reactor") -> ({ Reactor })) & ((port: PortLike?, class: "Prosthetic") -> ({ Prosthetic })) & ((port: PortLike?, class: "Decoupler") -> ({ Decoupler })) & ((port: PortLike?, class: "Solenoid") -> ({ Solenoid })) & ((port: PortLike?, class: "DevSink") -> ({ DevSink })) & ((port: PortLike?, class: "HyperDrive") -> ({ HyperDrive })) & ((port: PortLike?, class: "TriggerSwitch") -> ({ TriggerSwitch })) & ((port: PortLike?, class: "SolarPanel") -> ({ SolarPanel })) & ((port: PortLike?, class: "Boombox") -> ({ Boombox })) & ((port: PortLike?, class: "Igniter") -> ({ Igniter })) & ((port: PortLike?, class: "DeleteSwitch") -> ({ DeleteSwitch })) & ((port: PortLike?, class: "Electromagnet") -> ({ Electromagnet })) & ((port: PortLike?, class: "Rocket") -> ({ Rocket })) & ((port: PortLike?, class: "Scrapper") -> ({ Scrapper })) & ((port: PortLike?, class: "TemperatureGate") -> ({ TemperatureGate })) & ((port: PortLike?, class: "RemoteControl") -> ({ RemoteControl })) & ((port: PortLike?, class: "Flamethrower") -> ({ Flamethrower })) & ((port: PortLike?, class: "Light") -> ({ Light })) & ((port: PortLike?, class: "Balloon") -> ({ Balloon })) & ((port: PortLike?, class: "DarkReactor") -> ({ DarkReactor })) & ((port: PortLike?, class: "Sail") -> ({ Sail })) & ((port: PortLike?, class: "Rail") -> ({ Rail })) & ((port: PortLike?, class: "RepairLaser") -> ({ RepairLaser })) & ((port: PortLike?, class: "Polysilicon") -> ({ Polysilicon })) & ((port: PortLike?, class: "Scanner") -> ({ Scanner })) & ((port: PortLike?, class: "Furnace") -> ({ Furnace })) & ((port: PortLike?, class: "DevSource") -> ({ DevSource })) & ((port: PortLike?, class: "AutomaticLaser") -> ({ AutomaticLaser })) & ((port: PortLike?, class: "Faucet") -> ({ Faucet })) & ((port: PortLike?, class: "Thruster") -> ({ Thruster })) & ((port: PortLike?, class: "CombustionTurbine") -> ({ CombustionTurbine })) & ((port: PortLike?, class: "TouchScreen") -> ({ TouchScreen })) & ((port: PortLike?, class: "HeatCell") -> ({ HeatCell })) & ((port: PortLike?, class: "Camera") -> ({ Camera })) & ((port: PortLike?, class: "Modem") -> ({ Modem })) & ((port: PortLike?, class: "TemperatureSensor") -> ({ TemperatureSensor })) & ((port: PortLike?, class: "Engine") -> ({ Engine })) & ((port: PortLike?, class: "Radar") -> ({ Radar })) & ((port: PortLike?, class: "RepairPlate") -> ({ RepairPlate })) & ((port: PortLike?, class: "MiningLaser") -> ({ MiningLaser })) & ((port: PortLike?, class: "IonRocket") -> ({ IonRocket })) & ((port: PortLike?, class: "BallastTank") -> ({ BallastTank })) & ((port: PortLike?, class: "Router") -> ({ Router })) & ((port: PortLike?, class: "Explosive") -> ({ Explosive })) & ((port: PortLike?, class: "ObjectDetector") -> ({ ObjectDetector })) & ((port: PortLike?, class: "StarMap") -> ({ StarMap })) & ((port: PortLike?, class: "TractorBeam") -> ({ TractorBeam })) & ((port: PortLike?, class: "Turbofan") -> ({ Turbofan })) & ((port: PortLike?, class: "Battery") -> ({ Battery })) & ((port: PortLike?, class: "Coupler") -> ({ Coupler })) & ((port: PortLike?, class: "DevTeleporter") -> ({ DevTeleporter })) & ((port: PortLike?, class: "Seat") -> ({ Seat })) & ((port: PortLike?, class: "Part100k") -> ({ Part100k })) & ((port: PortLike?, class: "Valve") -> ({ Valve })) & ((port: PortLike?, class: "Freezer") -> ({ Freezer })) & ((port: PortLike?, class: "Melter") -> ({ Melter })) & ((port: PortLike?, class: "Railgun") -> ({ Railgun })) & ((port: PortLike?, class: "Dispenser") -> ({ Dispenser })) & ((port: PortLike?, class: "Wing") -> ({ Wing })) & ((port: PortLike?, class: "Anchor") -> ({ Anchor })) & ((port: PortLike?, class: "HeatValve") -> ({ HeatValve })) & ((port: PortLike?, class: "Constructor") -> ({ Constructor })) & ((port: PortLike?, class: "tinnitus") -> ({ tinnitus })) & ((port: PortLike?, class: "EnergyBomb") -> ({ EnergyBomb })) & ((port: PortLike?, class: "EnergyShield") -> ({ EnergyShield })) & ((port: PortLike?, class: "TouchSensor") -> ({ TouchSensor })) & ((port: PortLike?, class: "StorageSensor") -> ({ StorageSensor })) & ((port: PortLike?, class: "Microphone") -> ({ Microphone })) & ((port: PortLike?, class: "Blade") -> ({ Blade })) & ((port: PortLike?, class: "Sorter") -> ({ Sorter })) & ((port: PortLike?, class: "Hydroponic") -> ({ Hydroponic })) & ((port: PortLike?, class: "GravityGenerator") -> ({ GravityGenerator })) & ((port: PortLike?, class: "Gyro") -> ({ Gyro })) & ((port: PortLike?, class: "WindTurbine") -> ({ WindTurbine })) & ((port: PortLike?, class: "Sign") -> ({ Sign })) & ((port: PortLike?, class: "ConveyorBelt") -> ({ ConveyorBelt })) & ((port: PortLike?, class: "Plastic") -> ({ Plastic })) & ((port: PortLike?, class: "Hologram") -> ({ Hologram })) & ((port: PortLike?, class: "FourthOfJuly") -> ({ FourthOfJuly })) & ((port: PortLike?, class: "Relay") -> ({ Relay })) & ((port: PortLike?, class: "Transporter") -> ({ Transporter })) & ((port: PortLike?, class: "DevBattery") -> ({ DevBattery })) & ((port: PortLike?, class: "Door") -> ({ Door })) & ((port: PortLike?, class: "Handle") -> ({ Handle })) & ((port: PortLike?, class: "SolarScoop") -> ({ SolarScoop })) & ((port: PortLike?, class: "Refinery") -> ({ Refinery })) & ((port: PortLike?, class: "Bin") -> ({ Bin })) & ((port: PortLike?, class: "Propeller") -> ({ Propeller })) & ((port: PortLike?, class: "Kiln") -> ({ Kiln })) & ((port: PortLike?, class: "Boiler") -> ({ Boiler })) & ((port: PortLike?, class: "Asphalt") -> ({ Asphalt })) & ((port: PortLike?, class: "HyperspaceRadar") -> ({ HyperspaceRadar })) & ((port: PortLike?, class: "Tank") -> ({ Tank })) & ((port: PortLike?, class: "Switch") -> ({ Switch })) & ((port: PortLike?, class: "Port") -> ({ Port })) & ((port: PortLike?, class: "Beacon") -> ({ Beacon })) & ((port: PortLike?, class: "Spotlight") -> ({ Spotlight })) & ((port: PortLike?, class: string?) -> ({ PilotObject })),
+		GetPart = ( GetPart :: any ) :: ((class: "DelayWire") -> (DelayWire?)) & ((class: "Hatch") -> (Hatch?)) & ((class: "Screen") -> (Screen?)) & ((class: "Extractor") -> (Extractor?)) & ((class: "Apparel") -> (Apparel?)) & ((class: "CloningBay") -> (CloningBay?)) & ((class: "Food") -> (Food?)) & ((class: "Filter") -> (Filter?)) & ((class: "Antenna") -> (Antenna?)) & ((class: "Instrument") -> (Instrument?)) & ((class: "ARController") -> (ARController?)) & ((class: "Teleporter") -> (Teleporter?)) & ((class: "Laser") -> (Laser?)) & ((class: "DevHeatStorage") -> (DevHeatStorage?)) & ((class: "BurnerGenerator") -> (BurnerGenerator?)) & ((class: "DevGravityGenerator") -> (DevGravityGenerator?)) & ((class: "Servo") -> (Servo?)) & ((class: "DriveBox") -> (DriveBox?)) & ((class: "FluidProjector") -> (FluidProjector?)) & ((class: "TimeSensor") -> (TimeSensor?)) & ((class: "ElectricFence") -> (ElectricFence?)) & ((class: "Pump") -> (Pump?)) & ((class: "Assembler") -> (Assembler?)) & ((class: "Keyboard") -> (Keyboard?)) & ((class: "StasisField") -> (StasisField?)) & ((class: "LightBridge") -> (LightBridge?)) & ((class: "ProximityButton") -> (ProximityButton?)) & ((class: "WirelessButton") -> (WirelessButton?)) & ((class: "DarkConverter") -> (DarkConverter?)) & ((class: "Disk") -> (Disk?)) & ((class: "LightTube") -> (LightTube?)) & ((class: "LifeSensor") -> (LifeSensor?)) & ((class: "SteamTurbine") -> (SteamTurbine?)) & ((class: "PilotObject") -> (PilotObject?)) & ((class: "Component") -> (Component?)) & ((class: "Brick") -> (Brick?)) & ((class: "Warhead") -> (Warhead?)) & ((class: "Transformer") -> (Transformer?)) & ((class: "Fireworks") -> (Fireworks?)) & ((class: "FactionHub") -> (FactionHub?)) & ((class: "TriggerRelay") -> (TriggerRelay?)) & ((class: "PowerCell") -> (PowerCell?)) & ((class: "Transistor") -> (Transistor?)) & ((class: "Piston") -> (Piston?)) & ((class: "Treads") -> (Treads?)) & ((class: "CrudeWing") -> (CrudeWing?)) & ((class: "SteamEngine") -> (SteamEngine?)) & ((class: "Microcontroller") -> (Microcontroller?)) & ((class: "HeatPump") -> (HeatPump?)) & ((class: "Speaker") -> (Speaker?)) & ((class: "Hull") -> (Hull?)) & ((class: "VehicleSeat") -> (VehicleSeat?)) & ((class: "Winch") -> (Winch?)) & ((class: "Rotor") -> (Rotor?)) & ((class: "Controller") -> (Controller?)) & ((class: "Obelisk") -> (Obelisk?)) & ((class: "Motor") -> (Motor?)) & ((class: "Telescope") -> (Telescope?)) & ((class: "BlackBox") -> (BlackBox?)) & ((class: "Reactor") -> (Reactor?)) & ((class: "Prosthetic") -> (Prosthetic?)) & ((class: "Decoupler") -> (Decoupler?)) & ((class: "Solenoid") -> (Solenoid?)) & ((class: "DevSink") -> (DevSink?)) & ((class: "HyperDrive") -> (HyperDrive?)) & ((class: "TriggerSwitch") -> (TriggerSwitch?)) & ((class: "SolarPanel") -> (SolarPanel?)) & ((class: "Boombox") -> (Boombox?)) & ((class: "Igniter") -> (Igniter?)) & ((class: "DeleteSwitch") -> (DeleteSwitch?)) & ((class: "Electromagnet") -> (Electromagnet?)) & ((class: "Rocket") -> (Rocket?)) & ((class: "Scrapper") -> (Scrapper?)) & ((class: "TemperatureGate") -> (TemperatureGate?)) & ((class: "RemoteControl") -> (RemoteControl?)) & ((class: "Flamethrower") -> (Flamethrower?)) & ((class: "Light") -> (Light?)) & ((class: "Balloon") -> (Balloon?)) & ((class: "DarkReactor") -> (DarkReactor?)) & ((class: "Sail") -> (Sail?)) & ((class: "Rail") -> (Rail?)) & ((class: "RepairLaser") -> (RepairLaser?)) & ((class: "Polysilicon") -> (Polysilicon?)) & ((class: "Scanner") -> (Scanner?)) & ((class: "Furnace") -> (Furnace?)) & ((class: "DevSource") -> (DevSource?)) & ((class: "AutomaticLaser") -> (AutomaticLaser?)) & ((class: "Faucet") -> (Faucet?)) & ((class: "Thruster") -> (Thruster?)) & ((class: "CombustionTurbine") -> (CombustionTurbine?)) & ((class: "TouchScreen") -> (TouchScreen?)) & ((class: "HeatCell") -> (HeatCell?)) & ((class: "Camera") -> (Camera?)) & ((class: "Modem") -> (Modem?)) & ((class: "TemperatureSensor") -> (TemperatureSensor?)) & ((class: "Engine") -> (Engine?)) & ((class: "Radar") -> (Radar?)) & ((class: "RepairPlate") -> (RepairPlate?)) & ((class: "MiningLaser") -> (MiningLaser?)) & ((class: "IonRocket") -> (IonRocket?)) & ((class: "BallastTank") -> (BallastTank?)) & ((class: "Router") -> (Router?)) & ((class: "Explosive") -> (Explosive?)) & ((class: "ObjectDetector") -> (ObjectDetector?)) & ((class: "StarMap") -> (StarMap?)) & ((class: "TractorBeam") -> (TractorBeam?)) & ((class: "Turbofan") -> (Turbofan?)) & ((class: "Battery") -> (Battery?)) & ((class: "Coupler") -> (Coupler?)) & ((class: "DevTeleporter") -> (DevTeleporter?)) & ((class: "Seat") -> (Seat?)) & ((class: "Part100k") -> (Part100k?)) & ((class: "Valve") -> (Valve?)) & ((class: "Freezer") -> (Freezer?)) & ((class: "Melter") -> (Melter?)) & ((class: "Railgun") -> (Railgun?)) & ((class: "Dispenser") -> (Dispenser?)) & ((class: "Wing") -> (Wing?)) & ((class: "Anchor") -> (Anchor?)) & ((class: "HeatValve") -> (HeatValve?)) & ((class: "Constructor") -> (Constructor?)) & ((class: "tinnitus") -> (tinnitus?)) & ((class: "EnergyBomb") -> (EnergyBomb?)) & ((class: "EnergyShield") -> (EnergyShield?)) & ((class: "TouchSensor") -> (TouchSensor?)) & ((class: "StorageSensor") -> (StorageSensor?)) & ((class: "Microphone") -> (Microphone?)) & ((class: "Blade") -> (Blade?)) & ((class: "Sorter") -> (Sorter?)) & ((class: "Hydroponic") -> (Hydroponic?)) & ((class: "GravityGenerator") -> (GravityGenerator?)) & ((class: "Gyro") -> (Gyro?)) & ((class: "WindTurbine") -> (WindTurbine?)) & ((class: "Sign") -> (Sign?)) & ((class: "ConveyorBelt") -> (ConveyorBelt?)) & ((class: "Plastic") -> (Plastic?)) & ((class: "Hologram") -> (Hologram?)) & ((class: "FourthOfJuly") -> (FourthOfJuly?)) & ((class: "Relay") -> (Relay?)) & ((class: "Transporter") -> (Transporter?)) & ((class: "DevBattery") -> (DevBattery?)) & ((class: "Door") -> (Door?)) & ((class: "Handle") -> (Handle?)) & ((class: "SolarScoop") -> (SolarScoop?)) & ((class: "Refinery") -> (Refinery?)) & ((class: "Bin") -> (Bin?)) & ((class: "Propeller") -> (Propeller?)) & ((class: "Kiln") -> (Kiln?)) & ((class: "Boiler") -> (Boiler?)) & ((class: "Asphalt") -> (Asphalt?)) & ((class: "HyperspaceRadar") -> (HyperspaceRadar?)) & ((class: "Tank") -> (Tank?)) & ((class: "Switch") -> (Switch?)) & ((class: "Port") -> (Port?)) & ((class: "Beacon") -> (Beacon?)) & ((class: "Spotlight") -> (Spotlight?)) & ((class: string?) -> (PilotObject)),
 		logError = ( logError :: any ) :: (message: string, level: number?) -> (),
 		Beep = ( Beep :: any ) :: (frequency: number?) -> (),
 		GetCPUTime = ( GetCPUTime :: any ) :: () -> (number),
