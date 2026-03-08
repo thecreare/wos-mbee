@@ -160,7 +160,7 @@
         <bool name="Enabled">true</bool>
         <float name="FreeLength">1</float>
         <bool name="LimitsEnabled">false</bool>
-        <float name="MaxForce">INF</float>
+        <float name="MaxForce">0</float>
         <float name="MaxLength">5</float>
         <float name="MinLength">0</float>
         <float name="Radius">2</float>

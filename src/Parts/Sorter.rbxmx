@@ -216,7 +216,7 @@
         <bool name="DefinesCapabilities">false</bool>
         <int64 name="SourceAssetId">-1</int64>
         <BinaryString name="Tags"></BinaryString>
-        <double name="Value">INF</double>
+        <double name="Value">1000000</double>
       </Properties>
     </Item>
     <Item class="NumberValue" referent="5">
