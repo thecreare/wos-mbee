@@ -1,1548 +1,1427 @@
-<roblox version="4">
-  <Item class="Part" referent="0">
-    <Properties>
-      <string name="Name">Scanner</string>
-      <bool name="Anchored">true</bool>
-      <BinaryString name="AttributesSerialize"></BinaryString>
-      <bool name="AudioCanCollide">true</bool>
-      <float name="BackParamA">-0.5</float>
-      <float name="BackParamB">0.5</float>
-      <token name="BackSurface">5</token>
-      <token name="BackSurfaceInput">0</token>
-      <float name="BottomParamA">-0.5</float>
-      <float name="BottomParamB">0.5</float>
-      <token name="BottomSurface">5</token>
-      <token name="BottomSurfaceInput">0</token>
-      <CoordinateFrame name="CFrame">
-        <X>36.125</X>
-        <Y>2.499999</Y>
-        <Z>114.25</Z>
-        <R00>1</R00>
-        <R01>0</R01>
-        <R02>0</R02>
-        <R10>0</R10>
-        <R11>1</R11>
-        <R12>0</R12>
-        <R20>0</R20>
-        <R21>0</R21>
-        <R22>1</R22>
-      </CoordinateFrame>
-      <bool name="CanCollide">true</bool>
-      <bool name="CanQuery">true</bool>
-      <bool name="CanTouch">true</bool>
-      <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-      <bool name="CastShadow">true</bool>
-      <string name="CollisionGroup">Default</string>
-      <int name="CollisionGroupId">0</int>
-      <Color3uint8 name="Color3uint8">5987689</Color3uint8>
-      <PhysicalProperties name="CustomPhysicalProperties">
-        <CustomPhysics>false</CustomPhysics>
-      </PhysicalProperties>
-      <bool name="EnableFluidForces">false</bool>
-      <token name="formFactorRaw">1</token>
-      <float name="FrontParamA">-0.1</float>
-      <float name="FrontParamB">0.1</float>
-      <token name="FrontSurface">5</token>
-      <token name="FrontSurfaceInput">12</token>
-      <float name="LeftParamA">-0.5</float>
-      <float name="LeftParamB">0.5</float>
-      <token name="LeftSurface">5</token>
-      <token name="LeftSurfaceInput">0</token>
-      <bool name="Locked">false</bool>
-      <bool name="Massless">false</bool>
-      <token name="Material">1568</token>
-      <string name="MaterialVariantSerialized"></string>
-      <CoordinateFrame name="PivotOffset">
-        <X>0</X>
-        <Y>0</Y>
-        <Z>0</Z>
-        <R00>1</R00>
-        <R01>0</R01>
-        <R02>0</R02>
-        <R10>0</R10>
-        <R11>1</R11>
-        <R12>0</R12>
-        <R20>0</R20>
-        <R21>0</R21>
-        <R22>1</R22>
-      </CoordinateFrame>
-      <float name="Reflectance">0</float>
-      <float name="RightParamA">-0.5</float>
-      <float name="RightParamB">0.5</float>
-      <token name="RightSurface">5</token>
-      <token name="RightSurfaceInput">0</token>
-      <int name="RootPriority">0</int>
-      <Vector3 name="RotVelocity">
-        <X>0</X>
-        <Y>0</Y>
-        <Z>0</Z>
-      </Vector3>
-      <bool name="DefinesCapabilities">false</bool>
-      <token name="shape">1</token>
-      <Vector3 name="size">
-        <X>5</X>
-        <Y>5</Y>
-        <Z>12</Z>
-      </Vector3>
-      <int64 name="SourceAssetId">-1</int64>
-      <BinaryString name="Tags"></BinaryString>
-      <float name="TopParamA">-0.5</float>
-      <float name="TopParamB">0.5</float>
-      <token name="TopSurface">5</token>
-      <token name="TopSurfaceInput">0</token>
-      <float name="Transparency">0</float>
-      <Vector3 name="Velocity">
-        <X>0</X>
-        <Y>0</Y>
-        <Z>0</Z>
-      </Vector3>
-    </Properties>
-    <Item class="SurfaceGui" referent="1">
-      <Properties>
-        <string name="Name">Front</string>
-        <bool name="Active">false</bool>
-        <Ref name="Adornee">null</Ref>
-        <bool name="AlwaysOnTop">false</bool>
-        <BinaryString name="AttributesSerialize"></BinaryString>
-        <bool name="AutoLocalize">true</bool>
-        <float name="Brightness">9.5</float>
-        <Vector2 name="CanvasSize">
-          <X>800</X>
-          <Y>600</Y>
-        </Vector2>
-        <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-        <bool name="ClipsDescendants">true</bool>
-        <bool name="Enabled">true</bool>
-        <token name="Face">5</token>
-        <float name="LightInfluence">0</float>
-        <float name="MaxDistance">0</float>
-        <float name="PixelsPerStud">50</float>
-        <bool name="ResetOnSpawn">true</bool>
-        <Ref name="RootLocalizationTable">null</Ref>
-        <bool name="DefinesCapabilities">false</bool>
-        <token name="SelectionBehaviorDown">0</token>
-        <token name="SelectionBehaviorLeft">0</token>
-        <token name="SelectionBehaviorRight">0</token>
-        <token name="SelectionBehaviorUp">0</token>
-        <bool name="SelectionGroup">false</bool>
-        <token name="SizingMode">1</token>
-        <int64 name="SourceAssetId">-1</int64>
-        <BinaryString name="Tags"></BinaryString>
-        <float name="ToolPunchThroughDistance">0</float>
-        <token name="ZIndexBehavior">1</token>
-        <float name="ZOffset">0</float>
-      </Properties>
-      <Item class="ImageLabel" referent="2">
-        <Properties>
-          <string name="Name">Vent</string>
-          <bool name="Active">false</bool>
-          <Vector2 name="AnchorPoint">
-            <X>0.5</X>
-            <Y>0.5</Y>
-          </Vector2>
-          <BinaryString name="AttributesSerialize"></BinaryString>
-          <bool name="AutoLocalize">true</bool>
-          <token name="AutomaticSize">0</token>
-          <Color3 name="BackgroundColor3">
-            <R>1</R>
-            <G>1</G>
-            <B>1</B>
-          </Color3>
-          <float name="BackgroundTransparency">1</float>
-          <Color3 name="BorderColor3">
-            <R>0.105882354</R>
-            <G>0.16470589</G>
-            <B>0.20784314</B>
-          </Color3>
-          <token name="BorderMode">0</token>
-          <int name="BorderSizePixel">0</int>
-          <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-          <bool name="ClipsDescendants">false</bool>
-          <bool name="Draggable">false</bool>
-          <Color3 name="ImageColor3">
-            <R>1</R>
-            <G>0.627451</G>
-            <B>0.36078432</B>
-          </Color3>
-          <Content name="ImageContent">
-            <uri>rbxassetid://4584251621</uri>
-          </Content>
-          <Vector2 name="ImageRectOffset">
-            <X>0</X>
-            <Y>0</Y>
-          </Vector2>
-          <Vector2 name="ImageRectSize">
-            <X>0</X>
-            <Y>0</Y>
-          </Vector2>
-          <float name="ImageTransparency">0</float>
-          <token name="InputSink">0</token>
-          <bool name="Interactable">true</bool>
-          <int name="LayoutOrder">0</int>
-          <Ref name="NextSelectionDown">null</Ref>
-          <Ref name="NextSelectionLeft">null</Ref>
-          <Ref name="NextSelectionRight">null</Ref>
-          <Ref name="NextSelectionUp">null</Ref>
-          <UDim2 name="Position">
-            <XS>0.5</XS>
-            <XO>0</XO>
-            <YS>0.5</YS>
-            <YO>0</YO>
-          </UDim2>
-          <token name="ResampleMode">0</token>
-          <Ref name="RootLocalizationTable">null</Ref>
-          <float name="Rotation">0</float>
-          <bool name="DefinesCapabilities">false</bool>
-          <token name="ScaleType">0</token>
-          <bool name="Selectable">false</bool>
-          <token name="SelectionBehaviorDown">0</token>
-          <token name="SelectionBehaviorLeft">0</token>
-          <token name="SelectionBehaviorRight">0</token>
-          <token name="SelectionBehaviorUp">0</token>
-          <bool name="SelectionGroup">false</bool>
-          <Ref name="SelectionImageObject">null</Ref>
-          <int name="SelectionOrder">0</int>
-          <UDim2 name="Size">
-            <XS>1</XS>
-            <XO>0</XO>
-            <YS>1</YS>
-            <YO>0</YO>
-          </UDim2>
-          <token name="SizeConstraint">0</token>
-          <Rect2D name="SliceCenter">
-            <min>
-              <X>0</X>
-              <Y>0</Y>
-            </min>
-            <max>
-              <X>0</X>
-              <Y>0</Y>
-            </max>
-          </Rect2D>
-          <float name="SliceScale">-0.05</float>
-          <int64 name="SourceAssetId">-1</int64>
-          <BinaryString name="Tags"></BinaryString>
-          <UDim2 name="TileSize">
-            <XS>1</XS>
-            <XO>0</XO>
-            <YS>1</YS>
-            <YO>0</YO>
-          </UDim2>
-          <bool name="Visible">true</bool>
-          <int name="ZIndex">1</int>
-        </Properties>
-      </Item>
-      <Item class="ImageLabel" referent="3">
-        <Properties>
-          <string name="Name">Wifi</string>
-          <bool name="Active">false</bool>
-          <Vector2 name="AnchorPoint">
-            <X>0.5</X>
-            <Y>0.5</Y>
-          </Vector2>
-          <BinaryString name="AttributesSerialize">AQAAAAkAAABTcGluU3BlZWQGAAAAAADQhkA=</BinaryString>
-          <bool name="AutoLocalize">true</bool>
-          <token name="AutomaticSize">0</token>
-          <Color3 name="BackgroundColor3">
-            <R>1</R>
-            <G>1</G>
-            <B>1</B>
-          </Color3>
-          <float name="BackgroundTransparency">1</float>
-          <Color3 name="BorderColor3">
-            <R>0.105882354</R>
-            <G>0.16470589</G>
-            <B>0.20784314</B>
-          </Color3>
-          <token name="BorderMode">0</token>
-          <int name="BorderSizePixel">0</int>
-          <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-          <bool name="ClipsDescendants">false</bool>
-          <bool name="Draggable">false</bool>
-          <Color3 name="ImageColor3">
-            <R>0.8196079</R>
-            <G>0.13725491</G>
-            <B>0.1137255</B>
-          </Color3>
-          <Content name="ImageContent">
-            <uri>rbxassetid://14556783821</uri>
-          </Content>
-          <Vector2 name="ImageRectOffset">
-            <X>0</X>
-            <Y>0</Y>
-          </Vector2>
-          <Vector2 name="ImageRectSize">
-            <X>0</X>
-            <Y>0</Y>
-          </Vector2>
-          <float name="ImageTransparency">0.1</float>
-          <token name="InputSink">0</token>
-          <bool name="Interactable">true</bool>
-          <int name="LayoutOrder">0</int>
-          <Ref name="NextSelectionDown">null</Ref>
-          <Ref name="NextSelectionLeft">null</Ref>
-          <Ref name="NextSelectionRight">null</Ref>
-          <Ref name="NextSelectionUp">null</Ref>
-          <UDim2 name="Position">
-            <XS>0.5</XS>
-            <XO>0</XO>
-            <YS>0.5</YS>
-            <YO>0</YO>
-          </UDim2>
-          <token name="ResampleMode">1</token>
-          <Ref name="RootLocalizationTable">null</Ref>
-          <float name="Rotation">0</float>
-          <bool name="DefinesCapabilities">false</bool>
-          <token name="ScaleType">0</token>
-          <bool name="Selectable">false</bool>
-          <token name="SelectionBehaviorDown">0</token>
-          <token name="SelectionBehaviorLeft">0</token>
-          <token name="SelectionBehaviorRight">0</token>
-          <token name="SelectionBehaviorUp">0</token>
-          <bool name="SelectionGroup">false</bool>
-          <Ref name="SelectionImageObject">null</Ref>
-          <int name="SelectionOrder">0</int>
-          <UDim2 name="Size">
-            <XS>0.8</XS>
-            <XO>0</XO>
-            <YS>0.8</YS>
-            <YO>0</YO>
-          </UDim2>
-          <token name="SizeConstraint">0</token>
-          <Rect2D name="SliceCenter">
-            <min>
-              <X>0</X>
-              <Y>0</Y>
-            </min>
-            <max>
-              <X>0</X>
-              <Y>0</Y>
-            </max>
-          </Rect2D>
-          <float name="SliceScale">-0.05</float>
-          <int64 name="SourceAssetId">-1</int64>
-          <BinaryString name="Tags">VUlTcGlu</BinaryString>
-          <UDim2 name="TileSize">
-            <XS>1</XS>
-            <XO>0</XO>
-            <YS>1</YS>
-            <YO>0</YO>
-          </UDim2>
-          <bool name="Visible">true</bool>
-          <int name="ZIndex">3</int>
-        </Properties>
-      </Item>
-      <Item class="UIPadding" referent="4">
-        <Properties>
-          <string name="Name">UIPadding</string>
-          <BinaryString name="AttributesSerialize"></BinaryString>
-          <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-          <UDim name="PaddingBottom">
-            <S>0</S>
-            <O>7</O>
-          </UDim>
-          <UDim name="PaddingLeft">
-            <S>0</S>
-            <O>7</O>
-          </UDim>
-          <UDim name="PaddingRight">
-            <S>0</S>
-            <O>7</O>
-          </UDim>
-          <UDim name="PaddingTop">
-            <S>0</S>
-            <O>7</O>
-          </UDim>
-          <bool name="DefinesCapabilities">false</bool>
-          <int64 name="SourceAssetId">-1</int64>
-          <BinaryString name="Tags"></BinaryString>
-        </Properties>
-      </Item>
-      <Item class="ImageLabel" referent="5">
-        <Properties>
-          <string name="Name">VentMask</string>
-          <bool name="Active">false</bool>
-          <Vector2 name="AnchorPoint">
-            <X>0.5</X>
-            <Y>0.5</Y>
-          </Vector2>
-          <BinaryString name="AttributesSerialize"></BinaryString>
-          <bool name="AutoLocalize">true</bool>
-          <token name="AutomaticSize">0</token>
-          <Color3 name="BackgroundColor3">
-            <R>1</R>
-            <G>1</G>
-            <B>1</B>
-          </Color3>
-          <float name="BackgroundTransparency">1</float>
-          <Color3 name="BorderColor3">
-            <R>0.105882354</R>
-            <G>0.16470589</G>
-            <B>0.20784314</B>
-          </Color3>
-          <token name="BorderMode">0</token>
-          <int name="BorderSizePixel">0</int>
-          <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-          <bool name="ClipsDescendants">false</bool>
-          <bool name="Draggable">false</bool>
-          <Color3 name="ImageColor3">
-            <R>0.18823531</R>
-            <G>0.17254902</G>
-            <B>0.17254902</B>
-          </Color3>
-          <Content name="ImageContent">
-            <uri>rbxassetid://14557092445</uri>
-          </Content>
-          <Vector2 name="ImageRectOffset">
-            <X>0</X>
-            <Y>0</Y>
-          </Vector2>
-          <Vector2 name="ImageRectSize">
-            <X>0</X>
-            <Y>0</Y>
-          </Vector2>
-          <float name="ImageTransparency">0.68</float>
-          <token name="InputSink">0</token>
-          <bool name="Interactable">true</bool>
-          <int name="LayoutOrder">0</int>
-          <Ref name="NextSelectionDown">null</Ref>
-          <Ref name="NextSelectionLeft">null</Ref>
-          <Ref name="NextSelectionRight">null</Ref>
-          <Ref name="NextSelectionUp">null</Ref>
-          <UDim2 name="Position">
-            <XS>0.5</XS>
-            <XO>0</XO>
-            <YS>0.5</YS>
-            <YO>0</YO>
-          </UDim2>
-          <token name="ResampleMode">0</token>
-          <Ref name="RootLocalizationTable">null</Ref>
-          <float name="Rotation">0</float>
-          <bool name="DefinesCapabilities">false</bool>
-          <token name="ScaleType">0</token>
-          <bool name="Selectable">false</bool>
-          <token name="SelectionBehaviorDown">0</token>
-          <token name="SelectionBehaviorLeft">0</token>
-          <token name="SelectionBehaviorRight">0</token>
-          <token name="SelectionBehaviorUp">0</token>
-          <bool name="SelectionGroup">false</bool>
-          <Ref name="SelectionImageObject">null</Ref>
-          <int name="SelectionOrder">0</int>
-          <UDim2 name="Size">
-            <XS>1</XS>
-            <XO>0</XO>
-            <YS>1</YS>
-            <YO>0</YO>
-          </UDim2>
-          <token name="SizeConstraint">0</token>
-          <Rect2D name="SliceCenter">
-            <min>
-              <X>0</X>
-              <Y>0</Y>
-            </min>
-            <max>
-              <X>0</X>
-              <Y>0</Y>
-            </max>
-          </Rect2D>
-          <float name="SliceScale">-0.05</float>
-          <int64 name="SourceAssetId">-1</int64>
-          <BinaryString name="Tags"></BinaryString>
-          <UDim2 name="TileSize">
-            <XS>1</XS>
-            <XO>0</XO>
-            <YS>1</YS>
-            <YO>0</YO>
-          </UDim2>
-          <bool name="Visible">true</bool>
-          <int name="ZIndex">2</int>
-        </Properties>
-      </Item>
-    </Item>
-    <Item class="Decal" referent="6">
-      <Properties>
-        <string name="Name">ColorCopy</string>
-        <BinaryString name="AttributesSerialize"></BinaryString>
-        <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-        <Color3 name="Color3">
-          <R>0.35686275</R>
-          <G>0.3647059</G>
-          <B>0.4117647</B>
-        </Color3>
-        <token name="Face">1</token>
-        <Content name="MetalnessMapContent">
-          <null>
-          </null>
-        </Content>
-        <Content name="NormalMapContent">
-          <null>
-          </null>
-        </Content>
-        <float name="Rotation">0</float>
-        <Content name="RoughnessMapContent">
-          <null>
-          </null>
-        </Content>
-        <bool name="DefinesCapabilities">false</bool>
-        <int64 name="SourceAssetId">-1</int64>
-        <BinaryString name="Tags">Q29sb3JUZXh0dXJl</BinaryString>
-        <Content name="TextureContent">
-          <uri>rbxassetid://4611376175</uri>
-        </Content>
-        <ContentId name="TexturePack">
-          <null>
-          </null>
-        </ContentId>
-        <string name="TexturePackMetadata"></string>
-        <float name="Transparency">0</float>
-        <Vector2 name="UVOffset">
-          <X>0</X>
-          <Y>0</Y>
-        </Vector2>
-        <Vector2 name="UVScale">
-          <X>1</X>
-          <Y>1</Y>
-        </Vector2>
-        <int name="ZIndex">1</int>
-      </Properties>
-    </Item>
-    <Item class="Decal" referent="7">
-      <Properties>
-        <string name="Name">ColorCopy</string>
-        <BinaryString name="AttributesSerialize"></BinaryString>
-        <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-        <Color3 name="Color3">
-          <R>0.35686275</R>
-          <G>0.3647059</G>
-          <B>0.4117647</B>
-        </Color3>
-        <token name="Face">5</token>
-        <Content name="MetalnessMapContent">
-          <null>
-          </null>
-        </Content>
-        <Content name="NormalMapContent">
-          <null>
-          </null>
-        </Content>
-        <float name="Rotation">0</float>
-        <Content name="RoughnessMapContent">
-          <null>
-          </null>
-        </Content>
-        <bool name="DefinesCapabilities">false</bool>
-        <int64 name="SourceAssetId">-1</int64>
-        <BinaryString name="Tags">Q29sb3JUZXh0dXJl</BinaryString>
-        <Content name="TextureContent">
-          <uri>rbxassetid://4611376175</uri>
-        </Content>
-        <ContentId name="TexturePack">
-          <null>
-          </null>
-        </ContentId>
-        <string name="TexturePackMetadata"></string>
-        <float name="Transparency">0</float>
-        <Vector2 name="UVOffset">
-          <X>0</X>
-          <Y>0</Y>
-        </Vector2>
-        <Vector2 name="UVScale">
-          <X>1</X>
-          <Y>1</Y>
-        </Vector2>
-        <int name="ZIndex">1</int>
-      </Properties>
-    </Item>
-    <Item class="Decal" referent="8">
-      <Properties>
-        <string name="Name">ColorCopy</string>
-        <BinaryString name="AttributesSerialize"></BinaryString>
-        <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-        <Color3 name="Color3">
-          <R>0.35686275</R>
-          <G>0.3647059</G>
-          <B>0.4117647</B>
-        </Color3>
-        <token name="Face">2</token>
-        <Content name="MetalnessMapContent">
-          <null>
-          </null>
-        </Content>
-        <Content name="NormalMapContent">
-          <null>
-          </null>
-        </Content>
-        <float name="Rotation">0</float>
-        <Content name="RoughnessMapContent">
-          <null>
-          </null>
-        </Content>
-        <bool name="DefinesCapabilities">false</bool>
-        <int64 name="SourceAssetId">-1</int64>
-        <BinaryString name="Tags">Q29sb3JUZXh0dXJl</BinaryString>
-        <Content name="TextureContent">
-          <uri>rbxassetid://4611376175</uri>
-        </Content>
-        <ContentId name="TexturePack">
-          <null>
-          </null>
-        </ContentId>
-        <string name="TexturePackMetadata"></string>
-        <float name="Transparency">0</float>
-        <Vector2 name="UVOffset">
-          <X>0</X>
-          <Y>0</Y>
-        </Vector2>
-        <Vector2 name="UVScale">
-          <X>1</X>
-          <Y>1</Y>
-        </Vector2>
-        <int name="ZIndex">1</int>
-      </Properties>
-    </Item>
-    <Item class="Decal" referent="9">
-      <Properties>
-        <string name="Name">ColorCopy</string>
-        <BinaryString name="AttributesSerialize"></BinaryString>
-        <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-        <Color3 name="Color3">
-          <R>0.35686275</R>
-          <G>0.3647059</G>
-          <B>0.4117647</B>
-        </Color3>
-        <token name="Face">4</token>
-        <Content name="MetalnessMapContent">
-          <null>
-          </null>
-        </Content>
-        <Content name="NormalMapContent">
-          <null>
-          </null>
-        </Content>
-        <float name="Rotation">0</float>
-        <Content name="RoughnessMapContent">
-          <null>
-          </null>
-        </Content>
-        <bool name="DefinesCapabilities">false</bool>
-        <int64 name="SourceAssetId">-1</int64>
-        <BinaryString name="Tags">Q29sb3JUZXh0dXJl</BinaryString>
-        <Content name="TextureContent">
-          <uri>rbxassetid://4611376175</uri>
-        </Content>
-        <ContentId name="TexturePack">
-          <null>
-          </null>
-        </ContentId>
-        <string name="TexturePackMetadata"></string>
-        <float name="Transparency">0</float>
-        <Vector2 name="UVOffset">
-          <X>0</X>
-          <Y>0</Y>
-        </Vector2>
-        <Vector2 name="UVScale">
-          <X>1</X>
-          <Y>1</Y>
-        </Vector2>
-        <int name="ZIndex">1</int>
-      </Properties>
-    </Item>
-    <Item class="Decal" referent="10">
-      <Properties>
-        <string name="Name">ColorCopy</string>
-        <BinaryString name="AttributesSerialize"></BinaryString>
-        <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-        <Color3 name="Color3">
-          <R>0.35686275</R>
-          <G>0.3647059</G>
-          <B>0.4117647</B>
-        </Color3>
-        <token name="Face">0</token>
-        <Content name="MetalnessMapContent">
-          <null>
-          </null>
-        </Content>
-        <Content name="NormalMapContent">
-          <null>
-          </null>
-        </Content>
-        <float name="Rotation">0</float>
-        <Content name="RoughnessMapContent">
-          <null>
-          </null>
-        </Content>
-        <bool name="DefinesCapabilities">false</bool>
-        <int64 name="SourceAssetId">-1</int64>
-        <BinaryString name="Tags">Q29sb3JUZXh0dXJl</BinaryString>
-        <Content name="TextureContent">
-          <uri>rbxassetid://4611376175</uri>
-        </Content>
-        <ContentId name="TexturePack">
-          <null>
-          </null>
-        </ContentId>
-        <string name="TexturePackMetadata"></string>
-        <float name="Transparency">0</float>
-        <Vector2 name="UVOffset">
-          <X>0</X>
-          <Y>0</Y>
-        </Vector2>
-        <Vector2 name="UVScale">
-          <X>1</X>
-          <Y>1</Y>
-        </Vector2>
-        <int name="ZIndex">1</int>
-      </Properties>
-    </Item>
-    <Item class="Decal" referent="11">
-      <Properties>
-        <string name="Name">ColorCopy</string>
-        <BinaryString name="AttributesSerialize"></BinaryString>
-        <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-        <Color3 name="Color3">
-          <R>0.35686275</R>
-          <G>0.3647059</G>
-          <B>0.4117647</B>
-        </Color3>
-        <token name="Face">3</token>
-        <Content name="MetalnessMapContent">
-          <null>
-          </null>
-        </Content>
-        <Content name="NormalMapContent">
-          <null>
-          </null>
-        </Content>
-        <float name="Rotation">0</float>
-        <Content name="RoughnessMapContent">
-          <null>
-          </null>
-        </Content>
-        <bool name="DefinesCapabilities">false</bool>
-        <int64 name="SourceAssetId">-1</int64>
-        <BinaryString name="Tags">Q29sb3JUZXh0dXJl</BinaryString>
-        <Content name="TextureContent">
-          <uri>rbxassetid://4611376175</uri>
-        </Content>
-        <ContentId name="TexturePack">
-          <null>
-          </null>
-        </ContentId>
-        <string name="TexturePackMetadata"></string>
-        <float name="Transparency">0</float>
-        <Vector2 name="UVOffset">
-          <X>0</X>
-          <Y>0</Y>
-        </Vector2>
-        <Vector2 name="UVScale">
-          <X>1</X>
-          <Y>1</Y>
-        </Vector2>
-        <int name="ZIndex">1</int>
-      </Properties>
-    </Item>
-    <Item class="SurfaceGui" referent="12">
-      <Properties>
-        <string name="Name">Back</string>
-        <bool name="Active">false</bool>
-        <Ref name="Adornee">null</Ref>
-        <bool name="AlwaysOnTop">false</bool>
-        <BinaryString name="AttributesSerialize"></BinaryString>
-        <bool name="AutoLocalize">true</bool>
-        <float name="Brightness">9.5</float>
-        <Vector2 name="CanvasSize">
-          <X>800</X>
-          <Y>600</Y>
-        </Vector2>
-        <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-        <bool name="ClipsDescendants">true</bool>
-        <bool name="Enabled">true</bool>
-        <token name="Face">2</token>
-        <float name="LightInfluence">0</float>
-        <float name="MaxDistance">0</float>
-        <float name="PixelsPerStud">50</float>
-        <bool name="ResetOnSpawn">true</bool>
-        <Ref name="RootLocalizationTable">null</Ref>
-        <bool name="DefinesCapabilities">false</bool>
-        <token name="SelectionBehaviorDown">0</token>
-        <token name="SelectionBehaviorLeft">0</token>
-        <token name="SelectionBehaviorRight">0</token>
-        <token name="SelectionBehaviorUp">0</token>
-        <bool name="SelectionGroup">false</bool>
-        <token name="SizingMode">1</token>
-        <int64 name="SourceAssetId">-1</int64>
-        <BinaryString name="Tags"></BinaryString>
-        <float name="ToolPunchThroughDistance">0</float>
-        <token name="ZIndexBehavior">1</token>
-        <float name="ZOffset">0</float>
-      </Properties>
-      <Item class="ImageLabel" referent="13">
-        <Properties>
-          <string name="Name">Vent</string>
-          <bool name="Active">false</bool>
-          <Vector2 name="AnchorPoint">
-            <X>0.5</X>
-            <Y>0.5</Y>
-          </Vector2>
-          <BinaryString name="AttributesSerialize"></BinaryString>
-          <bool name="AutoLocalize">true</bool>
-          <token name="AutomaticSize">0</token>
-          <Color3 name="BackgroundColor3">
-            <R>1</R>
-            <G>1</G>
-            <B>1</B>
-          </Color3>
-          <float name="BackgroundTransparency">1</float>
-          <Color3 name="BorderColor3">
-            <R>0.105882354</R>
-            <G>0.16470589</G>
-            <B>0.20784314</B>
-          </Color3>
-          <token name="BorderMode">0</token>
-          <int name="BorderSizePixel">0</int>
-          <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-          <bool name="ClipsDescendants">false</bool>
-          <bool name="Draggable">false</bool>
-          <Color3 name="ImageColor3">
-            <R>1</R>
-            <G>0.627451</G>
-            <B>0.36078432</B>
-          </Color3>
-          <Content name="ImageContent">
-            <uri>rbxassetid://4584251621</uri>
-          </Content>
-          <Vector2 name="ImageRectOffset">
-            <X>0</X>
-            <Y>0</Y>
-          </Vector2>
-          <Vector2 name="ImageRectSize">
-            <X>0</X>
-            <Y>0</Y>
-          </Vector2>
-          <float name="ImageTransparency">0</float>
-          <token name="InputSink">0</token>
-          <bool name="Interactable">true</bool>
-          <int name="LayoutOrder">0</int>
-          <Ref name="NextSelectionDown">null</Ref>
-          <Ref name="NextSelectionLeft">null</Ref>
-          <Ref name="NextSelectionRight">null</Ref>
-          <Ref name="NextSelectionUp">null</Ref>
-          <UDim2 name="Position">
-            <XS>0.5</XS>
-            <XO>0</XO>
-            <YS>0.5</YS>
-            <YO>0</YO>
-          </UDim2>
-          <token name="ResampleMode">0</token>
-          <Ref name="RootLocalizationTable">null</Ref>
-          <float name="Rotation">0</float>
-          <bool name="DefinesCapabilities">false</bool>
-          <token name="ScaleType">0</token>
-          <bool name="Selectable">false</bool>
-          <token name="SelectionBehaviorDown">0</token>
-          <token name="SelectionBehaviorLeft">0</token>
-          <token name="SelectionBehaviorRight">0</token>
-          <token name="SelectionBehaviorUp">0</token>
-          <bool name="SelectionGroup">false</bool>
-          <Ref name="SelectionImageObject">null</Ref>
-          <int name="SelectionOrder">0</int>
-          <UDim2 name="Size">
-            <XS>1</XS>
-            <XO>0</XO>
-            <YS>1</YS>
-            <YO>0</YO>
-          </UDim2>
-          <token name="SizeConstraint">0</token>
-          <Rect2D name="SliceCenter">
-            <min>
-              <X>0</X>
-              <Y>0</Y>
-            </min>
-            <max>
-              <X>0</X>
-              <Y>0</Y>
-            </max>
-          </Rect2D>
-          <float name="SliceScale">-0.05</float>
-          <int64 name="SourceAssetId">-1</int64>
-          <BinaryString name="Tags"></BinaryString>
-          <UDim2 name="TileSize">
-            <XS>1</XS>
-            <XO>0</XO>
-            <YS>1</YS>
-            <YO>0</YO>
-          </UDim2>
-          <bool name="Visible">true</bool>
-          <int name="ZIndex">1</int>
-        </Properties>
-      </Item>
-      <Item class="ImageLabel" referent="14">
-        <Properties>
-          <string name="Name">Wifi</string>
-          <bool name="Active">false</bool>
-          <Vector2 name="AnchorPoint">
-            <X>0.5</X>
-            <Y>0.5</Y>
-          </Vector2>
-          <BinaryString name="AttributesSerialize">AQAAAAkAAABTcGluU3BlZWQGAAAAAADQhkA=</BinaryString>
-          <bool name="AutoLocalize">true</bool>
-          <token name="AutomaticSize">0</token>
-          <Color3 name="BackgroundColor3">
-            <R>1</R>
-            <G>1</G>
-            <B>1</B>
-          </Color3>
-          <float name="BackgroundTransparency">1</float>
-          <Color3 name="BorderColor3">
-            <R>0.105882354</R>
-            <G>0.16470589</G>
-            <B>0.20784314</B>
-          </Color3>
-          <token name="BorderMode">0</token>
-          <int name="BorderSizePixel">0</int>
-          <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-          <bool name="ClipsDescendants">false</bool>
-          <bool name="Draggable">false</bool>
-          <Color3 name="ImageColor3">
-            <R>0.8196079</R>
-            <G>0.13725491</G>
-            <B>0.1137255</B>
-          </Color3>
-          <Content name="ImageContent">
-            <uri>rbxassetid://14556783821</uri>
-          </Content>
-          <Vector2 name="ImageRectOffset">
-            <X>0</X>
-            <Y>0</Y>
-          </Vector2>
-          <Vector2 name="ImageRectSize">
-            <X>0</X>
-            <Y>0</Y>
-          </Vector2>
-          <float name="ImageTransparency">0.1</float>
-          <token name="InputSink">0</token>
-          <bool name="Interactable">true</bool>
-          <int name="LayoutOrder">0</int>
-          <Ref name="NextSelectionDown">null</Ref>
-          <Ref name="NextSelectionLeft">null</Ref>
-          <Ref name="NextSelectionRight">null</Ref>
-          <Ref name="NextSelectionUp">null</Ref>
-          <UDim2 name="Position">
-            <XS>0.5</XS>
-            <XO>0</XO>
-            <YS>0.5</YS>
-            <YO>0</YO>
-          </UDim2>
-          <token name="ResampleMode">1</token>
-          <Ref name="RootLocalizationTable">null</Ref>
-          <float name="Rotation">0</float>
-          <bool name="DefinesCapabilities">false</bool>
-          <token name="ScaleType">0</token>
-          <bool name="Selectable">false</bool>
-          <token name="SelectionBehaviorDown">0</token>
-          <token name="SelectionBehaviorLeft">0</token>
-          <token name="SelectionBehaviorRight">0</token>
-          <token name="SelectionBehaviorUp">0</token>
-          <bool name="SelectionGroup">false</bool>
-          <Ref name="SelectionImageObject">null</Ref>
-          <int name="SelectionOrder">0</int>
-          <UDim2 name="Size">
-            <XS>0.8</XS>
-            <XO>0</XO>
-            <YS>0.8</YS>
-            <YO>0</YO>
-          </UDim2>
-          <token name="SizeConstraint">0</token>
-          <Rect2D name="SliceCenter">
-            <min>
-              <X>0</X>
-              <Y>0</Y>
-            </min>
-            <max>
-              <X>0</X>
-              <Y>0</Y>
-            </max>
-          </Rect2D>
-          <float name="SliceScale">-0.05</float>
-          <int64 name="SourceAssetId">-1</int64>
-          <BinaryString name="Tags">VUlTcGlu</BinaryString>
-          <UDim2 name="TileSize">
-            <XS>1</XS>
-            <XO>0</XO>
-            <YS>1</YS>
-            <YO>0</YO>
-          </UDim2>
-          <bool name="Visible">true</bool>
-          <int name="ZIndex">3</int>
-        </Properties>
-      </Item>
-      <Item class="UIPadding" referent="15">
-        <Properties>
-          <string name="Name">UIPadding</string>
-          <BinaryString name="AttributesSerialize"></BinaryString>
-          <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-          <UDim name="PaddingBottom">
-            <S>0</S>
-            <O>7</O>
-          </UDim>
-          <UDim name="PaddingLeft">
-            <S>0</S>
-            <O>7</O>
-          </UDim>
-          <UDim name="PaddingRight">
-            <S>0</S>
-            <O>7</O>
-          </UDim>
-          <UDim name="PaddingTop">
-            <S>0</S>
-            <O>7</O>
-          </UDim>
-          <bool name="DefinesCapabilities">false</bool>
-          <int64 name="SourceAssetId">-1</int64>
-          <BinaryString name="Tags"></BinaryString>
-        </Properties>
-      </Item>
-      <Item class="ImageLabel" referent="16">
-        <Properties>
-          <string name="Name">VentMask</string>
-          <bool name="Active">false</bool>
-          <Vector2 name="AnchorPoint">
-            <X>0.5</X>
-            <Y>0.5</Y>
-          </Vector2>
-          <BinaryString name="AttributesSerialize"></BinaryString>
-          <bool name="AutoLocalize">true</bool>
-          <token name="AutomaticSize">0</token>
-          <Color3 name="BackgroundColor3">
-            <R>1</R>
-            <G>1</G>
-            <B>1</B>
-          </Color3>
-          <float name="BackgroundTransparency">1</float>
-          <Color3 name="BorderColor3">
-            <R>0.105882354</R>
-            <G>0.16470589</G>
-            <B>0.20784314</B>
-          </Color3>
-          <token name="BorderMode">0</token>
-          <int name="BorderSizePixel">0</int>
-          <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-          <bool name="ClipsDescendants">false</bool>
-          <bool name="Draggable">false</bool>
-          <Color3 name="ImageColor3">
-            <R>0.18823531</R>
-            <G>0.17254902</G>
-            <B>0.17254902</B>
-          </Color3>
-          <Content name="ImageContent">
-            <uri>rbxassetid://14557092445</uri>
-          </Content>
-          <Vector2 name="ImageRectOffset">
-            <X>0</X>
-            <Y>0</Y>
-          </Vector2>
-          <Vector2 name="ImageRectSize">
-            <X>0</X>
-            <Y>0</Y>
-          </Vector2>
-          <float name="ImageTransparency">0.68</float>
-          <token name="InputSink">0</token>
-          <bool name="Interactable">true</bool>
-          <int name="LayoutOrder">0</int>
-          <Ref name="NextSelectionDown">null</Ref>
-          <Ref name="NextSelectionLeft">null</Ref>
-          <Ref name="NextSelectionRight">null</Ref>
-          <Ref name="NextSelectionUp">null</Ref>
-          <UDim2 name="Position">
-            <XS>0.5</XS>
-            <XO>0</XO>
-            <YS>0.5</YS>
-            <YO>0</YO>
-          </UDim2>
-          <token name="ResampleMode">0</token>
-          <Ref name="RootLocalizationTable">null</Ref>
-          <float name="Rotation">0</float>
-          <bool name="DefinesCapabilities">false</bool>
-          <token name="ScaleType">0</token>
-          <bool name="Selectable">false</bool>
-          <token name="SelectionBehaviorDown">0</token>
-          <token name="SelectionBehaviorLeft">0</token>
-          <token name="SelectionBehaviorRight">0</token>
-          <token name="SelectionBehaviorUp">0</token>
-          <bool name="SelectionGroup">false</bool>
-          <Ref name="SelectionImageObject">null</Ref>
-          <int name="SelectionOrder">0</int>
-          <UDim2 name="Size">
-            <XS>1</XS>
-            <XO>0</XO>
-            <YS>1</YS>
-            <YO>0</YO>
-          </UDim2>
-          <token name="SizeConstraint">0</token>
-          <Rect2D name="SliceCenter">
-            <min>
-              <X>0</X>
-              <Y>0</Y>
-            </min>
-            <max>
-              <X>0</X>
-              <Y>0</Y>
-            </max>
-          </Rect2D>
-          <float name="SliceScale">-0.05</float>
-          <int64 name="SourceAssetId">-1</int64>
-          <BinaryString name="Tags"></BinaryString>
-          <UDim2 name="TileSize">
-            <XS>1</XS>
-            <XO>0</XO>
-            <YS>1</YS>
-            <YO>0</YO>
-          </UDim2>
-          <bool name="Visible">true</bool>
-          <int name="ZIndex">2</int>
-        </Properties>
-      </Item>
-    </Item>
-    <Item class="SurfaceLight" referent="17">
-      <Properties>
-        <string name="Name">Shadows</string>
-        <float name="Angle">180</float>
-        <BinaryString name="AttributesSerialize"></BinaryString>
-        <float name="Brightness">0.1</float>
-        <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-        <Color3 name="Color">
-          <R>1</R>
-          <G>0.627451</G>
-          <B>0.36078432</B>
-        </Color3>
-        <bool name="Enabled">true</bool>
-        <token name="Face">2</token>
-        <float name="Range">16</float>
-        <bool name="DefinesCapabilities">false</bool>
-        <bool name="Shadows">true</bool>
-        <int64 name="SourceAssetId">-1</int64>
-        <BinaryString name="Tags"></BinaryString>
-      </Properties>
-    </Item>
-    <Item class="SurfaceLight" referent="18">
-      <Properties>
-        <string name="Name">Shadows</string>
-        <float name="Angle">180</float>
-        <BinaryString name="AttributesSerialize"></BinaryString>
-        <float name="Brightness">0.1</float>
-        <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-        <Color3 name="Color">
-          <R>1</R>
-          <G>0.627451</G>
-          <B>0.36078432</B>
-        </Color3>
-        <bool name="Enabled">true</bool>
-        <token name="Face">5</token>
-        <float name="Range">16</float>
-        <bool name="DefinesCapabilities">false</bool>
-        <bool name="Shadows">true</bool>
-        <int64 name="SourceAssetId">-1</int64>
-        <BinaryString name="Tags"></BinaryString>
-      </Properties>
-    </Item>
-    <Item class="SurfaceLight" referent="19">
-      <Properties>
-        <string name="Name">NoShadows</string>
-        <float name="Angle">180</float>
-        <BinaryString name="AttributesSerialize"></BinaryString>
-        <float name="Brightness">1</float>
-        <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-        <Color3 name="Color">
-          <R>1</R>
-          <G>0.627451</G>
-          <B>0.36078432</B>
-        </Color3>
-        <bool name="Enabled">true</bool>
-        <token name="Face">2</token>
-        <float name="Range">16</float>
-        <bool name="DefinesCapabilities">false</bool>
-        <bool name="Shadows">false</bool>
-        <int64 name="SourceAssetId">-1</int64>
-        <BinaryString name="Tags"></BinaryString>
-      </Properties>
-    </Item>
-    <Item class="SurfaceLight" referent="20">
-      <Properties>
-        <string name="Name">NoShadows</string>
-        <float name="Angle">180</float>
-        <BinaryString name="AttributesSerialize"></BinaryString>
-        <float name="Brightness">1</float>
-        <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-        <Color3 name="Color">
-          <R>1</R>
-          <G>0.627451</G>
-          <B>0.36078432</B>
-        </Color3>
-        <bool name="Enabled">true</bool>
-        <token name="Face">5</token>
-        <float name="Range">16</float>
-        <bool name="DefinesCapabilities">false</bool>
-        <bool name="Shadows">false</bool>
-        <int64 name="SourceAssetId">-1</int64>
-        <BinaryString name="Tags"></BinaryString>
-      </Properties>
-    </Item>
-    <Item class="Part" referent="21">
-      <Properties>
-        <string name="Name">ShadowMask</string>
-        <bool name="Anchored">false</bool>
-        <BinaryString name="AttributesSerialize"></BinaryString>
-        <bool name="AudioCanCollide">true</bool>
-        <float name="BackParamA">-0.5</float>
-        <float name="BackParamB">0.5</float>
-        <token name="BackSurface">5</token>
-        <token name="BackSurfaceInput">0</token>
-        <float name="BottomParamA">-0.5</float>
-        <float name="BottomParamB">0.5</float>
-        <token name="BottomSurface">5</token>
-        <token name="BottomSurfaceInput">0</token>
-        <CoordinateFrame name="CFrame">
-          <X>36.125</X>
-          <Y>2.499999</Y>
-          <Z>120.35</Z>
-          <R00>1</R00>
-          <R01>0</R01>
-          <R02>0</R02>
-          <R10>0</R10>
-          <R11>1</R11>
-          <R12>0</R12>
-          <R20>0</R20>
-          <R21>0</R21>
-          <R22>1</R22>
-        </CoordinateFrame>
-        <bool name="CanCollide">false</bool>
-        <bool name="CanQuery">false</bool>
-        <bool name="CanTouch">false</bool>
-        <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-        <bool name="CastShadow">true</bool>
-        <string name="CollisionGroup">Default</string>
-        <int name="CollisionGroupId">0</int>
-        <Color3uint8 name="Color3uint8">5987689</Color3uint8>
-        <PhysicalProperties name="CustomPhysicalProperties">
-          <CustomPhysics>false</CustomPhysics>
-        </PhysicalProperties>
-        <bool name="EnableFluidForces">false</bool>
-        <token name="formFactorRaw">1</token>
-        <float name="FrontParamA">-0.1</float>
-        <float name="FrontParamB">0.1</float>
-        <token name="FrontSurface">5</token>
-        <token name="FrontSurfaceInput">12</token>
-        <float name="LeftParamA">-0.5</float>
-        <float name="LeftParamB">0.5</float>
-        <token name="LeftSurface">5</token>
-        <token name="LeftSurfaceInput">0</token>
-        <bool name="Locked">false</bool>
-        <bool name="Massless">false</bool>
-        <token name="Material">272</token>
-        <string name="MaterialVariantSerialized"></string>
-        <CoordinateFrame name="PivotOffset">
-          <X>0</X>
-          <Y>0</Y>
-          <Z>0</Z>
-          <R00>1</R00>
-          <R01>0</R01>
-          <R02>0</R02>
-          <R10>0</R10>
-          <R11>1</R11>
-          <R12>0</R12>
-          <R20>0</R20>
-          <R21>0</R21>
-          <R22>1</R22>
-        </CoordinateFrame>
-        <float name="Reflectance">0</float>
-        <float name="RightParamA">-0.5</float>
-        <float name="RightParamB">0.5</float>
-        <token name="RightSurface">5</token>
-        <token name="RightSurfaceInput">0</token>
-        <int name="RootPriority">0</int>
-        <Vector3 name="RotVelocity">
-          <X>0</X>
-          <Y>0</Y>
-          <Z>0</Z>
-        </Vector3>
-        <bool name="DefinesCapabilities">false</bool>
-        <token name="shape">1</token>
-        <Vector3 name="size">
-          <X>5</X>
-          <Y>5</Y>
-          <Z>0.19999999</Z>
-        </Vector3>
-        <int64 name="SourceAssetId">-1</int64>
-        <BinaryString name="Tags"></BinaryString>
-        <float name="TopParamA">-0.5</float>
-        <float name="TopParamB">0.5</float>
-        <token name="TopSurface">5</token>
-        <token name="TopSurfaceInput">0</token>
-        <float name="Transparency">1</float>
-        <Vector3 name="Velocity">
-          <X>0</X>
-          <Y>0</Y>
-          <Z>0</Z>
-        </Vector3>
-      </Properties>
-      <Item class="Decal" referent="22">
-        <Properties>
-          <string name="Name">Decal</string>
-          <BinaryString name="AttributesSerialize"></BinaryString>
-          <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-          <Color3 name="Color3">
-            <R>1</R>
-            <G>1</G>
-            <B>1</B>
-          </Color3>
-          <token name="Face">5</token>
-          <Content name="MetalnessMapContent">
-            <null>
-            </null>
-          </Content>
-          <Content name="NormalMapContent">
-            <null>
-            </null>
-          </Content>
-          <float name="Rotation">0</float>
-          <Content name="RoughnessMapContent">
-            <null>
-            </null>
-          </Content>
-          <bool name="DefinesCapabilities">false</bool>
-          <int64 name="SourceAssetId">-1</int64>
-          <BinaryString name="Tags"></BinaryString>
-          <Content name="TextureContent">
-            <uri>rbxassetid://14557092445</uri>
-          </Content>
-          <ContentId name="TexturePack">
-            <null>
-            </null>
-          </ContentId>
-          <string name="TexturePackMetadata"></string>
-          <float name="Transparency">0</float>
-          <Vector2 name="UVOffset">
-            <X>0</X>
-            <Y>0</Y>
-          </Vector2>
-          <Vector2 name="UVScale">
-            <X>1</X>
-            <Y>1</Y>
-          </Vector2>
-          <int name="ZIndex">1</int>
-        </Properties>
-      </Item>
-      <Item class="WeldConstraint" referent="23">
-        <Properties>
-          <string name="Name">WeldConstraint</string>
-          <BinaryString name="AttributesSerialize"></BinaryString>
-          <CoordinateFrame name="CFrame0">
-            <X>0</X>
-            <Y>0</Y>
-            <Z>-6.0999985</Z>
-            <R00>1</R00>
-            <R01>0</R01>
-            <R02>0</R02>
-            <R10>0</R10>
-            <R11>1</R11>
-            <R12>0</R12>
-            <R20>0</R20>
-            <R21>0</R21>
-            <R22>1</R22>
-          </CoordinateFrame>
-          <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-          <Ref name="Part0Internal">21</Ref>
-          <Ref name="Part1Internal">0</Ref>
-          <bool name="DefinesCapabilities">false</bool>
-          <int64 name="SourceAssetId">-1</int64>
-          <int name="State">3</int>
-          <BinaryString name="Tags"></BinaryString>
-        </Properties>
-      </Item>
-    </Item>
-    <Item class="Part" referent="24">
-      <Properties>
-        <string name="Name">ShadowMask</string>
-        <bool name="Anchored">false</bool>
-        <BinaryString name="AttributesSerialize"></BinaryString>
-        <bool name="AudioCanCollide">true</bool>
-        <float name="BackParamA">-0.5</float>
-        <float name="BackParamB">0.5</float>
-        <token name="BackSurface">5</token>
-        <token name="BackSurfaceInput">0</token>
-        <float name="BottomParamA">-0.5</float>
-        <float name="BottomParamB">0.5</float>
-        <token name="BottomSurface">5</token>
-        <token name="BottomSurfaceInput">0</token>
-        <CoordinateFrame name="CFrame">
-          <X>36.125</X>
-          <Y>2.499999</Y>
-          <Z>108.149994</Z>
-          <R00>-1</R00>
-          <R01>0</R01>
-          <R02>0</R02>
-          <R10>0</R10>
-          <R11>1</R11>
-          <R12>0</R12>
-          <R20>0</R20>
-          <R21>0</R21>
-          <R22>-1</R22>
-        </CoordinateFrame>
-        <bool name="CanCollide">false</bool>
-        <bool name="CanQuery">false</bool>
-        <bool name="CanTouch">false</bool>
-        <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-        <bool name="CastShadow">true</bool>
-        <string name="CollisionGroup">Default</string>
-        <int name="CollisionGroupId">0</int>
-        <Color3uint8 name="Color3uint8">5987689</Color3uint8>
-        <PhysicalProperties name="CustomPhysicalProperties">
-          <CustomPhysics>false</CustomPhysics>
-        </PhysicalProperties>
-        <bool name="EnableFluidForces">false</bool>
-        <token name="formFactorRaw">1</token>
-        <float name="FrontParamA">-0.1</float>
-        <float name="FrontParamB">0.1</float>
-        <token name="FrontSurface">5</token>
-        <token name="FrontSurfaceInput">12</token>
-        <float name="LeftParamA">-0.5</float>
-        <float name="LeftParamB">0.5</float>
-        <token name="LeftSurface">5</token>
-        <token name="LeftSurfaceInput">0</token>
-        <bool name="Locked">false</bool>
-        <bool name="Massless">false</bool>
-        <token name="Material">272</token>
-        <string name="MaterialVariantSerialized"></string>
-        <CoordinateFrame name="PivotOffset">
-          <X>0</X>
-          <Y>0</Y>
-          <Z>0</Z>
-          <R00>1</R00>
-          <R01>0</R01>
-          <R02>0</R02>
-          <R10>0</R10>
-          <R11>1</R11>
-          <R12>0</R12>
-          <R20>0</R20>
-          <R21>0</R21>
-          <R22>1</R22>
-        </CoordinateFrame>
-        <float name="Reflectance">0</float>
-        <float name="RightParamA">-0.5</float>
-        <float name="RightParamB">0.5</float>
-        <token name="RightSurface">5</token>
-        <token name="RightSurfaceInput">0</token>
-        <int name="RootPriority">0</int>
-        <Vector3 name="RotVelocity">
-          <X>0</X>
-          <Y>0</Y>
-          <Z>0</Z>
-        </Vector3>
-        <bool name="DefinesCapabilities">false</bool>
-        <token name="shape">1</token>
-        <Vector3 name="size">
-          <X>5</X>
-          <Y>5</Y>
-          <Z>0.19999999</Z>
-        </Vector3>
-        <int64 name="SourceAssetId">-1</int64>
-        <BinaryString name="Tags"></BinaryString>
-        <float name="TopParamA">-0.5</float>
-        <float name="TopParamB">0.5</float>
-        <token name="TopSurface">5</token>
-        <token name="TopSurfaceInput">0</token>
-        <float name="Transparency">1</float>
-        <Vector3 name="Velocity">
-          <X>0</X>
-          <Y>0</Y>
-          <Z>0</Z>
-        </Vector3>
-      </Properties>
-      <Item class="Decal" referent="25">
-        <Properties>
-          <string name="Name">Decal</string>
-          <BinaryString name="AttributesSerialize"></BinaryString>
-          <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-          <Color3 name="Color3">
-            <R>1</R>
-            <G>1</G>
-            <B>1</B>
-          </Color3>
-          <token name="Face">5</token>
-          <Content name="MetalnessMapContent">
-            <null>
-            </null>
-          </Content>
-          <Content name="NormalMapContent">
-            <null>
-            </null>
-          </Content>
-          <float name="Rotation">0</float>
-          <Content name="RoughnessMapContent">
-            <null>
-            </null>
-          </Content>
-          <bool name="DefinesCapabilities">false</bool>
-          <int64 name="SourceAssetId">-1</int64>
-          <BinaryString name="Tags"></BinaryString>
-          <Content name="TextureContent">
-            <uri>rbxassetid://14557092445</uri>
-          </Content>
-          <ContentId name="TexturePack">
-            <null>
-            </null>
-          </ContentId>
-          <string name="TexturePackMetadata"></string>
-          <float name="Transparency">0</float>
-          <Vector2 name="UVOffset">
-            <X>0</X>
-            <Y>0</Y>
-          </Vector2>
-          <Vector2 name="UVScale">
-            <X>1</X>
-            <Y>1</Y>
-          </Vector2>
-          <int name="ZIndex">1</int>
-        </Properties>
-      </Item>
-      <Item class="WeldConstraint" referent="26">
-        <Properties>
-          <string name="Name">WeldConstraint</string>
-          <BinaryString name="AttributesSerialize"></BinaryString>
-          <CoordinateFrame name="CFrame0">
-            <X>0</X>
-            <Y>0</Y>
-            <Z>-6.100006</Z>
-            <R00>-1</R00>
-            <R01>0</R01>
-            <R02>0</R02>
-            <R10>0</R10>
-            <R11>1</R11>
-            <R12>0</R12>
-            <R20>0</R20>
-            <R21>0</R21>
-            <R22>-1</R22>
-          </CoordinateFrame>
-          <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-          <Ref name="Part0Internal">24</Ref>
-          <Ref name="Part1Internal">0</Ref>
-          <bool name="DefinesCapabilities">false</bool>
-          <int64 name="SourceAssetId">-1</int64>
-          <int name="State">3</int>
-          <BinaryString name="Tags"></BinaryString>
-        </Properties>
-      </Item>
-    </Item>
-    <Item class="NumberValue" referent="27">
-      <Properties>
-        <string name="Name">Range</string>
-        <BinaryString name="AttributesSerialize"></BinaryString>
-        <SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-        <bool name="DefinesCapabilities">false</bool>
-        <int64 name="SourceAssetId">-1</int64>
-        <BinaryString name="Tags"></BinaryString>
-        <double name="Value">64</double>
-      </Properties>
-    </Item>
-  </Item>
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<Meta name="ExplicitAutoJoints">true</Meta>
+	<External>null</External>
+	<External>nil</External>
+	<Item class="Part" referent="RBX5F2555DEC6C240E39136DFFC1F1FB1A9">
+		<Properties>
+			<token name="shape">1</token>
+			<token name="formFactorRaw">1</token>
+			<bool name="Anchored">true</bool>
+			<bool name="AudioCanCollide">true</bool>
+			<float name="BackParamA">-0.5</float>
+			<float name="BackParamB">0.5</float>
+			<token name="BackSurface">5</token>
+			<token name="BackSurfaceInput">0</token>
+			<float name="BottomParamA">-0.5</float>
+			<float name="BottomParamB">0.5</float>
+			<token name="BottomSurface">5</token>
+			<token name="BottomSurfaceInput">0</token>
+			<CoordinateFrame name="CFrame">
+				<X>81.5</X>
+				<Y>4.5</Y>
+				<Z>86</Z>
+				<R00>1</R00>
+				<R01>0</R01>
+				<R02>0</R02>
+				<R10>0</R10>
+				<R11>1</R11>
+				<R12>0</R12>
+				<R20>0</R20>
+				<R21>0</R21>
+				<R22>1</R22>
+			</CoordinateFrame>
+			<bool name="CanCollide">true</bool>
+			<bool name="CanQuery">true</bool>
+			<bool name="CanTouch">true</bool>
+			<bool name="CastShadow">true</bool>
+			<string name="CollisionGroup">Default</string>
+			<int name="CollisionGroupId">0</int>
+			<Color3uint8 name="Color3uint8">4284177769</Color3uint8>
+			<PhysicalProperties name="CustomPhysicalProperties">
+				<CustomPhysics>false</CustomPhysics>
+			</PhysicalProperties>
+			<bool name="EnableFluidForces">false</bool>
+			<float name="FrontParamA">-0.100000001</float>
+			<float name="FrontParamB">0.100000001</float>
+			<token name="FrontSurface">5</token>
+			<token name="FrontSurfaceInput">12</token>
+			<float name="LeftParamA">-0.5</float>
+			<float name="LeftParamB">0.5</float>
+			<token name="LeftSurface">5</token>
+			<token name="LeftSurfaceInput">0</token>
+			<bool name="Locked">false</bool>
+			<bool name="Massless">false</bool>
+			<token name="Material">1568</token>
+			<string name="MaterialVariantSerialized"></string>
+			<CoordinateFrame name="PivotOffset">
+				<X>0</X>
+				<Y>0</Y>
+				<Z>0</Z>
+				<R00>1</R00>
+				<R01>0</R01>
+				<R02>0</R02>
+				<R10>0</R10>
+				<R11>1</R11>
+				<R12>0</R12>
+				<R20>0</R20>
+				<R21>0</R21>
+				<R22>1</R22>
+			</CoordinateFrame>
+			<float name="Reflectance">0</float>
+			<float name="RightParamA">-0.5</float>
+			<float name="RightParamB">0.5</float>
+			<token name="RightSurface">5</token>
+			<token name="RightSurfaceInput">0</token>
+			<int name="RootPriority">0</int>
+			<Vector3 name="RotVelocity">
+				<X>0</X>
+				<Y>0</Y>
+				<Z>0</Z>
+			</Vector3>
+			<float name="TopParamA">-0.5</float>
+			<float name="TopParamB">0.5</float>
+			<token name="TopSurface">5</token>
+			<token name="TopSurfaceInput">0</token>
+			<float name="Transparency">0</float>
+			<Vector3 name="Velocity">
+				<X>0</X>
+				<Y>0</Y>
+				<Z>0</Z>
+			</Vector3>
+			<Vector3 name="size">
+				<X>5</X>
+				<Y>5</Y>
+				<Z>12</Z>
+			</Vector3>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+			<bool name="DefinesCapabilities">false</bool>
+			<string name="Name">Scanner</string>
+			<int64 name="SourceAssetId">-1</int64>
+			<BinaryString name="Tags"></BinaryString>
+		</Properties>
+		<Item class="SurfaceGui" referent="RBXB09CC9324F1C4C90B75E64515AB32457">
+			<Properties>
+				<bool name="AlwaysOnTop">false</bool>
+				<float name="Brightness">9.5</float>
+				<Vector2 name="CanvasSize">
+					<X>800</X>
+					<Y>600</Y>
+				</Vector2>
+				<bool name="ClipsDescendants">true</bool>
+				<float name="LightInfluence">0</float>
+				<float name="MaxDistance">0</float>
+				<float name="PixelsPerStud">50</float>
+				<token name="SizingMode">1</token>
+				<float name="ToolPunchThroughDistance">0</float>
+				<float name="ZOffset">0</float>
+				<bool name="Active">false</bool>
+				<Ref name="Adornee">null</Ref>
+				<token name="Face">2</token>
+				<bool name="Enabled">true</bool>
+				<bool name="ResetOnSpawn">true</bool>
+				<token name="ZIndexBehavior">1</token>
+				<bool name="AutoLocalize">true</bool>
+				<Ref name="RootLocalizationTable">null</Ref>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<string name="Name">Back</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+			<Item class="ImageLabel" referent="RBXEE2A99880EA24B1197A1CB8C409F43D9">
+				<Properties>
+					<Content name="Image"><url>rbxassetid://14556783821</url></Content>
+					<Color3 name="ImageColor3">
+						<R>0.819607913</R>
+						<G>0.137254909</G>
+						<B>0.113725498</B>
+					</Color3>
+					<Vector2 name="ImageRectOffset">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<Vector2 name="ImageRectSize">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<float name="ImageTransparency">0.100000001</float>
+					<token name="ResampleMode">1</token>
+					<token name="ScaleType">0</token>
+					<Rect2D name="SliceCenter">
+						<min>
+							<X>0</X>
+							<Y>0</Y>
+						</min>
+						<max>
+							<X>0</X>
+							<Y>0</Y>
+						</max>
+					</Rect2D>
+					<float name="SliceScale">-0.0500000007</float>
+					<UDim2 name="TileSize">
+						<XS>1</XS>
+						<XO>0</XO>
+						<YS>1</YS>
+						<YO>0</YO>
+					</UDim2>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0.5</X>
+						<Y>0.5</Y>
+					</Vector2>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">1</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882354</R>
+						<G>0.164705887</G>
+						<B>0.20784314</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">0</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<token name="InputSink">0</token>
+					<bool name="Interactable">true</bool>
+					<int name="LayoutOrder">0</int>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0.5</XS>
+						<XO>0</XO>
+						<YS>0.5</YS>
+						<YO>0</YO>
+					</UDim2>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>0.800000012</XS>
+						<XO>0</XO>
+						<YS>0.800000012</YS>
+						<YO>0</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">3</int>
+					<bool name="AutoLocalize">true</bool>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<BinaryString name="AttributesSerialize">AQAAAAkAAABTcGluU3BlZWQGAAAAAADQhkA=</BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<string name="Name">Wifi</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags">VUlTcGlu</BinaryString>
+				</Properties>
+			</Item>
+			<Item class="UIPadding" referent="RBXB3D79F2C26EF46308EC49B6CA721D5BF">
+				<Properties>
+					<UDim name="PaddingBottom">
+						<S>0</S>
+						<O>7</O>
+					</UDim>
+					<UDim name="PaddingLeft">
+						<S>0</S>
+						<O>7</O>
+					</UDim>
+					<UDim name="PaddingRight">
+						<S>0</S>
+						<O>7</O>
+					</UDim>
+					<UDim name="PaddingTop">
+						<S>0</S>
+						<O>7</O>
+					</UDim>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<string name="Name">UIPadding</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="ImageLabel" referent="RBX478A31F86C1342C89D126C9E8B50F8A7">
+				<Properties>
+					<Content name="Image"><url>rbxassetid://14557092445</url></Content>
+					<Color3 name="ImageColor3">
+						<R>0.188235313</R>
+						<G>0.172549024</G>
+						<B>0.172549024</B>
+					</Color3>
+					<Vector2 name="ImageRectOffset">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<Vector2 name="ImageRectSize">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<float name="ImageTransparency">0.680000007</float>
+					<token name="ResampleMode">0</token>
+					<token name="ScaleType">0</token>
+					<Rect2D name="SliceCenter">
+						<min>
+							<X>0</X>
+							<Y>0</Y>
+						</min>
+						<max>
+							<X>0</X>
+							<Y>0</Y>
+						</max>
+					</Rect2D>
+					<float name="SliceScale">-0.0500000007</float>
+					<UDim2 name="TileSize">
+						<XS>1</XS>
+						<XO>0</XO>
+						<YS>1</YS>
+						<YO>0</YO>
+					</UDim2>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0.5</X>
+						<Y>0.5</Y>
+					</Vector2>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">1</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882354</R>
+						<G>0.164705887</G>
+						<B>0.20784314</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">0</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<token name="InputSink">0</token>
+					<bool name="Interactable">true</bool>
+					<int name="LayoutOrder">0</int>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0.5</XS>
+						<XO>0</XO>
+						<YS>0.5</YS>
+						<YO>0</YO>
+					</UDim2>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>1</XS>
+						<XO>0</XO>
+						<YS>1</YS>
+						<YO>0</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">2</int>
+					<bool name="AutoLocalize">true</bool>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<string name="Name">VentMask</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="ImageLabel" referent="RBX54AB2F4836634D469016FB84A374015A">
+				<Properties>
+					<Content name="Image"><url>rbxassetid://4584251621</url></Content>
+					<Color3 name="ImageColor3">
+						<R>1</R>
+						<G>0.627451003</G>
+						<B>0.360784322</B>
+					</Color3>
+					<Vector2 name="ImageRectOffset">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<Vector2 name="ImageRectSize">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<float name="ImageTransparency">0</float>
+					<token name="ResampleMode">0</token>
+					<token name="ScaleType">0</token>
+					<Rect2D name="SliceCenter">
+						<min>
+							<X>0</X>
+							<Y>0</Y>
+						</min>
+						<max>
+							<X>0</X>
+							<Y>0</Y>
+						</max>
+					</Rect2D>
+					<float name="SliceScale">-0.0500000007</float>
+					<UDim2 name="TileSize">
+						<XS>1</XS>
+						<XO>0</XO>
+						<YS>1</YS>
+						<YO>0</YO>
+					</UDim2>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0.5</X>
+						<Y>0.5</Y>
+					</Vector2>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">1</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882354</R>
+						<G>0.164705887</G>
+						<B>0.20784314</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">0</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<token name="InputSink">0</token>
+					<bool name="Interactable">true</bool>
+					<int name="LayoutOrder">0</int>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0.5</XS>
+						<XO>0</XO>
+						<YS>0.5</YS>
+						<YO>0</YO>
+					</UDim2>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>1</XS>
+						<XO>0</XO>
+						<YS>1</YS>
+						<YO>0</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">1</int>
+					<bool name="AutoLocalize">true</bool>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<string name="Name">Vent</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+		</Item>
+		<Item class="SurfaceLight" referent="RBXEFF995399F8C4017B4D34D17D095F069">
+			<Properties>
+				<float name="Angle">180</float>
+				<token name="Face">2</token>
+				<float name="Range">16</float>
+				<float name="Brightness">1</float>
+				<Color3 name="Color">
+					<R>1</R>
+					<G>0.627451003</G>
+					<B>0.360784322</B>
+				</Color3>
+				<bool name="Enabled">true</bool>
+				<bool name="Shadows">false</bool>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<string name="Name">NoShadows</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+		</Item>
+		<Item class="SurfaceLight" referent="RBX89A51DC1240D44A3A258376ABE51FCDD">
+			<Properties>
+				<float name="Angle">180</float>
+				<token name="Face">5</token>
+				<float name="Range">16</float>
+				<float name="Brightness">1</float>
+				<Color3 name="Color">
+					<R>1</R>
+					<G>0.627451003</G>
+					<B>0.360784322</B>
+				</Color3>
+				<bool name="Enabled">true</bool>
+				<bool name="Shadows">false</bool>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<string name="Name">NoShadows</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+		</Item>
+		<Item class="Decal" referent="RBXFEB515C7576643B5B8C15078B88D477E">
+			<Properties>
+				<Color3 name="Color3">
+					<R>0.356862754</R>
+					<G>0.36470589</G>
+					<B>0.411764711</B>
+				</Color3>
+				<Content name="MetalnessMap"><null></null></Content>
+				<Content name="NormalMap"><null></null></Content>
+				<float name="Rotation">0</float>
+				<Content name="RoughnessMap"><null></null></Content>
+				<Content name="Texture"><url>rbxassetid://4611376175</url></Content>
+				<Content name="TexturePack"><null></null></Content>
+				<string name="TexturePackMetadata"></string>
+				<float name="Transparency">0</float>
+				<Vector2 name="UVOffset">
+					<X>0</X>
+					<Y>0</Y>
+				</Vector2>
+				<Vector2 name="UVScale">
+					<X>1</X>
+					<Y>1</Y>
+				</Vector2>
+				<int name="ZIndex">1</int>
+				<token name="Face">1</token>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<string name="Name">ColorCopy</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags">Q29sb3JUZXh0dXJl</BinaryString>
+			</Properties>
+		</Item>
+		<Item class="NumberValue" referent="RBX2F4D78ED74104D28A2CBC8F737F68007">
+			<Properties>
+				<double name="Value">64</double>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<string name="Name">Range</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+		</Item>
+		<Item class="Part" referent="RBXF85039287524484D9EAEEDEAF27E790A">
+			<Properties>
+				<token name="shape">1</token>
+				<token name="formFactorRaw">1</token>
+				<bool name="Anchored">false</bool>
+				<bool name="AudioCanCollide">true</bool>
+				<float name="BackParamA">-0.5</float>
+				<float name="BackParamB">0.5</float>
+				<token name="BackSurface">5</token>
+				<token name="BackSurfaceInput">0</token>
+				<float name="BottomParamA">-0.5</float>
+				<float name="BottomParamB">0.5</float>
+				<token name="BottomSurface">5</token>
+				<token name="BottomSurfaceInput">0</token>
+				<CoordinateFrame name="CFrame">
+					<X>81.5</X>
+					<Y>4.5</Y>
+					<Z>79.8999939</Z>
+					<R00>-1</R00>
+					<R01>0</R01>
+					<R02>0</R02>
+					<R10>0</R10>
+					<R11>1</R11>
+					<R12>0</R12>
+					<R20>0</R20>
+					<R21>0</R21>
+					<R22>-1</R22>
+				</CoordinateFrame>
+				<bool name="CanCollide">false</bool>
+				<bool name="CanQuery">false</bool>
+				<bool name="CanTouch">false</bool>
+				<bool name="CastShadow">true</bool>
+				<string name="CollisionGroup">Default</string>
+				<int name="CollisionGroupId">0</int>
+				<Color3uint8 name="Color3uint8">4284177769</Color3uint8>
+				<PhysicalProperties name="CustomPhysicalProperties">
+					<CustomPhysics>false</CustomPhysics>
+				</PhysicalProperties>
+				<bool name="EnableFluidForces">false</bool>
+				<float name="FrontParamA">-0.100000001</float>
+				<float name="FrontParamB">0.100000001</float>
+				<token name="FrontSurface">5</token>
+				<token name="FrontSurfaceInput">12</token>
+				<float name="LeftParamA">-0.5</float>
+				<float name="LeftParamB">0.5</float>
+				<token name="LeftSurface">5</token>
+				<token name="LeftSurfaceInput">0</token>
+				<bool name="Locked">false</bool>
+				<bool name="Massless">false</bool>
+				<token name="Material">272</token>
+				<string name="MaterialVariantSerialized"></string>
+				<CoordinateFrame name="PivotOffset">
+					<X>0</X>
+					<Y>0</Y>
+					<Z>0</Z>
+					<R00>1</R00>
+					<R01>0</R01>
+					<R02>0</R02>
+					<R10>0</R10>
+					<R11>1</R11>
+					<R12>0</R12>
+					<R20>0</R20>
+					<R21>0</R21>
+					<R22>1</R22>
+				</CoordinateFrame>
+				<float name="Reflectance">0</float>
+				<float name="RightParamA">-0.5</float>
+				<float name="RightParamB">0.5</float>
+				<token name="RightSurface">5</token>
+				<token name="RightSurfaceInput">0</token>
+				<int name="RootPriority">0</int>
+				<Vector3 name="RotVelocity">
+					<X>0</X>
+					<Y>0</Y>
+					<Z>0</Z>
+				</Vector3>
+				<float name="TopParamA">-0.5</float>
+				<float name="TopParamB">0.5</float>
+				<token name="TopSurface">5</token>
+				<token name="TopSurfaceInput">0</token>
+				<float name="Transparency">1</float>
+				<Vector3 name="Velocity">
+					<X>0</X>
+					<Y>0</Y>
+					<Z>0</Z>
+				</Vector3>
+				<Vector3 name="size">
+					<X>5</X>
+					<Y>5</Y>
+					<Z>0.199999988</Z>
+				</Vector3>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<string name="Name">ShadowMask</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+			<Item class="WeldConstraint" referent="RBXD1EB9AB1F7404016ABF3506BC2DF6211">
+				<Properties>
+					<CoordinateFrame name="CFrame0">
+						<X>0</X>
+						<Y>0</Y>
+						<Z>-6.1000061</Z>
+						<R00>-1</R00>
+						<R01>0</R01>
+						<R02>0</R02>
+						<R10>0</R10>
+						<R11>1</R11>
+						<R12>0</R12>
+						<R20>0</R20>
+						<R21>0</R21>
+						<R22>-1</R22>
+					</CoordinateFrame>
+					<Ref name="Part0Internal">RBXF85039287524484D9EAEEDEAF27E790A</Ref>
+					<Ref name="Part1Internal">RBX5F2555DEC6C240E39136DFFC1F1FB1A9</Ref>
+					<int name="State">3</int>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<string name="Name">WeldConstraint</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="Decal" referent="RBXBBE05C5F321549CF8C01FB47A9B8DAC7">
+				<Properties>
+					<Color3 name="Color3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<Content name="MetalnessMap"><null></null></Content>
+					<Content name="NormalMap"><null></null></Content>
+					<float name="Rotation">0</float>
+					<Content name="RoughnessMap"><null></null></Content>
+					<Content name="Texture"><url>rbxassetid://14557092445</url></Content>
+					<Content name="TexturePack"><null></null></Content>
+					<string name="TexturePackMetadata"></string>
+					<float name="Transparency">0</float>
+					<Vector2 name="UVOffset">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<Vector2 name="UVScale">
+						<X>1</X>
+						<Y>1</Y>
+					</Vector2>
+					<int name="ZIndex">1</int>
+					<token name="Face">5</token>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<string name="Name">Decal</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+		</Item>
+		<Item class="SurfaceLight" referent="RBX4DD12FF74A4F458BBB010DB1063DF56E">
+			<Properties>
+				<float name="Angle">180</float>
+				<token name="Face">2</token>
+				<float name="Range">16</float>
+				<float name="Brightness">0.100000001</float>
+				<Color3 name="Color">
+					<R>1</R>
+					<G>0.627451003</G>
+					<B>0.360784322</B>
+				</Color3>
+				<bool name="Enabled">true</bool>
+				<bool name="Shadows">true</bool>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<string name="Name">Shadows</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+		</Item>
+		<Item class="SurfaceLight" referent="RBX1796B5FEEB0C4FA6B7DD6EA6E6E26AA1">
+			<Properties>
+				<float name="Angle">180</float>
+				<token name="Face">5</token>
+				<float name="Range">16</float>
+				<float name="Brightness">0.100000001</float>
+				<Color3 name="Color">
+					<R>1</R>
+					<G>0.627451003</G>
+					<B>0.360784322</B>
+				</Color3>
+				<bool name="Enabled">true</bool>
+				<bool name="Shadows">true</bool>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<string name="Name">Shadows</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+		</Item>
+		<Item class="Decal" referent="RBXBE5D303276CF455B9BB8B494A93CFCFF">
+			<Properties>
+				<Color3 name="Color3">
+					<R>0.356862754</R>
+					<G>0.36470589</G>
+					<B>0.411764711</B>
+				</Color3>
+				<Content name="MetalnessMap"><null></null></Content>
+				<Content name="NormalMap"><null></null></Content>
+				<float name="Rotation">0</float>
+				<Content name="RoughnessMap"><null></null></Content>
+				<Content name="Texture"><url>rbxassetid://4611376175</url></Content>
+				<Content name="TexturePack"><null></null></Content>
+				<string name="TexturePackMetadata"></string>
+				<float name="Transparency">0</float>
+				<Vector2 name="UVOffset">
+					<X>0</X>
+					<Y>0</Y>
+				</Vector2>
+				<Vector2 name="UVScale">
+					<X>1</X>
+					<Y>1</Y>
+				</Vector2>
+				<int name="ZIndex">1</int>
+				<token name="Face">5</token>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<string name="Name">ColorCopy</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags">Q29sb3JUZXh0dXJl</BinaryString>
+			</Properties>
+		</Item>
+		<Item class="Decal" referent="RBXA46C28B9C4E3416DB58B6E2CFE22F0A7">
+			<Properties>
+				<Color3 name="Color3">
+					<R>0.356862754</R>
+					<G>0.36470589</G>
+					<B>0.411764711</B>
+				</Color3>
+				<Content name="MetalnessMap"><null></null></Content>
+				<Content name="NormalMap"><null></null></Content>
+				<float name="Rotation">0</float>
+				<Content name="RoughnessMap"><null></null></Content>
+				<Content name="Texture"><url>rbxassetid://4611376175</url></Content>
+				<Content name="TexturePack"><null></null></Content>
+				<string name="TexturePackMetadata"></string>
+				<float name="Transparency">0</float>
+				<Vector2 name="UVOffset">
+					<X>0</X>
+					<Y>0</Y>
+				</Vector2>
+				<Vector2 name="UVScale">
+					<X>1</X>
+					<Y>1</Y>
+				</Vector2>
+				<int name="ZIndex">1</int>
+				<token name="Face">2</token>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<string name="Name">ColorCopy</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags">Q29sb3JUZXh0dXJl</BinaryString>
+			</Properties>
+		</Item>
+		<Item class="Decal" referent="RBX901B491F15C44BFDA26CE10E57B88C00">
+			<Properties>
+				<Color3 name="Color3">
+					<R>0.356862754</R>
+					<G>0.36470589</G>
+					<B>0.411764711</B>
+				</Color3>
+				<Content name="MetalnessMap"><null></null></Content>
+				<Content name="NormalMap"><null></null></Content>
+				<float name="Rotation">0</float>
+				<Content name="RoughnessMap"><null></null></Content>
+				<Content name="Texture"><url>rbxassetid://4611376175</url></Content>
+				<Content name="TexturePack"><null></null></Content>
+				<string name="TexturePackMetadata"></string>
+				<float name="Transparency">0</float>
+				<Vector2 name="UVOffset">
+					<X>0</X>
+					<Y>0</Y>
+				</Vector2>
+				<Vector2 name="UVScale">
+					<X>1</X>
+					<Y>1</Y>
+				</Vector2>
+				<int name="ZIndex">1</int>
+				<token name="Face">4</token>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<string name="Name">ColorCopy</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags">Q29sb3JUZXh0dXJl</BinaryString>
+			</Properties>
+		</Item>
+		<Item class="Decal" referent="RBXCC807E3F0F18482C816C5F2EB7625068">
+			<Properties>
+				<Color3 name="Color3">
+					<R>0.356862754</R>
+					<G>0.36470589</G>
+					<B>0.411764711</B>
+				</Color3>
+				<Content name="MetalnessMap"><null></null></Content>
+				<Content name="NormalMap"><null></null></Content>
+				<float name="Rotation">0</float>
+				<Content name="RoughnessMap"><null></null></Content>
+				<Content name="Texture"><url>rbxassetid://4611376175</url></Content>
+				<Content name="TexturePack"><null></null></Content>
+				<string name="TexturePackMetadata"></string>
+				<float name="Transparency">0</float>
+				<Vector2 name="UVOffset">
+					<X>0</X>
+					<Y>0</Y>
+				</Vector2>
+				<Vector2 name="UVScale">
+					<X>1</X>
+					<Y>1</Y>
+				</Vector2>
+				<int name="ZIndex">1</int>
+				<token name="Face">0</token>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<string name="Name">ColorCopy</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags">Q29sb3JUZXh0dXJl</BinaryString>
+			</Properties>
+		</Item>
+		<Item class="SurfaceGui" referent="RBX83A48672AA51438ABDAB266435B2521B">
+			<Properties>
+				<bool name="AlwaysOnTop">false</bool>
+				<float name="Brightness">9.5</float>
+				<Vector2 name="CanvasSize">
+					<X>800</X>
+					<Y>600</Y>
+				</Vector2>
+				<bool name="ClipsDescendants">true</bool>
+				<float name="LightInfluence">0</float>
+				<float name="MaxDistance">0</float>
+				<float name="PixelsPerStud">50</float>
+				<token name="SizingMode">1</token>
+				<float name="ToolPunchThroughDistance">0</float>
+				<float name="ZOffset">0</float>
+				<bool name="Active">false</bool>
+				<Ref name="Adornee">null</Ref>
+				<token name="Face">5</token>
+				<bool name="Enabled">true</bool>
+				<bool name="ResetOnSpawn">true</bool>
+				<token name="ZIndexBehavior">1</token>
+				<bool name="AutoLocalize">true</bool>
+				<Ref name="RootLocalizationTable">null</Ref>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<string name="Name">Front</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+			<Item class="ImageLabel" referent="RBX8F5AD71E875E48A291536AD1F62E4C10">
+				<Properties>
+					<Content name="Image"><url>rbxassetid://14556783821</url></Content>
+					<Color3 name="ImageColor3">
+						<R>0.819607913</R>
+						<G>0.137254909</G>
+						<B>0.113725498</B>
+					</Color3>
+					<Vector2 name="ImageRectOffset">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<Vector2 name="ImageRectSize">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<float name="ImageTransparency">0.100000001</float>
+					<token name="ResampleMode">1</token>
+					<token name="ScaleType">0</token>
+					<Rect2D name="SliceCenter">
+						<min>
+							<X>0</X>
+							<Y>0</Y>
+						</min>
+						<max>
+							<X>0</X>
+							<Y>0</Y>
+						</max>
+					</Rect2D>
+					<float name="SliceScale">-0.0500000007</float>
+					<UDim2 name="TileSize">
+						<XS>1</XS>
+						<XO>0</XO>
+						<YS>1</YS>
+						<YO>0</YO>
+					</UDim2>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0.5</X>
+						<Y>0.5</Y>
+					</Vector2>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">1</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882354</R>
+						<G>0.164705887</G>
+						<B>0.20784314</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">0</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<token name="InputSink">0</token>
+					<bool name="Interactable">true</bool>
+					<int name="LayoutOrder">0</int>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0.5</XS>
+						<XO>0</XO>
+						<YS>0.5</YS>
+						<YO>0</YO>
+					</UDim2>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>0.800000012</XS>
+						<XO>0</XO>
+						<YS>0.800000012</YS>
+						<YO>0</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">3</int>
+					<bool name="AutoLocalize">true</bool>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<BinaryString name="AttributesSerialize">AQAAAAkAAABTcGluU3BlZWQGAAAAAADQhkA=</BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<string name="Name">Wifi</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags">VUlTcGlu</BinaryString>
+				</Properties>
+			</Item>
+			<Item class="ImageLabel" referent="RBXA6518EE0034D4FEB8A2A15C34D75AD81">
+				<Properties>
+					<Content name="Image"><url>rbxassetid://14557092445</url></Content>
+					<Color3 name="ImageColor3">
+						<R>0.188235313</R>
+						<G>0.172549024</G>
+						<B>0.172549024</B>
+					</Color3>
+					<Vector2 name="ImageRectOffset">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<Vector2 name="ImageRectSize">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<float name="ImageTransparency">0.680000007</float>
+					<token name="ResampleMode">0</token>
+					<token name="ScaleType">0</token>
+					<Rect2D name="SliceCenter">
+						<min>
+							<X>0</X>
+							<Y>0</Y>
+						</min>
+						<max>
+							<X>0</X>
+							<Y>0</Y>
+						</max>
+					</Rect2D>
+					<float name="SliceScale">-0.0500000007</float>
+					<UDim2 name="TileSize">
+						<XS>1</XS>
+						<XO>0</XO>
+						<YS>1</YS>
+						<YO>0</YO>
+					</UDim2>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0.5</X>
+						<Y>0.5</Y>
+					</Vector2>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">1</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882354</R>
+						<G>0.164705887</G>
+						<B>0.20784314</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">0</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<token name="InputSink">0</token>
+					<bool name="Interactable">true</bool>
+					<int name="LayoutOrder">0</int>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0.5</XS>
+						<XO>0</XO>
+						<YS>0.5</YS>
+						<YO>0</YO>
+					</UDim2>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>1</XS>
+						<XO>0</XO>
+						<YS>1</YS>
+						<YO>0</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">2</int>
+					<bool name="AutoLocalize">true</bool>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<string name="Name">VentMask</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="ImageLabel" referent="RBX55B6AB6740E248DFA552AABD61A0B1FC">
+				<Properties>
+					<Content name="Image"><url>rbxassetid://4584251621</url></Content>
+					<Color3 name="ImageColor3">
+						<R>1</R>
+						<G>0.627451003</G>
+						<B>0.360784322</B>
+					</Color3>
+					<Vector2 name="ImageRectOffset">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<Vector2 name="ImageRectSize">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<float name="ImageTransparency">0</float>
+					<token name="ResampleMode">0</token>
+					<token name="ScaleType">0</token>
+					<Rect2D name="SliceCenter">
+						<min>
+							<X>0</X>
+							<Y>0</Y>
+						</min>
+						<max>
+							<X>0</X>
+							<Y>0</Y>
+						</max>
+					</Rect2D>
+					<float name="SliceScale">-0.0500000007</float>
+					<UDim2 name="TileSize">
+						<XS>1</XS>
+						<XO>0</XO>
+						<YS>1</YS>
+						<YO>0</YO>
+					</UDim2>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0.5</X>
+						<Y>0.5</Y>
+					</Vector2>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">1</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882354</R>
+						<G>0.164705887</G>
+						<B>0.20784314</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">0</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<token name="InputSink">0</token>
+					<bool name="Interactable">true</bool>
+					<int name="LayoutOrder">0</int>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0.5</XS>
+						<XO>0</XO>
+						<YS>0.5</YS>
+						<YO>0</YO>
+					</UDim2>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>1</XS>
+						<XO>0</XO>
+						<YS>1</YS>
+						<YO>0</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">1</int>
+					<bool name="AutoLocalize">true</bool>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<string name="Name">Vent</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="UIPadding" referent="RBXE3DE74758FE14E57ADEF27E55455FFA8">
+				<Properties>
+					<UDim name="PaddingBottom">
+						<S>0</S>
+						<O>7</O>
+					</UDim>
+					<UDim name="PaddingLeft">
+						<S>0</S>
+						<O>7</O>
+					</UDim>
+					<UDim name="PaddingRight">
+						<S>0</S>
+						<O>7</O>
+					</UDim>
+					<UDim name="PaddingTop">
+						<S>0</S>
+						<O>7</O>
+					</UDim>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<string name="Name">UIPadding</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+		</Item>
+		<Item class="Part" referent="RBXC080C5CF05284988B3179B6BF03B2FEB">
+			<Properties>
+				<token name="shape">1</token>
+				<token name="formFactorRaw">1</token>
+				<bool name="Anchored">false</bool>
+				<bool name="AudioCanCollide">true</bool>
+				<float name="BackParamA">-0.5</float>
+				<float name="BackParamB">0.5</float>
+				<token name="BackSurface">5</token>
+				<token name="BackSurfaceInput">0</token>
+				<float name="BottomParamA">-0.5</float>
+				<float name="BottomParamB">0.5</float>
+				<token name="BottomSurface">5</token>
+				<token name="BottomSurfaceInput">0</token>
+				<CoordinateFrame name="CFrame">
+					<X>81.5</X>
+					<Y>4.5</Y>
+					<Z>92.0999985</Z>
+					<R00>1</R00>
+					<R01>0</R01>
+					<R02>0</R02>
+					<R10>0</R10>
+					<R11>1</R11>
+					<R12>0</R12>
+					<R20>0</R20>
+					<R21>0</R21>
+					<R22>1</R22>
+				</CoordinateFrame>
+				<bool name="CanCollide">false</bool>
+				<bool name="CanQuery">false</bool>
+				<bool name="CanTouch">false</bool>
+				<bool name="CastShadow">true</bool>
+				<string name="CollisionGroup">Default</string>
+				<int name="CollisionGroupId">0</int>
+				<Color3uint8 name="Color3uint8">4284177769</Color3uint8>
+				<PhysicalProperties name="CustomPhysicalProperties">
+					<CustomPhysics>false</CustomPhysics>
+				</PhysicalProperties>
+				<bool name="EnableFluidForces">false</bool>
+				<float name="FrontParamA">-0.100000001</float>
+				<float name="FrontParamB">0.100000001</float>
+				<token name="FrontSurface">5</token>
+				<token name="FrontSurfaceInput">12</token>
+				<float name="LeftParamA">-0.5</float>
+				<float name="LeftParamB">0.5</float>
+				<token name="LeftSurface">5</token>
+				<token name="LeftSurfaceInput">0</token>
+				<bool name="Locked">false</bool>
+				<bool name="Massless">false</bool>
+				<token name="Material">272</token>
+				<string name="MaterialVariantSerialized"></string>
+				<CoordinateFrame name="PivotOffset">
+					<X>0</X>
+					<Y>0</Y>
+					<Z>0</Z>
+					<R00>1</R00>
+					<R01>0</R01>
+					<R02>0</R02>
+					<R10>0</R10>
+					<R11>1</R11>
+					<R12>0</R12>
+					<R20>0</R20>
+					<R21>0</R21>
+					<R22>1</R22>
+				</CoordinateFrame>
+				<float name="Reflectance">0</float>
+				<float name="RightParamA">-0.5</float>
+				<float name="RightParamB">0.5</float>
+				<token name="RightSurface">5</token>
+				<token name="RightSurfaceInput">0</token>
+				<int name="RootPriority">0</int>
+				<Vector3 name="RotVelocity">
+					<X>0</X>
+					<Y>0</Y>
+					<Z>0</Z>
+				</Vector3>
+				<float name="TopParamA">-0.5</float>
+				<float name="TopParamB">0.5</float>
+				<token name="TopSurface">5</token>
+				<token name="TopSurfaceInput">0</token>
+				<float name="Transparency">1</float>
+				<Vector3 name="Velocity">
+					<X>0</X>
+					<Y>0</Y>
+					<Z>0</Z>
+				</Vector3>
+				<Vector3 name="size">
+					<X>5</X>
+					<Y>5</Y>
+					<Z>0.199999988</Z>
+				</Vector3>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<string name="Name">ShadowMask</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+			<Item class="Decal" referent="RBX7237ECB5F0C54F859F44F288E6FD01AF">
+				<Properties>
+					<Color3 name="Color3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<Content name="MetalnessMap"><null></null></Content>
+					<Content name="NormalMap"><null></null></Content>
+					<float name="Rotation">0</float>
+					<Content name="RoughnessMap"><null></null></Content>
+					<Content name="Texture"><url>rbxassetid://14557092445</url></Content>
+					<Content name="TexturePack"><null></null></Content>
+					<string name="TexturePackMetadata"></string>
+					<float name="Transparency">0</float>
+					<Vector2 name="UVOffset">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<Vector2 name="UVScale">
+						<X>1</X>
+						<Y>1</Y>
+					</Vector2>
+					<int name="ZIndex">1</int>
+					<token name="Face">5</token>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<string name="Name">Decal</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="WeldConstraint" referent="RBX311B8230D3B248D68A4D91F21C2DCBEE">
+				<Properties>
+					<CoordinateFrame name="CFrame0">
+						<X>0</X>
+						<Y>0</Y>
+						<Z>-6.09999847</Z>
+						<R00>1</R00>
+						<R01>0</R01>
+						<R02>0</R02>
+						<R10>0</R10>
+						<R11>1</R11>
+						<R12>0</R12>
+						<R20>0</R20>
+						<R21>0</R21>
+						<R22>1</R22>
+					</CoordinateFrame>
+					<Ref name="Part0Internal">RBXC080C5CF05284988B3179B6BF03B2FEB</Ref>
+					<Ref name="Part1Internal">RBX5F2555DEC6C240E39136DFFC1F1FB1A9</Ref>
+					<int name="State">3</int>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<string name="Name">WeldConstraint</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+		</Item>
+		<Item class="Decal" referent="RBX3A02B5CFB6D642C5A042EA0B251809B6">
+			<Properties>
+				<Color3 name="Color3">
+					<R>0.356862754</R>
+					<G>0.36470589</G>
+					<B>0.411764711</B>
+				</Color3>
+				<Content name="MetalnessMap"><null></null></Content>
+				<Content name="NormalMap"><null></null></Content>
+				<float name="Rotation">0</float>
+				<Content name="RoughnessMap"><null></null></Content>
+				<Content name="Texture"><url>rbxassetid://4611376175</url></Content>
+				<Content name="TexturePack"><null></null></Content>
+				<string name="TexturePackMetadata"></string>
+				<float name="Transparency">0</float>
+				<Vector2 name="UVOffset">
+					<X>0</X>
+					<Y>0</Y>
+				</Vector2>
+				<Vector2 name="UVScale">
+					<X>1</X>
+					<Y>1</Y>
+				</Vector2>
+				<int name="ZIndex">1</int>
+				<token name="Face">3</token>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<string name="Name">ColorCopy</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags">Q29sb3JUZXh0dXJl</BinaryString>
+			</Properties>
+		</Item>
+	</Item>
 </roblox>
