@@ -61,36 +61,29 @@ function ModernDecompile(content): (Model?, string?)
 end
 
 function ClassicDecompile(content)
-	local DecompileParts
-    local decompile_position = CFrame.new(ExtractedUtil.GetInsertPoint(32))
 	if content:sub(1, 4) == "http" then
-		DecompileParts = ClassicStableDecompiler.Decompile(decompile_position, HttpService:GetAsync(content))
-	else
-		DecompileParts = ClassicStableDecompiler.Decompile(decompile_position, content)
+		content = HttpService:GetAsync(content)
 	end
-	if not DecompileParts then warn('[MB:E:E] NO DECOMPILE') return end
 
-	local DecompileGroup = Instance.new("Model")
+    local decompile_position = CFrame.new(ExtractedUtil.GetInsertPoint(32))
+	local decompiled_parts = ClassicStableDecompiler.Decompile(decompile_position, content)
 
-	for i,v in ExtractedUtil.SearchTableWithRecursion(DecompileParts, function(Element) return typeof(Element) == "Instance" and Element:IsA("BasePart") or typeof(Element) == "table" and Element or Element:GetChildren() end) do
-		v.Parent = DecompileGroup
-		ApplyColorCopy(v)
-		if ExtractedUtil.IsTemplate(v) then
-			ExtractedUtil.ApplyTemplates({v})
-		end
+	local container_model = Instance.new("Model")
 
-		if not v:FindFirstChildWhichIsA("ValueBase") then continue end
+	for _, part in decompiled_parts do
+		part.Parent = container_model
+		ApplyColorCopy(part)
 
-		for _, v2 in v:GetDescendants() do
-			if not v2:IsA("ValueBase") then continue end
-			ApplyConfigurationValues(nil, v, v2, v2.Value)
+		for _, config in part:GetDescendants() do
+			if not config:IsA("ValueBase") then continue end
+			ApplyConfigurationValues(nil, part, config, config.Value)
 		end
 	end
 
-	DecompileGroup.Name = "MBE_Decompile"
-	DecompileGroup.Parent = workspace
+	container_model.Name = `{Branding.NAME_ABBREVIATION}_Decompile`
+	container_model.Parent = workspace
 
-	Selection:Set({DecompileGroup})
+	Selection:Set({container_model})
 end
 
 return function(save_string: string)
@@ -103,12 +96,12 @@ return function(save_string: string)
 	else
 		Logger.print("MODERN DECOMPILE FAILED, TRYING CLASSIC DECOMPILER")
 
-		local ok, result = pcall(ClassicDecompile, save_string)
+		local ok, _ = xpcall(ClassicDecompile :: any, function(err)
+			Logger.warn("CLASSIC DECOMPILE FAILED WITH ERROR", err, debug.traceback())
+		end, save_string)
 
 		if ok then
-			Logger.print("CLASSIC DECOMPILE SUCCESS")
-		else
-			Logger.print("CLASSIC DECOMPILE FAILED WITH ERROR", result)
+			Logger.print("CLASSIC DECOMPILE SUCCEEDED")
 		end
 	end
 end

@@ -2,9 +2,7 @@ local Compiler = {}
 Compiler.DateAdded = "2022-02-28"
 Compiler.Default = true -- selected by default
 
-local Decompiler = require(script.Decompiler)
-
---local Malleability = require(script.Parent.Parent.Malleability)
+Compiler.Decompile = require(script.Decompiler)
 
 local Round = false
 local Offset = Vector3.new(0, -1, 0)
@@ -250,10 +248,6 @@ end
 
 function Compiler.GetPartData(part, getIssues)
 	return pcall(getPartData, part, getIssues, {})
-end
-
-function Compiler.Decompile(CF, Data)
-	return Decompiler(CF, Data)
 end
 
 return Compiler
