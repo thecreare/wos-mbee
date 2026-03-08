@@ -37,13 +37,16 @@ The original [MBTools](https://create.roblox.com/store/asset/6724254977) was dev
 
 [`tools/`](https://github.com/thecreare/wos-mbee/tree/main/tools) contains partially documented tools used to keep mbee up to date.
 
-### Setting up a local workspace
+### Setting up a local environment
 
-1. Download the plugin source from here: <https://assetdelivery.roblox.com/v1/asset/?id=11707735968>
-2. Rename downloaded file to include the extension `.rbxm`
-3. Import the rbxm into a new place file
-4. Move the local script named `MBEE` into a folder named `MBEE`
-5. Sync rojo
+1. [Fork](https://github.com/thecreare/wos-mbee/fork) this repository
+2. [git clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) your new repository
+3. Navigate into the `wos-mbee/` directory
+4. Run `rokit install` to install the development tools
+5. Run `wally install` to install the dependencies
+6. Run `rojo serve` to start the Rojo server
+7. If you don't have the Rojo plugin installed in Roblox Studio, run `rojo plugin` to install it
+8. Create a new place in Roblox Studio & click the "Connect" button in the Rojo menu
 
 ### Saving as a local plugin
 
