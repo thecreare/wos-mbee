@@ -1074,6 +1074,43 @@ local CONFIG_TYPE_GENERIC_DEFAULT_VALUE = {
 	["Selection"] = "",
 }
 
+-- Temporary until mawesome fixes the partdata module
+local HARDCODE_ENUM_CONFIGS = {
+	TextFont = {
+		Default = {
+			Kind = "EnumItem",
+			EnumType = "Font",
+			Name = "SciFi",
+		},
+		Options = {
+			Kind = "Enum",
+			Enum = "Font",
+		}
+	},
+	KeyboardKeyCode = {
+		Default = {
+			Kind = "EnumItem",
+			EnumType = "KeyCode",
+			Name = "E",
+		},
+		Options = {
+			Kind = "Enum",
+			Enum = "KeyCode",
+		}
+	},
+	GamepadKeyCode = {
+		Default = {
+			Kind = "EnumItem",
+			EnumType = "KeyCode",
+			Name = "ButtonX",
+		},
+		Options = {
+			Kind = "Enum",
+			Enum = "KeyCode",
+		}
+	},
+}
+
 local function CreateConfigElementsForInstance(
 	output_container: GuiBase2d,
 	instance_to_configure: BasePart|Configuration,
@@ -1083,6 +1120,7 @@ local function CreateConfigElementsForInstance(
 
 	local function GetDefaultConfigValue(config_data)
 		local default_value = config_data.Default :: any
+		local config_options = config_data.Options
 		local config_type = config_data.Type
 		local config_name = config_data.Name
 
@@ -1095,14 +1133,14 @@ local function CreateConfigElementsForInstance(
 		-- Convert selection default (numberic index) into string value of default
 		if config_type == "Selection" then
 			-- Edge case for natural
-			if config_data.Options == "Natural" then return "Coal" end
+			if config_options == "Natural" then return "Coal" end
 
 			-- Edge case for sign's TextFont
-			if config_data.Options.Kind == "Enum" then
-				return Enum[config_data.Options.Enum][default_value.Name]
+			if config_options.Kind == "Enum" then
+				return Enum[config_options.Enum][default_value.Name]
 			end
 
-			return config_data.Options[(tonumber(default_value) or 0)+1]
+			return config_options[(tonumber(default_value) or 0)+1]
 		end
 		if config_type == "NumberRange" then
 			return `{default_value[1]}:{default_value[2]}`
@@ -1144,6 +1182,14 @@ local function CreateConfigElementsForInstance(
 		for i, config_data in configurations do
 			local config_type = config_data.Type
 			local config_name = config_data.Name
+			
+			do -- Remove when mawesome fixes
+				local hardcode = HARDCODE_ENUM_CONFIGS[config_name]
+				if hardcode then
+					config_data.Default = config_data.Default or hardcode.Default
+					config_data.Options = config_data.Options or hardcode.Options
+				end
+			end
 
 			-- Insert value instance into part if it doesn't already exist
 			local config_instance = instance_to_configure:FindFirstChild(config_name) :: ConfigValue?
