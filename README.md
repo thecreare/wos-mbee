@@ -12,16 +12,21 @@ The plugin can be found here: <https://create.roblox.com/store/asset/11707735968
 - Automatic wireless ID securing. Prefix any `Antenna`/`Router`/etc ID with % to automatically randomize its ID at compile time.
 - Builtin mirror tool (fork of stravant's, edited to work with wos parts)
 - Range and capacity visualizations for parts like `EnergyShield` & `PowerCell`
-- Microcontroller type checking (from [arvid's documentation](https://github.com/ArvidSilverlock/Pilot.lua-Luau-LSP))
+- Edit `Microcontroller` code in a script with type checking from [Arvid's documentation](https://github.com/ArvidSilverlock/Pilot.lua-Luau-LSP)
 - Part name & config autocomplete
-- Support for decompiling pre 2024 wipe model codes
-- Automatically open `Microcontroller` code as script
-- Get resource cost of model
-- Extra developer parts that aren't shown in the classic model builder tools
-- Customizable UI
-- Support for components in UI
-- Part list UI shows miniature part icon
-- UI Dropdown for enum configs
+- Support for decompiling pre-2024-wipe model codes
+- Get resource cost of a model in LUA, JSON, or human-readable text
+- Extra developer parts like `DevSource`, `DevSink`, and more that aren't shown in the official tools
+- Customizable UI colors
+- Support for adding and configuring part components like `Blade` and `Door`
+- Dropdowns for multiple-choice configurations like `Polysilicon`, `Apparel`, `Extractor`, and more
+- Currently more up-to-date than the official tools
+- Warning symbols for parts that can't be loaded in testing zone (blue), can't be crafted in the universe (orange), or both (red)
+- Change part types in bulk, ie, replacing `Iron` with `Titanium`
+- Spawn wedges and other templates with a template material
+- Ignores non-wos parts by default, it won't accidentally compile random parts like Handles in rigs
+- Overlap & Malleability checking
+- Create and add custom ("randmat") materials from the universe
 
 ## History
 
@@ -30,7 +35,7 @@ The original [MBTools](https://create.roblox.com/store/asset/6724254977) was dev
 
 ## Contributing
 
-[Tools](https://github.com/1-creare-1/wos-mbee/tree/main/tools) contains partially documented tools used to keep mbee up to date.
+[`tools/`](https://github.com/thecreare/wos-mbee/tree/main/tools) contains partially documented tools used to keep mbee up to date.
 
 ### Setting up a local workspace
 
